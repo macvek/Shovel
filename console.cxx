@@ -7,6 +7,10 @@ Console::Console() {
 }
 
 Console::~Console() {
+    restore();
+}
+
+void Console::restore() {
     tcsetattr( STDIN_FILENO, TCSANOW, &initial);
 }
 

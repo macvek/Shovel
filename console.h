@@ -9,6 +9,7 @@ class Console {
     Console();
     ~Console();
     void enableRaw();
+    void restore();
     
 
 };

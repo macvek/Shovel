@@ -16,6 +16,10 @@ add_executable(Shovel
     main.cxx
     console.cxx
     timer.cxx
+    log.cxx
 )
 
 target_link_libraries(Shovel rt)
+target_link_options(Shovel PUBLIC 
+  "$<${gcc_like_cxx}:-rdynamic>"  
+)
