@@ -4,11 +4,11 @@
 #include <iostream>
 static void handler(int sig, siginfo_t *info, void *ucontext) {
     Timer* owner = (Timer*)info->si_value.sival_ptr;
-    owner->onTick();
+    owner->trigger();
 }
 
 static int signalSeq = 0;
-Timer::Timer() {
+Timer::Timer() : onTick(nullptr) {
     if (SIGRTMIN + signalSeq >= SIGRTMAX) {
         std::cout << "timer() failed, sequence exhausted " << errno << "\r\n";
     }
@@ -43,6 +43,10 @@ Timer::~Timer() {
     }
 }
 
+void Timer::setOnTick(TimerOnTick* aOnTick) {
+    onTick = aOnTick;
+}
+
 void Timer::start() {
     struct itimerspec its = {0};
     its.it_value.tv_sec = 0;
@@ -64,6 +68,11 @@ void Timer::stop() {
     }
 }
 
-void Timer::onTick() {
-     std::cout << "onTICK " << id << "\r\n";
+void Timer::trigger() {
+    if (!onTick) {
+        std::cout << "Missing handler for timer " << this << "\r\n";
+    }
+    else {
+        onTick->onTick();
+    }
 }

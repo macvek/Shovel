@@ -6,9 +6,17 @@
 #include "timer.h"
 using namespace std;
 
+struct MyOnTick : public TimerOnTick {
+    void onTick() {
+        std::cout << "On My Tick\r\n";
+    }
+};
+
 int main(int argc, char** argv) {
     Console console;
     Timer timer;
+    MyOnTick myOnTick;
+    timer.setOnTick(&myOnTick);
     Timer *nextTimer = nullptr;
 
     console.enableRaw();
