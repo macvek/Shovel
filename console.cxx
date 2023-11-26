@@ -1,8 +1,11 @@
 #include "console.h"
+#include "log.h"
 #include <unistd.h>
 
 Console::Console() {
-    tcgetattr( STDIN_FILENO,  &initial);
+    if (tcgetattr( STDIN_FILENO,  &initial)) {
+        Log::panicWithErrno("Failed on Console constructor");
+    }
     applied = initial;
 }
 
@@ -11,10 +14,14 @@ Console::~Console() {
 }
 
 void Console::restore() {
-    tcsetattr( STDIN_FILENO, TCSANOW, &initial);
+    if (tcsetattr( STDIN_FILENO, TCSANOW, &initial)) {
+        Log::panicWithErrno("Failed on restore");
+    }
 }
 
 void Console::enableRaw() {
     cfmakeraw(&applied);
-    tcsetattr( STDIN_FILENO, TCSANOW, &applied);
+    if (tcsetattr( STDIN_FILENO, TCSANOW, &applied)) {
+        Log::panicWithErrno("Failed on enableRaw");
+    }
 }

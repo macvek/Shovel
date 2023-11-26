@@ -1,10 +1,16 @@
 #include "timer.h"
+#include "log.h"
 #include <signal.h>
 
 #include <iostream>
 static void handler(int sig, siginfo_t *info, void *ucontext) {
     Timer* owner = (Timer*)info->si_value.sival_ptr;
-    owner->trigger();
+    if (owner == nullptr) {
+        Log::warn() << "Triggered timer event handler with NULL pointer\r\n";
+    }
+    else {
+        owner->trigger();
+    }
 }
 
 static int signalSeq = 0;
@@ -21,8 +27,7 @@ Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMil
     sev.sigev_value.sival_ptr = this;
     
     if (timer_create(CLOCK_REALTIME, &sev, &id)) {
-        std::cout << "timer_create failed " << errno << "\r\n";
-        return;
+        Log::panicWithErrno("Timer - timer_create");
     }
 
     struct sigaction sa = { 0 };
@@ -30,16 +35,14 @@ Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMil
     sa.sa_sigaction = handler;
 
     if (sigaction(signalNumber, &sa, NULL) == -1){
-        std::cout << "sigaction failed " << errno << "\r\n";
-        return;
+        Log::panicWithErrno("Timer - sigaction");
     }
     ++signalSeq;
 }
 
 Timer::~Timer() {
     if (timer_delete(id)) {
-        std::cout << "timer_delete failed " << errno << "\r\n";
-        return;
+        Log::warn() << "Failed to delete timer: " << id;
     }
 }
 
@@ -51,16 +54,14 @@ void Timer::start() {
     its.it_interval.tv_nsec = its.it_value.tv_nsec;
 
     if (timer_settime(id, 0, &its, NULL)) {
-        std::cout << "timer_settime failed " << errno << "\r\n";
-        return;
+       Log::panicWithErrno("Timer - start() failed");
     }
 }
 
 void Timer::stop() {
     struct itimerspec its = {0};
     if (timer_settime(id, 0, &its, NULL)) {
-        std::cout << "timer_settime failed " << errno << "\r\n";
-        return;
+        Log::panicWithErrno("Timer - stop() failed");
     }
 }
 

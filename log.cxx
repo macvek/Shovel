@@ -7,7 +7,11 @@
 static void *backtraceBuffer[FRAMESCOUNT];
 
 std::stringstream Log::errorStream;
-std::stringstream& Log::error() {
+std::ostream& Log::warn() {
+    return std::cout;
+}
+
+std::ostream& Log::error() {
     int nbOfTraces = backtrace((void**)&backtraceBuffer, FRAMESCOUNT);
     char **strings = backtrace_symbols(backtraceBuffer, nbOfTraces);
     if (strings == nullptr) {
@@ -24,7 +28,7 @@ std::stringstream& Log::error() {
 }
 
 void Log::panicOnError() {
-    if (Log::errorStream.str().length() > 0) {
+    if (errorStream.str().length() > 0) {
         panic();
     }
 }
@@ -39,4 +43,9 @@ void Log::panic() {
 
 void Log::clear() {
     errorStream.clear();
+}
+
+void Log::panicWithErrno(std::string msg) {
+    error() << msg << "; errno:" << errno << ", strerror: " << strerror(errno) << "\r\n";
+    panic();
 }

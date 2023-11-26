@@ -10,8 +10,10 @@ class Log {
     static std::stringstream errorStream;
     public:
     
-    static std::stringstream& error();
+    static std::ostream& error();
+    static std::ostream& warn();
     static void panicOnError();
+    static void panicWithErrno(std::string msg);
     static void panic();
     static void clear();
 
