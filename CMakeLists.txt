@@ -13,7 +13,8 @@ target_compile_options(shared_compiler_flags INTERFACE
 )
 
 add_executable(Shovel 
-    Main.cxx    
+    Main.cxx
+    console.cxx
 )
 
 target_link_libraries(Shovel rt)
