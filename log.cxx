@@ -1,12 +1,18 @@
-#include "log.h"
 #include <execinfo.h> 
 #include <errno.h>
 #include <string.h>
 
-#define FRAMESCOUNT 100
+#include "output.h"
+#include "log.h"
+
+#define FRAMESCOUNT 30
 static void *backtraceBuffer[FRAMESCOUNT];
 
 std::stringstream Log::errorStream;
+std::ostream& Log::info() {
+    return std::cout;
+}
+
 std::ostream& Log::warn() {
     return std::cout;
 }
@@ -15,15 +21,16 @@ std::ostream& Log::error() {
     int nbOfTraces = backtrace((void**)&backtraceBuffer, FRAMESCOUNT);
     char **strings = backtrace_symbols(backtraceBuffer, nbOfTraces);
     if (strings == nullptr) {
-        errorStream << "failed to produce backtrace: " << strerror(errno) << "\r\n";
+        errorStream << "failed to produce backtrace: " << strerror(errno) << CRLF;
     }
     else {
         for (int i = 0; i < nbOfTraces; i++) {
-            errorStream << strings[i] << "\r\n";
+            errorStream << strings[i] << CRLF;
         }
-        errorStream << "\r\n";
+        errorStream << CRLF;
+        free(strings);
     }
-    free(strings);
+    
     return errorStream;
 }
 
@@ -35,7 +42,7 @@ void Log::panicOnError() {
 
 void Log::panic() {
     std::string message = errorStream.str();
-    std::cerr << "PANIC:" << message << "\r\n";
+    std::cerr << "PANIC:" << message << CRLF;
     LogPanic panic;
     panic.str = message;
     throw panic;
@@ -46,6 +53,6 @@ void Log::clear() {
 }
 
 void Log::panicWithErrno(std::string msg) {
-    error() << msg << "; errno:" << errno << ", strerror: " << strerror(errno) << "\r\n";
+    error() << msg << "; errno:" << errno << ", strerror: " << strerror(errno) << CRLF;
     panic();
 }

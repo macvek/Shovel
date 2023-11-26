@@ -1,12 +1,14 @@
+#include <signal.h>
+#include <iostream>
+
 #include "timer.h"
 #include "log.h"
-#include <signal.h>
+#include "output.h"
 
-#include <iostream>
 static void handler(int sig, siginfo_t *info, void *ucontext) {
     Timer* owner = (Timer*)info->si_value.sival_ptr;
     if (owner == nullptr) {
-        Log::warn() << "Triggered timer event handler with NULL pointer\r\n";
+        Log::warn() << "Triggered timer event handler with NULL pointer" << CRLF;
     }
     else {
         owner->trigger();
@@ -16,7 +18,7 @@ static void handler(int sig, siginfo_t *info, void *ucontext) {
 static int signalSeq = 0;
 Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMilisecInternval), onTick(aOnTick) {
     if (SIGRTMIN + signalSeq >= SIGRTMAX) {
-        std::cout << "timer() failed, sequence exhausted " << errno << "\r\n";
+        Log::panicWithErrno("Timer() failed, sequence exhausted");
     }
 
     int signalNumber = SIGRTMIN + signalSeq;
@@ -42,7 +44,7 @@ Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMil
 
 Timer::~Timer() {
     if (timer_delete(id)) {
-        Log::warn() << "Failed to delete timer: " << id;
+        Log::warn() << "Failed to delete timer: " << id << CRLF;
     }
 }
 

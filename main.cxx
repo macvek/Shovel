@@ -1,15 +1,15 @@
-#include <iostream>
 #include <unistd.h>
 
 #include "console.h"
 #include "timer.h"
 #include "log.h"
+#include "output.h"
 
 using namespace std;
 
 struct MyOnTick : public TimerOnTick {
     void onTick() {
-        std::cout << "On My Tick\r\n";
+        std::cout << "On My Tick" << CRLF;
     }
 };
 
@@ -25,9 +25,9 @@ int main(int argc, char** argv) {
         for (;;) {
             int ret = read(STDIN_FILENO, bytes, 1024);
             char what = bytes[0];
-            cout << "GOT : "<<bytes[0] << ";" << ret << "\r\n";
+            cout << "GOT : "<<bytes[0] << ";" << ret << CRLF;
             if (what == 'x') {
-                cout << "I'm done" << "\r\n";
+                cout << "I'm done" << CRLF;
                 break;
             } 
             else if (what == 's') {
@@ -37,12 +37,12 @@ int main(int argc, char** argv) {
                 timer.start();
             } 
             else if (what == 'E') {
-                Log::error() << "Call me inside a method" << "\r\n";
+                Log::error() << "Call me inside a method" << CRLF;
                 Log::panicOnError();
-                cout << "No error\r\n";
+                cout << "No error" << CRLF;
             } 
             else {
-                cout << "not x , try again" << "\r\n";
+                cout << "not x , try again" << CRLF;
             }
         }
     }

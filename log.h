@@ -10,6 +10,7 @@ class Log {
     static std::stringstream errorStream;
     public:
     
+    static std::ostream& info();
     static std::ostream& error();
     static std::ostream& warn();
     static void panicOnError();
