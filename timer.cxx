@@ -8,7 +8,7 @@ static void handler(int sig, siginfo_t *info, void *ucontext) {
 }
 
 static int signalSeq = 0;
-Timer::Timer() : onTick(nullptr) {
+Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMilisecInternval), onTick(aOnTick) {
     if (SIGRTMIN + signalSeq >= SIGRTMAX) {
         std::cout << "timer() failed, sequence exhausted " << errno << "\r\n";
     }
@@ -43,16 +43,12 @@ Timer::~Timer() {
     }
 }
 
-void Timer::setOnTick(TimerOnTick* aOnTick) {
-    onTick = aOnTick;
-}
-
 void Timer::start() {
     struct itimerspec its = {0};
     its.it_value.tv_sec = 0;
-    its.it_value.tv_nsec = 500000000;
+    its.it_value.tv_nsec = milisecInterval * 1000000;
     its.it_interval.tv_sec  = 0;
-    its.it_interval.tv_nsec = 500000000;
+    its.it_interval.tv_nsec = its.it_value.tv_nsec;
 
     if (timer_settime(id, 0, &its, NULL)) {
         std::cout << "timer_settime failed " << errno << "\r\n";
@@ -69,10 +65,5 @@ void Timer::stop() {
 }
 
 void Timer::trigger() {
-    if (!onTick) {
-        std::cout << "Missing handler for timer " << this << "\r\n";
-    }
-    else {
-        onTick->onTick();
-    }
+    onTick->onTick();
 }

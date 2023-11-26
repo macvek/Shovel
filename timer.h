@@ -6,15 +6,16 @@ struct TimerOnTick {
 };
 
 class Timer {
-    timer_t id;
+    const int milisecInterval;
     TimerOnTick *onTick;
+    timer_t id;
+    
     public:
-    Timer();
+    Timer(int aMilisecInternval, TimerOnTick* aOnTick);
     ~Timer();
     void start();
     void stop();
     void trigger();
-    void setOnTick(TimerOnTick* aOnTick);
 };
 
 

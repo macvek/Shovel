@@ -14,11 +14,8 @@ struct MyOnTick : public TimerOnTick {
 
 int main(int argc, char** argv) {
     Console console;
-    Timer timer;
     MyOnTick myOnTick;
-    timer.setOnTick(&myOnTick);
-    Timer *nextTimer = nullptr;
-
+    Timer timer(200, &myOnTick);
     console.enableRaw();
     
     char bytes[1024];
@@ -30,30 +27,13 @@ int main(int argc, char** argv) {
         if (what == 'x') {
             cout << "I'm done" << "\r\n";
             break;
-        } else 
-        if (what == 's') {
+        } else if (what == 's') {
             timer.stop();
-        } else 
-        if (what == 'r') {
+        } else if (what == 'r') {
             timer.start();
-        } else
-        if (what == 'S') {
-            if (nextTimer) {
-                nextTimer->stop();
-                delete nextTimer;
-                nextTimer = nullptr;
-            }
-        } else 
-        if (what == 'R') {
-            if (!nextTimer) {
-                nextTimer = new Timer();
-                nextTimer->start();
-            }
-        }
+        } 
         else {
             cout << "not x , try again" << "\r\n";
         }
     }
-
-    
 }
