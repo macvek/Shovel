@@ -13,12 +13,10 @@ struct MyOnTick : public TimerOnTick {
     }
 };
 
-static Console console;
-
 int main(int argc, char** argv) {
-    
+    Console console;
+    MyOnTick myOnTick;
     try {
-        MyOnTick myOnTick;
         Timer timer(200, &myOnTick);
         console.enableRaw();
         
