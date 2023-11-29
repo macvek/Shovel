@@ -1,7 +1,8 @@
 #include "inputdecoder.h"
 
 static Key SPECIAL_EMPTY = {
-    .value = '~'
+    .value = '~',
+    .type = ERROR
 };
 
 bool InputDecoder::canLoad() {

@@ -1,7 +1,14 @@
 #include <queue>
 
+enum KeyType {
+    STANDARD,
+    ERROR
+};
+
 struct Key {
     unsigned short value;
+    KeyType type;
+    
 };
 
 class InputDecoder {

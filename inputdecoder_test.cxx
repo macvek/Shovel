@@ -25,11 +25,23 @@ void TestFeedingStandardKey() {
         cerr << "TestFeedingStandardKey: buffer should be empty" << endl;
         exit(1);
     }
-
 }
 
+void TestEmptyDecoder() {
+    InputDecoder decoder;
+    if (decoder.canLoad()) {
+        cerr << "TestEmptyDecoder: empty decoder should not load anything" << endl;
+        exit(1);
+    }
+
+    Key k = decoder.load();
+    if (k.type != ERROR) {
+        cerr << "TestEmptyDecoder: loading on empty should return ERROR type" << endl;
+        exit(1);
+    }
+}
 
 int main() {
     TestFeedingStandardKey();
-    
+    TestEmptyDecoder();
 }
