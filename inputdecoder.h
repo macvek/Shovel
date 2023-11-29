@@ -1,12 +1,14 @@
 #include <queue>
 
+typedef unsigned char AChar;
+
 enum KeyType {
-    STANDARD,
-    ERROR
+    ERROR,
+    STANDARD
 };
 
 struct Key {
-    unsigned short value;
+    AChar value;
     KeyType type;
     
 };
@@ -15,7 +17,7 @@ class InputDecoder {
     std::queue<Key> queue;
 
     public:
-    void feed(char* buffer, int size);
+    void feed(AChar* buffer, int size);
     bool canLoad();
     Key load();
 };

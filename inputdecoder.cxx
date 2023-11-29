@@ -9,8 +9,8 @@ bool InputDecoder::canLoad() {
     return queue.size() > 0;
 }
 
-void InputDecoder::feed(char* ptr, int bufferSize) {
-    char *end = ptr+bufferSize;
+void InputDecoder::feed(AChar* ptr, int bufferSize) {
+    AChar *end = ptr+bufferSize;
     Key k;
     while(ptr < end) {
         k.value = *ptr;
