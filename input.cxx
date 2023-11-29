@@ -17,16 +17,10 @@ int Input::getKey() {
 }
 
 void Input::decodeBuffer(int size) {
-    int k = buffer[0];
-    
-    std::cout << "EXTRA: " << size <<" => ";
+    std::cout << "BUFFER: ";
     for (int i=0;i<size;i++) {
-        int each = buffer[i];
-        std::cout << each <<";";
+        std::cout << (int)buffer[i] << ';';
     }
     std::cout << CRLF;
-    
-    
-    key = k;
-    
+    key = buffer[0];
 }

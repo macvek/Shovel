@@ -14,6 +14,7 @@ void InputDecoder::feed(char* ptr, int bufferSize) {
     Key k;
     while(ptr < end) {
         k.value = *ptr;
+        k.type = STANDARD;
         ptr++;
 
         queue.push(k);

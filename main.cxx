@@ -3,7 +3,7 @@
 #include "log.h"
 #include "input.h"
 #include "output.h"
-
+#include <stdio.h>
 using namespace std;
 
 struct MyOnTick : public TimerOnTick {
@@ -23,7 +23,8 @@ int main(int argc, char** argv) {
         for (;;) {
             input.waitFor();
             char what = input.getKey();
-            cout << "GOT : "<< what << ";" << (int)(what) << CRLF;
+            printf("Got 0x%x;%i;%c\r\n", what,what,what);
+
             if (what == 'x') {
                 cout << "I'm done" << CRLF;
                 break;
