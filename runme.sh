@@ -4,6 +4,6 @@ set -e
 mkdir -p build
 cd build
 cmake ../
-cmake --build .
+cmake --build . && ctest --output-on-failure
 ./Shovel
 cd ../

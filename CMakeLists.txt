@@ -12,14 +12,22 @@ target_compile_options(shared_compiler_flags INTERFACE
   "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
 )
 
-add_executable(Shovel 
-    main.cxx
-    console.cxx
-    timer.cxx
-    log.cxx
+set(sources main.cxx
+  console.cxx
+  timer.cxx
+  log.cxx
+  input.cxx
+  inputdecoder.cxx
 )
+
+add_executable(Shovel ${sources})
 
 target_link_libraries(Shovel rt)
 target_link_options(Shovel PUBLIC 
   "$<${gcc_like_cxx}:-rdynamic>"  
 )
+
+enable_testing()
+
+add_executable(InputDecoderTest inputdecoder_test.cxx inputdecoder.cxx )
+add_test(NAME InputDecoderTest COMMAND InputDecoderTest)
