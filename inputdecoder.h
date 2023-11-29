@@ -4,7 +4,13 @@ typedef unsigned char AChar;
 
 enum KeyType {
     ERROR,
-    STANDARD
+    STANDARD,
+    SPECIALS, // MARKER for checking for special CHARACTERS by k.type > SPECIALS
+    
+    ENTER,
+    TAB,
+    ESCAPE
+    
 };
 
 struct Key {

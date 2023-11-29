@@ -18,12 +18,20 @@ void assertEmpty(std::string prefix, InputDecoder& decoder) {
     }
 }
 
-void assertCharInBuffer(std::string prefix, Key& k, AChar* buffer, int i) {
-    if (k.value != buffer[i]) {
-        cerr << prefix << " expected:" << buffer[i] << ", got "<< k.value << endl;
+void assertCharInBuffer(std::string prefix, Key& k, AChar* values, int i) {
+    if (k.value != values[i]) {
+        cerr << prefix << " expected:" << (int)values[i] << ", got "<< (int)k.value << endl;
         exit(1);
     }
 }
+
+void assertTypesInBuffer(std::string prefix, Key& k, KeyType* types, int i) {
+    if (k.type != types[i]) {
+        cerr << prefix << " expected:" << types[i] << ", got "<< (int)k.type << endl;
+        exit(1);
+    }
+}
+
 
 void TestFeedingStandardKey() {
     InputDecoder decoder;
@@ -78,23 +86,33 @@ void TestFeedingAll0x20PlusCharacters() {
 
 void TestFeedingSpecialOneChars() {
     InputDecoder decoder;
-    AChar* buffer = ascii+0x20; //0x20 is 'space' as first of typable characters
-    int size = 0x7F - 0x20; // 0x7F is excluded as it is DEL character
+    AChar buffer[] = {
+        0x0D, // ENTER,
+        0x1B, // ESCAPE,
+        0x09, // TAB,
+    };
+
+    KeyType toMatch[] = {
+        ENTER,
+        ESCAPE,
+        TAB
+    };
+    
+    int size = sizeof(buffer);
     
     decoder.feed(buffer, size); 
-    
     for (int i=0;i<size;i++) {
         assertCanLoad(__FUNCTION__, decoder, i);
-
         Key k = decoder.load();
         
-        if (k.type != STANDARD) {
-            cerr << __FUNCTION__ << " non STANDARD char returned on position:" << i << "; "<< k.value << endl;
+        if (k.type <= SPECIALS) {
+            cerr << __FUNCTION__ << " non SPECIAL char returned on position:" << i << "; "<< k.type << endl;
             exit(1);
         }
 
-        assertCharInBuffer(__FUNCTION__, k, buffer, i);
+        assertTypesInBuffer(__FUNCTION__, k, toMatch, i);
     }
+    assertEmpty(__FUNCTION__, decoder);
 }
 
 
