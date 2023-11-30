@@ -32,6 +32,22 @@ void assertTypesInBuffer(std::string prefix, Key& k, KeyType* types, int i) {
     }
 }
 
+void assertKeySequence(std::string prefix, InputDecoder& decoder, AChar *buffer, int bufferSize, KeyType *toMatch, int toMatchCount) {
+    decoder.feed(buffer, bufferSize); 
+    for (int i=0;i<toMatchCount;i++) {
+        assertCanLoad(prefix, decoder, i);
+        Key k = decoder.load();
+        
+        if (k.type <= SPECIALS) {
+            cerr << prefix << " non SPECIAL char returned on position:" << i << "; "<< k.type << endl;
+            exit(1);
+        }
+
+        assertTypesInBuffer(prefix, k, toMatch, i);
+    }
+    assertEmpty(prefix, decoder);
+}
+
 
 void TestFeedingStandardKey() {
     InputDecoder decoder;
@@ -98,20 +114,7 @@ void TestFeedingSpecialOneChars() {
         TAB
     };
     
-    decoder.feed(buffer, sizeof(buffer)); 
-    int toMatchCount = (sizeof(toMatch)/sizeof(KeyType));
-    for (int i=0;i<toMatchCount;i++) {
-        assertCanLoad(__FUNCTION__, decoder, i);
-        Key k = decoder.load();
-        
-        if (k.type <= SPECIALS) {
-            cerr << __FUNCTION__ << " non SPECIAL char returned on position:" << i << "; "<< k.type << endl;
-            exit(1);
-        }
-
-        assertTypesInBuffer(__FUNCTION__, k, toMatch, i);
-    }
-    assertEmpty(__FUNCTION__, decoder);
+    assertKeySequence(__FUNCTION__, decoder, buffer, sizeof(buffer), toMatch, sizeof(toMatch)/sizeof(KeyType));
 }
 
 void TestFeeding3BytesChars() {
@@ -145,20 +148,26 @@ void TestFeeding3BytesChars() {
         F4
     };
 
-    decoder.feed(buffer, sizeof(buffer)); 
-    int toMatchCount = (sizeof(toMatch)/sizeof(KeyType));
-    for (int i=0;i<toMatchCount;i++) {
-        assertCanLoad(__FUNCTION__, decoder, i);
-        Key k = decoder.load();
-        
-        if (k.type <= SPECIALS) {
-            cerr << __FUNCTION__ << " non SPECIAL char returned on position:" << i << "; "<< k.type << endl;
-            exit(1);
-        }
+    assertKeySequence(__FUNCTION__, decoder, buffer, sizeof(buffer), toMatch, sizeof(toMatch)/sizeof(KeyType));
+}
 
-        assertTypesInBuffer(__FUNCTION__, k, toMatch, i);
-    }
-    assertEmpty(__FUNCTION__, decoder);
+void TestFeeding4BytesChars() {
+    InputDecoder decoder;
+    AChar buffer[] = {
+        0x1b, 0x5b, 0x32, 0x7e, // INSERT
+        0x1b, 0x5b, 0x33, 0x7e, // DELETE
+        0x1b, 0x5b, 0x35, 0x7e, // PAGEUP
+        0x1b, 0x5b, 0x36, 0x7e, // PAGEDOWN
+    };
+
+    KeyType toMatch[] = {
+        INSERT,
+        DELETE,
+        PAGEUP,
+        PAGEDOWN,
+    };
+
+    assertKeySequence(__FUNCTION__, decoder, buffer, sizeof(buffer), toMatch, sizeof(toMatch)/sizeof(KeyType));
 }
 
 

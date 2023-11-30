@@ -47,7 +47,7 @@ static int asSpecial(Key& k, KeyType t, int ret) {
     return ret;
 }
 
-static int decodeKey(AChar* buffer, AChar* limit, Key& k) {
+static int decodeKey(AChar* buffer, AChar* limit, Key& k) {   
     if (limit - buffer >= 3) {
         if (*buffer == HEX_ESCAPE && *(buffer+1) == HEX_ESCAPESEQ1) {
             switch( *(buffer+2) ) {

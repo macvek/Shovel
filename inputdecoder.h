@@ -23,6 +23,11 @@ enum KeyType {
     F2,
     F3,
     F4,
+
+    INSERT,
+    DELETE,
+    PAGEUP,
+    PAGEDOWN,
     
 };
 
