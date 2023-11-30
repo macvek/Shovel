@@ -9,7 +9,20 @@ enum KeyType {
     
     ENTER,
     TAB,
-    ESCAPE
+    ESCAPE,
+
+    ARROW_UP,
+    ARROW_DOWN,
+    ARROW_RIGHT,
+    ARROW_LEFT,
+    
+    END,
+    HOME,
+
+    F1,
+    F2,
+    F3,
+    F4,
     
 };
 

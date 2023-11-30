@@ -27,7 +27,7 @@ void assertCharInBuffer(std::string prefix, Key& k, AChar* values, int i) {
 
 void assertTypesInBuffer(std::string prefix, Key& k, KeyType* types, int i) {
     if (k.type != types[i]) {
-        cerr << prefix << " expected:" << types[i] << ", got "<< (int)k.type << endl;
+        cerr << prefix << " expected type:" << types[i] << ", got "<< (int)k.type << endl;
         exit(1);
     }
 }
@@ -98,10 +98,56 @@ void TestFeedingSpecialOneChars() {
         TAB
     };
     
-    int size = sizeof(buffer);
-    
-    decoder.feed(buffer, size); 
-    for (int i=0;i<size;i++) {
+    decoder.feed(buffer, sizeof(buffer)); 
+    int toMatchCount = (sizeof(toMatch)/sizeof(KeyType));
+    for (int i=0;i<toMatchCount;i++) {
+        assertCanLoad(__FUNCTION__, decoder, i);
+        Key k = decoder.load();
+        
+        if (k.type <= SPECIALS) {
+            cerr << __FUNCTION__ << " non SPECIAL char returned on position:" << i << "; "<< k.type << endl;
+            exit(1);
+        }
+
+        assertTypesInBuffer(__FUNCTION__, k, toMatch, i);
+    }
+    assertEmpty(__FUNCTION__, decoder);
+}
+
+void TestFeeding3BytesChars() {
+    InputDecoder decoder;
+    AChar buffer[] = {
+        0x1b, 0x5b, 0x41, // ARROW_UP
+        0x1b, 0x5b, 0x42, // ARROW_DOWN
+        0x1b, 0x5b, 0x43, // ARROW_RIGHT
+        0x1b, 0x5b, 0x44, // ARROW_LEFT
+                          // ?        
+        0x1b, 0x5b, 0x46, // END
+                          // ?
+        0x1b, 0x5b, 0x48, // HOME
+                          // ?
+        0x1b, 0x4f, 0x50, // F1
+        0x1b, 0x4f, 0x51, // F2
+        0x1b, 0x4f, 0x52, // F3
+        0x1b, 0x4f, 0x53, // F4
+    };
+
+    KeyType toMatch[] = {
+        ARROW_UP,
+        ARROW_DOWN,
+        ARROW_RIGHT,
+        ARROW_LEFT,
+        END,
+        HOME,
+        F1,
+        F2,
+        F3,
+        F4
+    };
+
+    decoder.feed(buffer, sizeof(buffer)); 
+    int toMatchCount = (sizeof(toMatch)/sizeof(KeyType));
+    for (int i=0;i<toMatchCount;i++) {
         assertCanLoad(__FUNCTION__, decoder, i);
         Key k = decoder.load();
         
@@ -125,4 +171,5 @@ int main() {
     TestEmptyDecoder();
     TestFeedingAll0x20PlusCharacters();
     TestFeedingSpecialOneChars();
+    TestFeeding3BytesChars();
 }
