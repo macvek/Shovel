@@ -181,4 +181,5 @@ int main() {
     TestFeedingAll0x20PlusCharacters();
     TestFeedingSpecialOneChars();
     TestFeeding3BytesChars();
+    TestFeeding4BytesChars();
 }
