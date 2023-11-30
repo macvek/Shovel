@@ -32,6 +32,31 @@ bool InputDecoder::canLoad() {
 #define HEX_F3 0x52
 #define HEX_F4 0x53
 
+struct KeySequence {
+    KeyType k;
+    AChar seq[8];
+};
+
+static KeySequence sequences[] = {
+    { .k = ARROW_UP,    .seq = {0x1b, 0x5b, 0x41, 0xFF}},
+    { .k = ARROW_DOWN,  .seq = {0x1b, 0x5b, 0x42, 0xFF}},
+    { .k = ARROW_RIGHT, .seq = {0x1b, 0x5b, 0x43, 0xFF}},
+    { .k = ARROW_LEFT,  .seq = {0x1b, 0x5b, 0x44, 0xFF}},
+    { .k = END,         .seq = {0x1b, 0x5b, 0x46, 0xFF}},
+    { .k = HOME,        .seq = {0x1b, 0x5b, 0x48, 0xFF}},
+
+    { .k = F1,          .seq = {0x1b, 0x4f, 0x50, 0xFF}},
+    { .k = F2,          .seq = {0x1b, 0x4f, 0x51, 0xFF}},
+    { .k = F3,          .seq = {0x1b, 0x4f, 0x52, 0xFF}},
+    { .k = F4,          .seq = {0x1b, 0x4f, 0x53, 0xFF}},
+
+    { .k = ENTER,       .seq = {0x0d, 0xFF}},
+    { .k = ESCAPE,      .seq = {0x1b, 0xFF}},
+    { .k = TAB,         .seq = {0x09, 0xFF}},
+    
+    { .k = ERROR } // END OF MATCHES
+};
+
 static KeyType checkType(AChar *of) {
     if (*of >= STANDARD_BEGIN && *of <= STANDARD_END) {
         return STANDARD;
@@ -48,33 +73,20 @@ static int asSpecial(Key& k, KeyType t, int ret) {
 }
 
 static int decodeKey(AChar* buffer, AChar* limit, Key& k) {   
-    if (limit - buffer >= 3) {
-        if (*buffer == HEX_ESCAPE && *(buffer+1) == HEX_ESCAPESEQ1) {
-            switch( *(buffer+2) ) {
-                case HEX_ARROWUP: return asSpecial(k, ARROW_UP, 3);
-                case HEX_ARROWDOWN: return asSpecial(k, ARROW_DOWN, 3);
-                case HEX_ARROWLEFT: return asSpecial(k, ARROW_LEFT, 3);
-                case HEX_ARROWRIGHT: return asSpecial(k, ARROW_RIGHT, 3);
-                case HEX_HOME: return asSpecial(k, HOME, 3);
-                case HEX_END: return asSpecial(k, END, 3);
-            }
-        }
+    int bufferSize = limit-buffer;
+    for (KeySequence* entry = sequences; entry->k != ERROR; ++entry) {
+        int seqLength = -1;
+        while (entry->seq[++seqLength] != 0xFF);
 
-        if (*buffer == HEX_ESCAPE && *(buffer+1) == HEX_ESCAPESEQ2) {
-            switch( *(buffer+2) ) {
-                case HEX_F1: return asSpecial(k, F1, 3);
-                case HEX_F2: return asSpecial(k, F2, 3);
-                case HEX_F3: return asSpecial(k, F3, 3);
-                case HEX_F4: return asSpecial(k, F4, 3);
+        if (seqLength <= bufferSize) {
+            bool match = true;
+            for (int i=0;i<seqLength && match; ++i) {
+                match = match && buffer[i] == entry->seq[i];
             }
-        }
-    }
-    
-    if (limit - buffer >= 1) {
-        switch(*buffer) {
-            case HEX_ENTER: return asSpecial(k, ENTER, 1);
-            case HEX_ESCAPE: return asSpecial(k, ESCAPE, 1);
-            case HEX_TAB: return asSpecial(k, TAB, 1);
+
+            if (match) {
+                return asSpecial(k, entry->k, seqLength);
+            }
         }
     }
 
@@ -82,8 +94,6 @@ static int decodeKey(AChar* buffer, AChar* limit, Key& k) {
     k.value = '?';
     return 1;
 }
-
-
 
 void InputDecoder::feed(AChar* ptr, int bufferSize) {
     AChar *end = ptr+bufferSize;
