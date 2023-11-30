@@ -170,6 +170,33 @@ void TestFeeding4BytesChars() {
     assertKeySequence(__FUNCTION__, decoder, buffer, sizeof(buffer), toMatch, sizeof(toMatch)/sizeof(KeyType));
 }
 
+void TestFeeding5BytesChars() {
+    InputDecoder decoder;
+    AChar buffer[] = {
+        0x1b, 0x5b, 0x31, 0x35, 0x7e, // F5
+        0x1b, 0x5b, 0x31, 0x37, 0x7e, // F6
+        0x1b, 0x5b, 0x31, 0x38, 0x7e, // F7
+        0x1b, 0x5b, 0x31, 0x39, 0x7e, // F8
+        0x1b, 0x5b, 0x32, 0x30, 0x7e, // F9
+        0x1b, 0x5b, 0x32, 0x31, 0x7e, // F10
+        0x1b, 0x5b, 0x32, 0x33, 0x7e, // F11
+        0x1b, 0x5b, 0x32, 0x34, 0x7e, // F12
+    };
+
+    KeyType toMatch[] = {
+        F5,
+        F6,
+        F7,
+        F8,
+        F9,
+        F10,
+        F11,
+        F12,
+    };
+
+    assertKeySequence(__FUNCTION__, decoder, buffer, sizeof(buffer), toMatch, sizeof(toMatch)/sizeof(KeyType));
+}
+
 
 int main() {
     for (int i=0;i<128;i++) {
@@ -182,4 +209,5 @@ int main() {
     TestFeedingSpecialOneChars();
     TestFeeding3BytesChars();
     TestFeeding4BytesChars();
+    TestFeeding5BytesChars();
 }
