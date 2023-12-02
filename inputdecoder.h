@@ -38,13 +38,20 @@ enum KeyType {
     DELETE,
     PAGEUP,
     PAGEDOWN,
-    
+
+    STANDARD_MODIFIED   // marker for STANDARD key, but with applied modifier    
+};
+
+enum Modifier {
+    NONE,
+    CTRL,
+    ALT
 };
 
 struct Key {
     AChar value;
     KeyType type;
-    
+    Modifier modifier;
 };
 
 class InputDecoder {

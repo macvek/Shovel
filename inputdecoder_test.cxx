@@ -1,5 +1,6 @@
 #include "inputdecoder.h"
 #include <iostream>
+#include <string.h>
 
 using namespace std;
 AChar ascii[128];
@@ -32,7 +33,7 @@ void assertTypesInBuffer(std::string prefix, Key& k, KeyType* types, int i) {
     }
 }
 
-void assertKeySequence(std::string prefix, InputDecoder& decoder, AChar *buffer, int bufferSize, KeyType *toMatch, int toMatchCount) {
+void assertKeySequence(std::string prefix, InputDecoder& decoder, AChar *buffer, int bufferSize, KeyType *toMatch, int toMatchCount, int modifiers=0) {
     decoder.feed(buffer, bufferSize); 
     for (int i=0;i<toMatchCount;i++) {
         assertCanLoad(prefix, decoder, i);
@@ -200,7 +201,36 @@ void TestFeeding5BytesChars() {
 }
 
 void TestFeedingCtrlPlusBasicChars() {
+    InputDecoder decoder;
+    int size = 0x1a;
     
+    AChar input[size];
+    AChar output[size];
+    for (int i=0;i<size;i++) {
+        if (i == 0 || /*ignore special chars in this test */i == '\t' || i == '\r' || i == '\n') {
+            input[i] = 0;
+            output[i] = ' ';    // space is returned instead of @ as it is more obvious to hit CTRL+SPACE than CTRL+@
+        }
+        else {
+            input[i] = i;
+            output[i] = i+0x40;
+        }
+
+    }
+    decoder.feed(input, size); 
+    
+    for (int i=0;i<size;i++) {
+        assertCanLoad(__FUNCTION__, decoder, i);
+        Key k = decoder.load();
+        
+        if (k.type != STANDARD_MODIFIED) {
+            cerr << __FUNCTION__ << " non STANDARD_MODIFIED char returned on position:" << i << "; "<< k.value << endl;
+            exit(1);
+        }
+
+        assertCharInBuffer(__FUNCTION__, k, output, i); // CTRL + simple symbol shows values with offset by 0x40
+    }
+    assertEmpty(__FUNCTION__, decoder);
 }
 
 

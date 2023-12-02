@@ -10,8 +10,14 @@ bool InputDecoder::canLoad() {
 }
 
 // https://upload.wikimedia.org/wikipedia/commons/5/5c/ASCII-Table-wide.pdf
+#define STANDARD_MODIFIED_OFFSET 0x40
+#define STANDARD_MODIFIED_START 0
+#define STANDARD_MODIFIED_END 'Z'-STANDARD_MODIFIED_OFFSET
+
+
 #define STANDARD_BEGIN ' '
 #define STANDARD_END '~'
+#define HEX_LF      0x0A
 #define HEX_ENTER   0x0D
 #define HEX_ESCAPE  0x1B
 #define HEX_TAB     0x09
@@ -73,7 +79,10 @@ static KeySequence sequences[] = {
 };
 
 static KeyType checkType(AChar *of) {
-    if (*of >= STANDARD_BEGIN && *of <= STANDARD_END) {
+    if (*of >= STANDARD_MODIFIED_START && *of < STANDARD_MODIFIED_END && *of != HEX_ENTER && *of != HEX_LF && *of != HEX_TAB) {
+        return STANDARD_MODIFIED;
+    }
+    else if (*of >= STANDARD_BEGIN && *of <= STANDARD_END) {
         return STANDARD;
     }
     else {
@@ -118,6 +127,19 @@ void InputDecoder::feed(AChar* ptr, int bufferSize) {
         if (type == STANDARD) {
             k.value = *ptr;
             k.type = STANDARD;
+            k.modifier = NONE;
+            queue.push(k);
+            ptr++;
+        }
+        else if (type == STANDARD_MODIFIED) {
+            if (*ptr == 0) {
+                k.value = ' ';
+            }
+            else {
+                k.value = *ptr + STANDARD_MODIFIED_OFFSET;
+            }
+            k.type = STANDARD_MODIFIED;
+            k.modifier = CTRL;
             queue.push(k);
             ptr++;
         }
