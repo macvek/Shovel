@@ -29,5 +29,9 @@ target_link_options(Shovel PUBLIC
 
 enable_testing()
 
+add_executable(InputDecoderDemo inputdecoder_demo.cxx log.cxx console.cxx inputdecoder.cxx )
 add_executable(InputDecoderTest inputdecoder_test.cxx inputdecoder.cxx )
 add_test(NAME InputDecoderTest COMMAND InputDecoderTest)
+
+add_executable(NameEnumTest nameenum_test.cxx)
+add_test(NAME NameEnumTest COMMAND NameEnumTest)
