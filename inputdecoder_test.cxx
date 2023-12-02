@@ -106,12 +106,14 @@ void TestFeedingSpecialOneChars() {
         0x0D, // ENTER,
         0x1B, // ESCAPE,
         0x09, // TAB,
+        0x7F, // BACKSPACE
     };
 
     KeyType toMatch[] = {
         ENTER,
         ESCAPE,
-        TAB
+        TAB,
+        BACKSPACE
     };
     
     assertKeySequence(__FUNCTION__, decoder, buffer, sizeof(buffer), toMatch, sizeof(toMatch)/sizeof(KeyType));
@@ -197,6 +199,10 @@ void TestFeeding5BytesChars() {
     assertKeySequence(__FUNCTION__, decoder, buffer, sizeof(buffer), toMatch, sizeof(toMatch)/sizeof(KeyType));
 }
 
+void TestFeedingCtrlPlusBasicChars() {
+    
+}
+
 
 int main() {
     for (int i=0;i<128;i++) {
@@ -210,4 +216,5 @@ int main() {
     TestFeeding3BytesChars();
     TestFeeding4BytesChars();
     TestFeeding5BytesChars();
+    TestFeedingCtrlPlusBasicChars();
 }

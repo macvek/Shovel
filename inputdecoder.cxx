@@ -67,6 +67,7 @@ static KeySequence sequences[] = {
     { .k = ENTER,       .seq = {0x0d, 0xFF}},
     { .k = ESCAPE,      .seq = {0x1b, 0xFF}},
     { .k = TAB,         .seq = {0x09, 0xFF}},
+    { .k = BACKSPACE,   .seq = {0x7F, 0xFF}},
     
     { .k = ERROR } // END OF MATCHES
 };

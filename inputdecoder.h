@@ -10,6 +10,7 @@ enum KeyType {
     ENTER,
     TAB,
     ESCAPE,
+    BACKSPACE,
 
     ARROW_UP,
     ARROW_DOWN,
