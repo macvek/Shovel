@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
             while(decoder.canLoad()) {
                 ++times;
                 Key k = decoder.load();
-                printf("#%i Key %c, type %i , modifier %i\r\n", times, k.value, k.type, k.modifier);
+                printf("#%i Key %c, type %s , modifier %s\r\n", times, k.value, k.typeName().c_str(), k.modifierName().c_str());
                 if (k.modifier == CTRL && (k.value == 'C' || k.value =='c')) {
                     return 0;
                 }

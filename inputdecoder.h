@@ -1,4 +1,5 @@
 #include <queue>
+#include <string>
 
 typedef unsigned char AChar;
 
@@ -52,6 +53,9 @@ struct Key {
     AChar value;
     KeyType type;
     Modifier modifier;
+
+    std::string typeName();
+    std::string modifierName();
 };
 
 class InputDecoder {

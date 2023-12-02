@@ -1,4 +1,5 @@
 #include "inputdecoder.h"
+#include "nameenum.h"
 
 static Key SPECIAL_EMPTY = {
     .value = '~',
@@ -78,6 +79,57 @@ static KeySequence sequences[] = {
     
     { .k = ERROR } // END OF MATCHES
 };
+
+std::string Key::typeName() {
+    NAMEENUM(type, KeyType, ERROR);
+
+    NAMEENUM(type, KeyType, STANDARD);
+    NAMEENUM(type, KeyType, SPECIALS);
+    
+    NAMEENUM(type, KeyType, ENTER);
+    NAMEENUM(type, KeyType, TAB);
+    NAMEENUM(type, KeyType, ESCAPE);
+    NAMEENUM(type, KeyType, BACKSPACE);
+
+    NAMEENUM(type, KeyType, ARROW_UP);
+    NAMEENUM(type, KeyType, ARROW_DOWN);
+    NAMEENUM(type, KeyType, ARROW_RIGHT);
+    NAMEENUM(type, KeyType, ARROW_LEFT);
+    
+    NAMEENUM(type, KeyType, END);
+    NAMEENUM(type, KeyType, HOME);
+
+    NAMEENUM(type, KeyType, F1);
+    NAMEENUM(type, KeyType, F2);
+    NAMEENUM(type, KeyType, F3);
+    NAMEENUM(type, KeyType, F4);
+
+    NAMEENUM(type, KeyType, F5);
+    NAMEENUM(type, KeyType, F6);
+    NAMEENUM(type, KeyType, F7);
+    NAMEENUM(type, KeyType, F8);
+    NAMEENUM(type, KeyType, F9);
+    NAMEENUM(type, KeyType, F10);
+    NAMEENUM(type, KeyType, F11);
+    NAMEENUM(type, KeyType, F12);
+
+    NAMEENUM(type, KeyType, INSERT);
+    NAMEENUM(type, KeyType, DELETE);
+    NAMEENUM(type, KeyType, PAGEUP);
+    NAMEENUM(type, KeyType, PAGEDOWN);
+
+    NAMEENUM(type, KeyType, STANDARD_MODIFIED);
+
+    return "UnknownKeyType";
+}
+
+std::string Key::modifierName() {
+    NAMEENUM(modifier, Modifier, NONE);
+    NAMEENUM(modifier, Modifier, CTRL);
+    NAMEENUM(modifier, Modifier, META);
+
+    return "UnknownModifier";
+}
 
 static KeyType checkType(AChar *of) {
     if (*of >= STANDARD_MODIFIED_START && *of < STANDARD_MODIFIED_END && *of != HEX_ENTER && *of != HEX_LF && *of != HEX_TAB) {
