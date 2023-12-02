@@ -45,7 +45,7 @@ enum KeyType {
 enum Modifier {
     NONE,
     CTRL,
-    ALT
+    META
 };
 
 struct Key {

@@ -26,6 +26,13 @@ void assertCharInBuffer(std::string prefix, Key& k, AChar* values, int i) {
     }
 }
 
+void assertModifier(std::string prefix, Key& k, Modifier mod) {
+    if (k.modifier != mod) {
+        cerr << prefix << " expected modifier :" << mod << ", got "<< k.modifier << endl;
+        exit(1);
+    }
+}
+
 void assertTypesInBuffer(std::string prefix, Key& k, KeyType* types, int i) {
     if (k.type != types[i]) {
         cerr << prefix << " expected type:" << types[i] << ", got "<< (int)k.type << endl;
@@ -33,7 +40,7 @@ void assertTypesInBuffer(std::string prefix, Key& k, KeyType* types, int i) {
     }
 }
 
-void assertKeySequence(std::string prefix, InputDecoder& decoder, AChar *buffer, int bufferSize, KeyType *toMatch, int toMatchCount, int modifiers=0) {
+void assertKeySequence(std::string prefix, InputDecoder& decoder, AChar *buffer, int bufferSize, KeyType *toMatch, int toMatchCount) {
     decoder.feed(buffer, bufferSize); 
     for (int i=0;i<toMatchCount;i++) {
         assertCanLoad(prefix, decoder, i);
@@ -45,6 +52,22 @@ void assertKeySequence(std::string prefix, InputDecoder& decoder, AChar *buffer,
         }
 
         assertTypesInBuffer(prefix, k, toMatch, i);
+    }
+    assertEmpty(prefix, decoder);
+}
+
+void assertKeysMatchBuffer(std::string prefix, InputDecoder& decoder, AChar *buffer, int size, KeyType expectedType, Modifier expectedModifier) {
+    for (int i=0;i<size;i++) {
+        assertCanLoad(prefix, decoder, i);
+        Key k = decoder.load();
+        
+        if (k.type != expectedType) {
+            cerr << prefix << " expected type " << expectedType << " got " << k.type << " char returned on position:" << i << "; "<< k.value << endl;
+            exit(1);
+        }
+
+        assertCharInBuffer(prefix, k, buffer, i);
+        assertModifier(prefix, k, expectedModifier);
     }
     assertEmpty(prefix, decoder);
 }
@@ -218,20 +241,24 @@ void TestFeedingCtrlPlusBasicChars() {
 
     }
     decoder.feed(input, size); 
-    
-    for (int i=0;i<size;i++) {
-        assertCanLoad(__FUNCTION__, decoder, i);
-        Key k = decoder.load();
-        
-        if (k.type != STANDARD_MODIFIED) {
-            cerr << __FUNCTION__ << " non STANDARD_MODIFIED char returned on position:" << i << "; "<< k.value << endl;
-            exit(1);
-        }
-
-        assertCharInBuffer(__FUNCTION__, k, output, i); // CTRL + simple symbol shows values with offset by 0x40
-    }
-    assertEmpty(__FUNCTION__, decoder);
+    assertKeysMatchBuffer(__FUNCTION__, decoder, output, size, STANDARD_MODIFIED, CTRL);
 }
+
+void TestFeedingAll0x20PlusCharactersWithMeta() {
+    InputDecoder decoder;
+    AChar* buffer = ascii+0x20; //0x20 is 'space' as first of typable characters
+    int size = 0x7F - 0x20; // 0x7F is excluded as it is DEL character
+
+    AChar metaBuffer[size*2];
+    for (int i=0;i<size;i++) {
+        metaBuffer[i*2] = 0x1b;
+        metaBuffer[i*2 +1] = buffer[i];
+    }
+    
+    decoder.feed(metaBuffer, size*2); 
+    assertKeysMatchBuffer(__FUNCTION__, decoder, buffer, size, STANDARD_MODIFIED, META);
+}
+
 
 
 int main() {
@@ -247,4 +274,5 @@ int main() {
     TestFeeding4BytesChars();
     TestFeeding5BytesChars();
     TestFeedingCtrlPlusBasicChars();
+    TestFeedingAll0x20PlusCharactersWithMeta();
 }

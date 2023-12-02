@@ -39,8 +39,8 @@ bool InputDecoder::canLoad() {
 #define HEX_F4 0x53
 
 struct KeySequence {
-    KeyType k;
     Modifier m;
+    KeyType k;
     AChar seq[8];
 };
 
@@ -98,7 +98,7 @@ static int asSpecial(Key& k, KeyType t, Modifier m,  int ret) {
     return ret;
 }
 
-static int decodeKey(AChar* buffer, AChar* limit, Key& k) {   
+static int decodeCharSequence(AChar* buffer, AChar* limit, Key& k) {   
     int bufferSize = limit-buffer;
     for (KeySequence* entry = sequences; entry->k != ERROR; ++entry) {
         int seqLength = -1;
@@ -146,9 +146,22 @@ void InputDecoder::feed(AChar* ptr, int bufferSize) {
             ptr++;
         }
         else if (type == SPECIALS) {
-            ptr += decodeKey(ptr, end, k);
-            queue.push(k);
+            int offset = decodeCharSequence(ptr, end, k);
+            
+            // if it is decoded as pressed ESCAPE, check if following character is standard, as it might be META+key sequence
+            if (k.type == ESCAPE && ptr+1 < end && checkType(ptr+1) == STANDARD) {
+                k.value = *(ptr+1);
+                k.type = STANDARD_MODIFIED;
+                k.modifier = META;
+                ptr += 2;
+                queue.push(k);
+            }
+            else {
+                ptr += offset;
+                queue.push(k);
+            }
         }
+        
     }
 }
 
