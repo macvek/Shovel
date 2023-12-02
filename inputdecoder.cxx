@@ -13,7 +13,7 @@ bool InputDecoder::canLoad() {
 // https://upload.wikimedia.org/wikipedia/commons/5/5c/ASCII-Table-wide.pdf
 #define STANDARD_MODIFIED_OFFSET 0x40
 #define STANDARD_MODIFIED_START 0
-#define STANDARD_MODIFIED_END 'Z'-STANDARD_MODIFIED_OFFSET
+#define STANDARD_MODIFIED_END 1+'Z'-STANDARD_MODIFIED_OFFSET 
 
 
 #define STANDARD_BEGIN ' '

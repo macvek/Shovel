@@ -12,6 +12,7 @@ int main(int argc, char** argv) {
     Console console;
     InputDecoder decoder;
     try {
+        printf("Entering raw mode.. type CTRL+C to exit\n");
         console.enableRaw();
 
         for(;;) {

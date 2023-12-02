@@ -225,7 +225,7 @@ void TestFeeding5BytesChars() {
 
 void TestFeedingCtrlPlusBasicChars() {
     InputDecoder decoder;
-    int size = 0x1a;
+    int size = 0x1b;
     
     AChar input[size];
     AChar output[size];
