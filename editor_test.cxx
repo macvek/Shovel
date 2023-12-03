@@ -146,6 +146,25 @@ void TestInsertingText() {
     }
 }
 
+void TestDeletingText() {
+    Editor e;
+    e.setText("HelloWorld");
+    
+    Key k;
+    k.type = ARROW_LEFT;
+    for (int i=0;i<3;i++) e.consume(k);
+
+    k.type = DELETE;
+    for (int i=0;i<3;i++) e.consume(k);
+
+    k.type = BACKSPACE;
+    for (int i=0;i<3;i++) e.consume(k);
+
+    if ("Hell" != e.getText()) {
+        ERR << "Should be Hell, got " << e.getText() << endl;
+        exit(1);
+    }
+}
 
 int main() {
     TestClearEditor();
@@ -153,4 +172,5 @@ int main() {
     TestMovingCursorSingleLine();
     TestMovingCursorHomeEnd();
     TestInsertingText();
+    TestDeletingText();
 }

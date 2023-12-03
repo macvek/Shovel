@@ -19,8 +19,23 @@ void Editor::setText(std::string aText) {
     cursor = text.length();
 }
 
+void Editor::deleteAtCursor() {
+    if (cursor < text.length()) {
+        text.erase(text.cbegin()+cursor);
+    }
+}
+
 void Editor::consume(Key k) {
     if (k.type >= SPECIALS) {
+        if (k.type == DELETE) {
+            deleteAtCursor();
+        }
+        if (k.type == BACKSPACE) {
+            if (cursor > 0) {
+                moveCursor(-1);
+                deleteAtCursor();
+            }
+        }
         if (k.type == HOME) {
             cursor = 0;
         }

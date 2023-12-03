@@ -5,7 +5,7 @@
 class Editor {
     std::string text;
     int cursor;
-    
+
     public:
     Editor();
     Editor(std::string text);
@@ -17,4 +17,5 @@ class Editor {
     int getCursor();
 
     void moveCursor(int offset);
+    void deleteAtCursor();
 };
