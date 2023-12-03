@@ -48,6 +48,30 @@ void TestConsumeSampleInput() {
     }
 }
 
+void TestMovingCursorHomeEnd() {
+    Editor e;
+    e.setText("HelloWorld");
+    e.moveCursor(-3);
+
+    Key k;
+    k.type = HOME;
+
+    e.consume(k);
+
+    if (e.getCursor() != 0) {
+        ERR << "Cursor should be on pos 0, got : " << e.getCursor();
+        exit(1);
+    }
+
+    k.type = END;
+    e.consume(k);
+
+    if (e.getCursor() != 10) {
+        ERR << "Cursor should be on pos 10, got : " << e.getCursor();
+        exit(1);
+    }
+}
+
 void TestMovingCursorSingleLine() {
     Editor e;
     e.setText("HelloWorld");
@@ -79,10 +103,7 @@ void TestMovingCursorSingleLine() {
     }
 
     k.type = ARROW_LEFT;
-    for (int i=0;i<15;i++) {
-        cout << e.getCursor() << endl;
-        e.consume(k);
-    }
+    for (int i=0;i<15;i++) e.consume(k);
 
     if (0 != e.getCursor()) {
         ERR << "Left arrow should eventually move cursor to beginning; got :" << e.getCursor() << endl;
@@ -94,4 +115,5 @@ int main() {
     TestClearEditor();
     TestConsumeSampleInput();
     TestMovingCursorSingleLine();
+    TestMovingCursorHomeEnd();
 }

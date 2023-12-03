@@ -1,5 +1,5 @@
 #include "editor.h"
-#include <iostream>
+#include <string>
 Editor::Editor() : Editor(""){}
 
 Editor::Editor(std::string aText) : text(aText) {
@@ -21,7 +21,13 @@ void Editor::setText(std::string aText) {
 
 void Editor::consume(Key k) {
     if (k.type >= SPECIALS) {
-        if (k.type == ARROW_RIGHT) {
+        if (k.type == HOME) {
+            cursor = 0;
+        }
+        else if (k.type == END) {
+            cursor = text.length();
+        } 
+        else if (k.type == ARROW_RIGHT) {
             moveCursor(1);
         }
         else if (k.type == ARROW_LEFT) {
