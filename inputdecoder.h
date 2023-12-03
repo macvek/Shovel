@@ -3,7 +3,7 @@
 #include <queue>
 #include <string>
 
-typedef unsigned char AChar;
+typedef char AChar;
 
 enum KeyType {
     ERROR,

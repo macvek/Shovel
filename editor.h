@@ -15,4 +15,6 @@ class Editor {
     
     void consume(Key k);
     int getCursor();
+
+    void moveCursor(int offset);
 };

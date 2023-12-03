@@ -48,7 +48,50 @@ void TestConsumeSampleInput() {
     }
 }
 
+void TestMovingCursorSingleLine() {
+    Editor e;
+    e.setText("HelloWorld");
+    
+    int cursor = e.getCursor();
+
+    Key k;
+    k.type = ARROW_LEFT;
+
+    e.consume(k);
+    
+    if (cursor-1 != e.getCursor()) {
+        ERR << "Left arrow should lower cursor" << endl;
+        exit(1);
+    }
+
+    k.type = ARROW_RIGHT;
+    e.consume(k);
+
+    if (cursor != e.getCursor()) {
+        ERR << "Right arrow should restore cursor to initial pos" << endl;
+        exit(1);
+    }
+
+    e.consume(k);
+    if (cursor != e.getCursor()) {
+        ERR << "Right arrow again should not affect cursor and keep it in the end" << endl;
+        exit(1);
+    }
+
+    k.type = ARROW_LEFT;
+    for (int i=0;i<15;i++) {
+        cout << e.getCursor() << endl;
+        e.consume(k);
+    }
+
+    if (0 != e.getCursor()) {
+        ERR << "Left arrow should eventually move cursor to beginning; got :" << e.getCursor() << endl;
+        exit(1);
+    }
+}
+
 int main() {
     TestClearEditor();
     TestConsumeSampleInput();
+    TestMovingCursorSingleLine();
 }
