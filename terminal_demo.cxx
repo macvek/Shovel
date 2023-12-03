@@ -37,8 +37,7 @@ int main(int argc, char** argv) {
     t.reset();
     cout << endl << "after reset "<< endl;
 
-    cout << "extra 10 lines for some space...";
-    cout << "\n\n\n\n\n \n\n\n\n\n";
+    t.moveCursor(0,10);
 
     t.moveCursor(1,-5);
     cout << "A Moved 1, -5";
@@ -53,10 +52,12 @@ int main(int argc, char** argv) {
     t.moveCursor(-15,0);
     cout << "E -15 x";
 
-    t.moveCursor(0,5);
-    
+    t.placeCursor(1,10);
+    t.moveCursor(5,1);
+
+    cout << "Calculated (X,Y) : ("<< t.getCalculatedX() << "," << t.getCalculatedY() << ")" << endl;
+
     t.placeCursor(50,20);
-    cout << "Moved to 50,20";
-    cout << endl;
+    cout << "Moved to 50,20" << endl;
 
 }

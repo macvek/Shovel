@@ -38,6 +38,8 @@ void Terminal::backColorRGB(int r, int g, int b) {
 }
 
 void Terminal::moveCursor(int x, int y) {
+    calculatedX += x;
+    calculatedY += y;
     if (x != 0) {
         out << CSI() << (x > 0 ? x : -x) << (x > 0 ? 'C' : 'D');
     }
@@ -47,6 +49,8 @@ void Terminal::moveCursor(int x, int y) {
 }
 
 void Terminal::placeCursor(int x, int y) {
+    calculatedX = x;
+    calculatedY = y;
     out << CSI() << y << ";" << x << "H";
 }
 
