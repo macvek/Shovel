@@ -19,6 +19,7 @@ set(sources main.cxx
   input.cxx
   inputdecoder.cxx
   terminal.cxx
+  editor.cxx
 )
 
 add_executable(Shovel ${sources})
@@ -38,3 +39,6 @@ add_executable(NameEnumTest nameenum_test.cxx)
 add_test(NAME NameEnumTest COMMAND NameEnumTest)
 
 add_executable(TerminalDemo terminal_demo.cxx terminal.cxx)
+
+add_executable(EditorTest editor_test.cxx editor.cxx inputdecoder.cxx)
+add_test(NAME EditorTest COMMAND EditorTest)
