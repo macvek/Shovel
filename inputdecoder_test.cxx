@@ -35,12 +35,12 @@ void assertModifier(std::string prefix, Key& k, Modifier mod) {
 
 void assertTypesInBuffer(std::string prefix, Key& k, KeyType* types, int i) {
     if (k.type != types[i]) {
-        cerr << prefix << " expected type:" << types[i] << ", got "<< (int)k.type << endl;
+        cerr << prefix << " expected type:" << types[i] << ", got "<< (int)k.type << " on position " << i << endl;
         exit(1);
     }
 }
 
-void assertKeySequence(std::string prefix, InputDecoder& decoder, AChar *buffer, int bufferSize, KeyType *toMatch, int toMatchCount) {
+void assertKeySequence(std::string prefix, InputDecoder& decoder, AChar *buffer, int bufferSize, KeyType *toMatch, int toMatchCount, Modifier modifier = NONE) {
     decoder.feed(buffer, bufferSize); 
     for (int i=0;i<toMatchCount;i++) {
         assertCanLoad(prefix, decoder, i);
@@ -52,6 +52,7 @@ void assertKeySequence(std::string prefix, InputDecoder& decoder, AChar *buffer,
         }
 
         assertTypesInBuffer(prefix, k, toMatch, i);
+        assertModifier(prefix, k, modifier);
     }
     assertEmpty(prefix, decoder);
 }
@@ -259,6 +260,64 @@ void TestFeedingAll0x20PlusCharactersWithMeta() {
     assertKeysMatchBuffer(__FUNCTION__, decoder, buffer, size, STANDARD_MODIFIED, META);
 }
 
+void TestFeedingMultiBytePlusCtrl() {
+    InputDecoder decoder;
+    AChar buffer[] = {
+        0x1b, 0x5b, 0x31, 0x3b, 0x35, 0x50, // CTRL+F1
+        0x1b, 0x5b, 0x31, 0x3b, 0x35, 0x51, // CTRL+F2
+        0x1b, 0x5b, 0x31, 0x3b, 0x35, 0x52, // CTRL+F3
+        0x1b, 0x5b, 0x31, 0x3b, 0x35, 0x53, // CTRL+F4
+        
+        0x1b, 0x5b, 0x31, 0x35, 0x3b, 0x35, 0x7e, // CTRL+F5
+        0x1b, 0x5b, 0x31, 0x37, 0x3b, 0x35, 0x7e, // CTRL+F6
+        0x1b, 0x5b, 0x31, 0x38, 0x3b, 0x35, 0x7e, // CTRL+F7
+        0x1b, 0x5b, 0x31, 0x39, 0x3b, 0x35, 0x7e, // CTRL+F8
+        0x1b, 0x5b, 0x32, 0x30, 0x3b, 0x35, 0x7e, // CTRL+F9
+        0x1b, 0x5b, 0x32, 0x31, 0x3b, 0x35, 0x7e, // CTRL+F10
+        0x1b, 0x5b, 0x32, 0x33, 0x3b, 0x35, 0x7e, // CTRL+F11
+        0x1b, 0x5b, 0x32, 0x34, 0x3b, 0x35, 0x7e, // CTRL+F12
+
+        0x1b, 0x5b, 0x31, 0x3b, 0x35, 0x41, // CTRL+UP
+        0x1b, 0x5b, 0x31, 0x3b, 0x35, 0x42, // CTRL+DOWN
+        0x1b, 0x5b, 0x31, 0x3b, 0x35, 0x43, // CTRL+RIGHT
+        0x1b, 0x5b, 0x31, 0x3b, 0x35, 0x44, // CTRL+LEFT
+
+        0x1b, 0x5b, 0x31, 0x3b, 0x35, 0x46, // CTRL+END
+        0x1b, 0x5b, 0x31, 0x3b, 0x35, 0x48, // CTRL+HOME
+        0x1b, 0x5b, 0x32, 0x3b, 0x35, 0x7e, // CTRL+INSERT
+        0x1b, 0x5b, 0x33, 0x3b, 0x35, 0x7e, // CTRL+DELETE
+        0x1b, 0x5b, 0x35, 0x3b, 0x35, 0x7e, // CTRL+PAGEUP
+        0x1b, 0x5b, 0x36, 0x3b, 0x35, 0x7e, // CTRL+PAGEDOWN
+    };
+
+    KeyType toMatch[] = {
+        F1,
+        F2,
+        F3,
+        F4,
+        F5,
+        F6,
+        F7,
+        F8,
+        F9,
+        F10,
+        F11,
+        F12,
+
+        ARROW_UP,
+        ARROW_DOWN,
+        ARROW_RIGHT,
+        ARROW_LEFT,
+        END,
+        HOME,
+        INSERT,
+        DELETE,
+        PAGEUP,
+        PAGEDOWN,
+    };
+
+    assertKeySequence(__FUNCTION__, decoder, buffer, sizeof(buffer), toMatch, sizeof(toMatch)/sizeof(KeyType), CTRL);
+}
 
 
 int main() {
@@ -275,4 +334,5 @@ int main() {
     TestFeeding5BytesChars();
     TestFeedingCtrlPlusBasicChars();
     TestFeedingAll0x20PlusCharactersWithMeta();
+    TestFeedingMultiBytePlusCtrl();
 }
