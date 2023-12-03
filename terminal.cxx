@@ -47,5 +47,10 @@ void Terminal::moveCursor(int x, int y) {
 }
 
 void Terminal::placeCursor(int x, int y) {
-    out << CSI() << x << ";" << y << "H";
+    out << CSI() << y << ";" << x << "H";
+}
+
+void Terminal::clear() {
+    out << CSI() << 2 << "J";
+    placeCursor(1,1);
 }

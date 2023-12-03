@@ -17,5 +17,6 @@ class Terminal {
 
     void moveCursor(int x, int y);
     void placeCursor(int x, int y);
+    void clear();
 };
 

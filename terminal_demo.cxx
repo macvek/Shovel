@@ -10,6 +10,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
     Terminal t(cout);
+    t.clear();
     t.foreColor(COLOR_RED);
     cout << "I'm red" << endl;
 
@@ -53,6 +54,9 @@ int main(int argc, char** argv) {
     cout << "E -15 x";
 
     t.moveCursor(0,5);
+    
+    t.placeCursor(50,20);
+    cout << "Moved to 50,20";
     cout << endl;
 
 }
