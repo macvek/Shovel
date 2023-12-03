@@ -18,6 +18,7 @@ set(sources main.cxx
   log.cxx
   input.cxx
   inputdecoder.cxx
+  terminal.cxx
 )
 
 add_executable(Shovel ${sources})
@@ -35,3 +36,5 @@ add_test(NAME InputDecoderTest COMMAND InputDecoderTest)
 
 add_executable(NameEnumTest nameenum_test.cxx)
 add_test(NAME NameEnumTest COMMAND NameEnumTest)
+
+add_executable(TerminalDemo terminal_demo.cxx terminal.cxx)
