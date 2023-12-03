@@ -1,8 +1,16 @@
 #include "terminal.h"
 #include <iostream>
 
+static inline std::string CSI() {
+    return "\x1B[";
+}
+
+Terminal::Terminal(std::ostream &aOut) : out(aOut) {
+
+}
+
 void Terminal::reset() {
-    std::cout << "\x1B[0m";
+    out << "\x1B[0m";
 }
 
 void Terminal::foreDefault() {
@@ -14,20 +22,30 @@ void Terminal::backDefault() {
 }
 
 void Terminal::foreColor(int it) {
-    std::cout << "\x1B[" << 30+it << "m";
+    out << CSI() << 30+it << "m";
 }
 
 void Terminal::backColor(int it) {
-    std::cout << "\x1B[" << 40+it << "m";
+    out << CSI() << 40+it << "m";
 }
 
 void Terminal::foreColorRGB(int r, int g, int b) {
-    std::cout << "\x1B[38;2;"<<r<<";"<<g<<";"<<b<<"m";
+    out << CSI() << "38;2;"<<r<<";"<<g<<";"<<b<<"m";
 }
 
 void Terminal::backColorRGB(int r, int g, int b) {
-    std::cout << "\x1B[48;2;"<<r<<";"<<g<<";"<<b<<"m";
+    out << CSI() << "48;2;"<<r<<";"<<g<<";"<<b<<"m";
 }
 
+void Terminal::moveCursor(int x, int y) {
+    if (x != 0) {
+        out << CSI() << (x > 0 ? x : -x) << (x > 0 ? 'C' : 'D');
+    }
+    if (y != 0) {
+        out << CSI() << (y > 0 ? y : -y) << (y > 0 ? 'B' : 'A');
+    }
+}
 
-
+void Terminal::placeCursor(int x, int y) {
+    out << CSI() << x << ";" << y << "H";
+}
