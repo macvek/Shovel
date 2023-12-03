@@ -34,8 +34,8 @@ void Editor::consume(Key k) {
             moveCursor(-1);
         }
     } else {
-        text += (char)k.value;
-        cursor = text.length();
+        text.insert(text.cbegin() + cursor , k.value);
+        ++cursor;
     }
 }
 

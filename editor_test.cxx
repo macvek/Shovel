@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include "editor.h"
 
@@ -111,9 +110,47 @@ void TestMovingCursorSingleLine() {
     }
 }
 
+void TestInsertingText() {
+    Editor e;
+    e.setText("Hello");
+    feedEditor("World", e);
+
+    if ("HelloWorld" != e.getText()) {
+        ERR << "Should be HelloWorld, got "<< e.getText() << endl;
+        exit(1);
+    }
+
+    Key k;
+    k.type = ARROW_LEFT;
+    for (int i=0;i<5;i++) e.consume(k);
+
+    feedEditor("Magic", e);
+
+    if ("HelloMagicWorld" != e.getText()) {
+        ERR << "Should be HelloMagicWorld, got "<< e.getText() << endl;
+        exit(1);
+    }
+
+
+    k.type = HOME;
+    e.consume(k);
+    feedEditor("Prefix", e);
+    
+    k.type = END;
+    e.consume(k);
+    feedEditor("Suffix", e);
+
+    if ("PrefixHelloMagicWorldSuffix" != e.getText()) {
+        ERR << "Should be PrefixHelloMagicWorldSuffix, got "<< e.getText() << endl;
+        exit(1);
+    }
+}
+
+
 int main() {
     TestClearEditor();
     TestConsumeSampleInput();
     TestMovingCursorSingleLine();
     TestMovingCursorHomeEnd();
+    TestInsertingText();
 }
