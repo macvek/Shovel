@@ -166,15 +166,32 @@ void TestDeletingText() {
     }
 }
 
-void TestMultiLineNavigation() {
+void TestAddingLineEnding() {
     Editor e;
-    e.setText(
-        "HelloWorld\n"
-        "This is my\n"
-        ""
-        "Sample editor\n"
-        "Preview");
-    
+    Key k;
+
+    feedEditor("HelloWorld", e);
+    k.type = ENTER;
+    e.consume(k);
+
+    if ("HelloWorld\n" != e.getText()) {
+        ERR << "Should be be Helloworld and line ending, got " << e.getText() << endl;
+        exit(1);
+    }
+}
+
+void TestMovingCursorHomeInLine() {
+    Editor e;
+    Key k;
+
+    e.setText("\nHelloWorld");
+    k.type = HOME;
+    e.consume(k);
+
+    if (1 != e.getCursor()) {
+        ERR << "Cursor should be at position 1, got " << e.getCursor() << endl;
+        exit(1);
+    }
 }
 
 int main() {
@@ -184,5 +201,6 @@ int main() {
     TestMovingCursorHomeEnd();
     TestInsertingText();
     TestDeletingText();
-    TestMultiLineNavigation();
+    TestAddingLineEnding();
+    TestMovingCursorHomeInLine();
 }

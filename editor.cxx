@@ -27,17 +27,20 @@ void Editor::deleteAtCursor() {
 
 void Editor::consume(Key k) {
     if (k.type >= SPECIALS) {
-        if (k.type == DELETE) {
+        if (k.type == ENTER) {
+            putChar('\n');
+        }
+        else if (k.type == DELETE) {
             deleteAtCursor();
         }
-        if (k.type == BACKSPACE) {
+        else if (k.type == BACKSPACE) {
             if (cursor > 0) {
                 moveCursor(-1);
                 deleteAtCursor();
             }
         }
-        if (k.type == HOME) {
-            cursor = 0;
+        else if (k.type == HOME) {
+            moveToLineStart();
         }
         else if (k.type == END) {
             cursor = text.length();
@@ -49,9 +52,24 @@ void Editor::consume(Key k) {
             moveCursor(-1);
         }
     } else {
-        text.insert(text.cbegin() + cursor , k.value);
-        ++cursor;
+        putChar(k.value);
     }
+}
+
+void Editor::moveToLineStart() {
+    for (auto here = text.begin() + cursor; here-- > text.begin();) { 
+        if ( *here == '\n') {
+            cursor = (here - text.begin()) + 1;
+            return;
+        }
+    }
+
+    cursor = 0;
+}
+
+void Editor::putChar(AChar c) {
+    text.insert(text.cbegin() + cursor , c);
+    ++cursor;
 }
 
 void Editor::moveCursor(int offset) {

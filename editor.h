@@ -19,4 +19,7 @@ class Editor {
 
     void moveCursor(int offset);
     void deleteAtCursor();
+
+    void putChar(AChar c);
+    void moveToLineStart();
 };
