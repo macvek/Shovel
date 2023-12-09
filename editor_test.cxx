@@ -166,6 +166,17 @@ void TestDeletingText() {
     }
 }
 
+void TestMultiLineNavigation() {
+    Editor e;
+    e.setText(
+        "HelloWorld\n"
+        "This is my\n"
+        ""
+        "Sample editor\n"
+        "Preview");
+    
+}
+
 int main() {
     TestClearEditor();
     TestConsumeSampleInput();
@@ -173,4 +184,5 @@ int main() {
     TestMovingCursorHomeEnd();
     TestInsertingText();
     TestDeletingText();
+    TestMultiLineNavigation();
 }

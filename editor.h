@@ -5,6 +5,7 @@
 class Editor {
     std::string text;
     int cursor;
+    int lineOffset;
 
     public:
     Editor();
