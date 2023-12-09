@@ -194,6 +194,22 @@ void TestMovingCursorHomeInLine() {
     }
 }
 
+void TestMovingCursorEndInLine() {
+    Editor e;
+    Key k;
+
+    e.setText("END\n");
+    e.setCursor(0);
+
+    k.type = END;
+    e.consume(k);
+
+    if (3 != e.getCursor()) {
+        ERR << "Cursor should be at position 3, got " << e.getCursor() << endl;
+        exit(1);
+    }
+}
+
 int main() {
     TestClearEditor();
     TestConsumeSampleInput();
@@ -203,4 +219,5 @@ int main() {
     TestDeletingText();
     TestAddingLineEnding();
     TestMovingCursorHomeInLine();
+    TestMovingCursorEndInLine();
 }

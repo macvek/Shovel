@@ -14,6 +14,18 @@ int Editor::getCursor() {
     return cursor;
 }
 
+void Editor::setCursor(int where) {
+    if (where < 0) { 
+        cursor = 0;
+    }
+    else if (where > text.length()) {
+        cursor = text.length();
+    }
+    else {
+        cursor = where;
+    }
+}
+
 void Editor::setText(std::string aText) {
     text = aText;
     cursor = text.length();
@@ -43,7 +55,7 @@ void Editor::consume(Key k) {
             moveToLineStart();
         }
         else if (k.type == END) {
-            cursor = text.length();
+            moveToLineEnd();
         } 
         else if (k.type == ARROW_RIGHT) {
             moveCursor(1);
@@ -65,6 +77,17 @@ void Editor::moveToLineStart() {
     }
 
     cursor = 0;
+}
+
+void Editor::moveToLineEnd() {
+    for (auto here = text.begin() + cursor; here < text.end(); ++here) { 
+        if ( *here == '\n') {
+            cursor = here - text.begin();
+            return;
+        }
+    }
+
+    cursor = text.length();
 }
 
 void Editor::putChar(AChar c) {
