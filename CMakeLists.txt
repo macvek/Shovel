@@ -40,5 +40,6 @@ add_test(NAME NameEnumTest COMMAND NameEnumTest)
 
 add_executable(TerminalDemo terminal_demo.cxx terminal.cxx)
 
+add_executable(EditorDemo editor_demo.cxx editor.cxx terminal.cxx log.cxx console.cxx inputdecoder.cxx)
 add_executable(EditorTest editor_test.cxx editor.cxx inputdecoder.cxx)
 add_test(NAME EditorTest COMMAND EditorTest)

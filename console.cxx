@@ -21,6 +21,7 @@ void Console::restore() {
 
 void Console::enableRaw() {
     cfmakeraw(&applied);
+    applied.c_oflag |= OPOST | OCRNL;
     if (tcsetattr( STDIN_FILENO, TCSANOW, &applied)) {
         Log::panicWithErrno("Failed on enableRaw");
     }
