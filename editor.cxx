@@ -108,10 +108,12 @@ int Editor::findLineEnd(int from) const {
 }
 
 void Editor::moveToLineStart() {
+    resetExpectedOffset();
     cursor = findLineStart();
 }
 
 void Editor::moveToLineEnd() {
+    resetExpectedOffset();
     cursor = findLineEnd();
 }
 
@@ -181,6 +183,7 @@ void Editor::putChar(AChar c) {
 }
 
 void Editor::moveCursor(int offset) {
+    resetExpectedOffset();
     int nCursor = cursor + offset;
     int signedLength = text.length(); 
 
