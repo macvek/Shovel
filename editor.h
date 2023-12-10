@@ -17,7 +17,9 @@ class Editor {
     void consume(Key k);
     
     int findLineStart() const;
+    int findLineStart(int from) const;
     int findLineEnd() const;
+    int findLineEnd(int from) const;
     int offsetInLine() const;
     
     int getCursor() const;
@@ -29,6 +31,9 @@ class Editor {
     void putChar(AChar c);
     void moveToLineStart();
     void moveToLineEnd();
+    void moveLineUp();
     void moveLineDown();
+
+    int boundCursor(int expectedPosition) const;
     
 };

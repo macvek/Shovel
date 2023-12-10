@@ -216,8 +216,9 @@ void TestMovingCursorArrowDown() {
 
     e.setText(
         "Idx0\n"
-        "Idx5\n"
-        "Idx10, here line does not end with LF"
+        "Idx5 - this line is longer then next one\n"
+        "idx46\n"
+        "Idx52, here line does not end with LF"
     );
     e.setCursor(0);
 
@@ -230,14 +231,51 @@ void TestMovingCursorArrowDown() {
     }
 
     e.consume(k);
-    if (10 != e.getCursor()) {
-        ERR << "Cursor should be at position 10, got " << e.getCursor() << endl;
+    if (46 != e.getCursor()) {
+        ERR << "Cursor should be at position 46, got " << e.getCursor() << endl;
+        exit(1);
+    }
+
+    e.consume(k);
+    if (52 != e.getCursor()) {
+        ERR << "Cursor should be at position 52, got " << e.getCursor() << endl;
         exit(1);
     }
 
     e.consume(k);
     if (e.getText().length() != e.getCursor()) {
         ERR << "Cursor should be at string end, got " << e.getCursor() << endl;
+        exit(1);
+    }
+}
+
+void TestMovingCursorArrowUp() {
+    Editor e;
+    Key k;
+
+    e.setText(
+        "Idx0\n"
+        "Idx5\n"
+        "Idx10, here line does not end with LF"
+    );
+
+    k.type = ARROW_UP;
+    e.consume(k);
+
+    if (9 != e.getCursor()) {
+        ERR << "Cursor should be at position 9, got " << e.getCursor() << endl;
+        exit(1);
+    }
+
+    e.consume(k);
+    if (4 != e.getCursor()) {
+        ERR << "Cursor should be at position 4, got " << e.getCursor() << endl;
+        exit(1);
+    }
+
+    e.consume(k);
+    if (0 != e.getCursor()) {
+        ERR << "Cursor should be at string start, got " << e.getCursor() << endl;
         exit(1);
     }
 }
@@ -253,4 +291,5 @@ int main() {
     TestMovingCursorHomeInLine();
     TestMovingCursorEndInLine();
     TestMovingCursorArrowDown();
+    TestMovingCursorArrowUp();
 }

@@ -66,13 +66,24 @@ void Editor::consume(Key k) {
         else if (k.type == ARROW_DOWN) {
             moveLineDown();
         }
+        else if (k.type == ARROW_UP) {
+            moveLineUp();
+        }
     } else {
         putChar(k.value);
     }
 }
 
+int Editor::boundCursor(int expectedPosition) const {
+    return expectedPosition < 0 ? 0 : ( expectedPosition > text.length() ? text.length() : expectedPosition);
+}
+
 int Editor::findLineStart() const {
-    for (auto here = text.begin() + cursor; here-- > text.begin();) { 
+    return findLineStart(cursor);
+}
+
+int Editor::findLineStart(int from) const {
+    for (auto here = text.begin() + boundCursor(from); here-- > text.begin();) { 
         if ( *here == '\n') {
             return (here - text.begin()) + 1;
         }
@@ -82,7 +93,11 @@ int Editor::findLineStart() const {
 }
 
 int Editor::findLineEnd() const{
-    for (auto here = text.begin() + cursor; here < text.end(); ++here) { 
+    return findLineEnd(cursor);
+}
+
+int Editor::findLineEnd(int from) const {
+    for (auto here = text.begin() + boundCursor(from); here < text.end(); ++here) { 
         if ( *here == '\n') {
             return here - text.begin();
         }
@@ -100,7 +115,24 @@ void Editor::moveToLineEnd() {
 }
 
 int Editor::offsetInLine() const {
-    return findLineStart() - cursor;
+    return cursor - findLineStart();
+}
+
+void Editor::moveLineUp() {
+    int currentLineStart = findLineStart();
+    if (currentLineStart == 0) {
+        cursor = 0;
+    }
+
+    int prevLineStart = findLineStart(currentLineStart-1);
+
+    
+    int prevLineEnd = findLineEnd(prevLineStart);
+
+    int offset = offsetInLine();
+
+    int expectedPos = prevLineStart + offset;
+    cursor = expectedPos < prevLineEnd ? expectedPos : prevLineEnd;
 }
 
 void Editor::moveLineDown() {
