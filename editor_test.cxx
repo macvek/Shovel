@@ -20,6 +20,18 @@ void assertCursor(Editor &e, int expectedPosition) {
     }
 }
 
+void assertStat(Editor &e, int column, int line) {
+    if (column != e.getCurrentColumn()) {
+        ERR << "Column should be at " << column << ", got " << e.getCurrentColumn() << endl;
+        exit(1);
+    }
+
+    if (line != e.getCurrentLine()) {
+        ERR << "Line should be at " << line << ", got " << e.getCurrentLine() << endl;
+        exit(1);
+    }
+}
+
 void TestClearEditor() {
     Editor e;
     if ("" != e.getText()) {
@@ -297,6 +309,38 @@ void TestMovingCursorArrowUpAndDownFromEndOfString() {
     assertCursor(e, 39);
 }
 
+void TestStats() {
+    Editor e;
+    Key k;
+
+    e.setText(
+        "THIS LINE HAS 40 CHARACTERS............\n"
+        "THIS LINE HAS 30 CHARACTERS..\n"
+        "THIS LINE HAS 40 CHARACTERS............\n"
+    );
+
+    e.setCursor(0);
+    assertStat(e, 0,0);
+
+    e.setCursor(45);
+    assertStat(e, 5,1);
+    
+    k.type = ARROW_UP; e.consume(k);
+    assertStat(e, 5,0);
+
+    k.type = ARROW_RIGHT; e.consume(k);
+    assertStat(e, 6, 0);
+
+    k.type = ARROW_DOWN; e.consume(k);
+    assertStat(e, 6, 1);
+
+    k.type = ARROW_LEFT; e.consume(k);
+    assertStat(e, 5, 1);
+
+    k.type = ARROW_UP; e.consume(k);
+    assertStat(e, 5, 0);
+}
+
 int main() {
     TestClearEditor();
     TestConsumeSampleInput();
@@ -310,4 +354,5 @@ int main() {
     TestMovingCursorArrowDown();
     TestMovingCursorArrowUp();
     TestMovingCursorArrowUpAndDownFromEndOfString();
+    TestStats();
 }

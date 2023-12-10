@@ -117,8 +117,24 @@ void Editor::moveToLineEnd() {
     cursor = findLineEnd();
 }
 
-int Editor::offsetInLine() const {
+int Editor::getCurrentColumn() const {
     return cursor - findLineStart();
+}
+
+int Editor::getCurrentLine() const {
+    int count = 0;
+    int pointer = cursor;
+    for (;;) {
+        int lineStart = findLineStart(pointer);
+        if (lineStart == 0) {
+            return count;
+        }
+        else {
+            pointer = lineStart - 1;
+            ++count;
+        }
+    }
+
 }
 
 void Editor::moveLineUp() {
@@ -198,7 +214,7 @@ void Editor::moveCursor(int offset) {
 }
 
 void Editor::updateExpectedOffset() {
-    int currentOffset = offsetInLine();
+    int currentOffset = getCurrentColumn();
     if (storedOffset == -1) {
         storedOffset = currentOffset;
     }

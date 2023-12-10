@@ -24,7 +24,8 @@ class Editor {
     int findLineStart(int from) const;
     int findLineEnd() const;
     int findLineEnd(int from) const;
-    int offsetInLine() const;
+    int getCurrentColumn() const;
+    int getCurrentLine() const;
     
     int getCursor() const;
     void setCursor(int where);
