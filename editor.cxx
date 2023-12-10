@@ -2,7 +2,7 @@
 #include <string>
 Editor::Editor() : Editor(""){}
 
-Editor::Editor(std::string aText) : text(aText) {
+Editor::Editor(std::string aText) : tabString("    "), text(aText) {
     cursor = text.length();
     resetExpectedOffset();
 }
@@ -40,7 +40,10 @@ void Editor::deleteAtCursor() {
 
 void Editor::consume(Key k) {
     if (k.type >= SPECIALS) {
-        if (k.type == ENTER) {
+        if (k.type == TAB) {
+            putString(tabString);
+        } 
+        else if (k.type == ENTER) {
             putChar('\n');
         }
         else if (k.type == DELETE) {
@@ -199,6 +202,12 @@ void Editor::putChar(AChar c) {
     resetExpectedOffset();
 }
 
+void Editor::putString(std::string s) {
+    text.insert(cursor, s);
+    cursor += s.length();
+    resetExpectedOffset();
+}
+
 void Editor::moveCursor(int offset) {
     resetExpectedOffset();
     int nCursor = cursor + offset;
@@ -231,3 +240,8 @@ int Editor::loadExpectedOffset() {
 void Editor::resetExpectedOffset() {
     storedOffset = -1;
 }
+
+void Editor::setTabString(std::string aTabString) {
+    tabString = aTabString;
+}
+

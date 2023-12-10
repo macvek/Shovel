@@ -4,8 +4,10 @@
 
 class Editor {
     std::string text;
+    std::string tabString;
     int cursor;
     int storedOffset;
+    
     void updateExpectedOffset();
     int loadExpectedOffset();
     void resetExpectedOffset();
@@ -34,10 +36,13 @@ class Editor {
     void deleteAtCursor();
 
     void putChar(AChar c);
+    void putString(std::string s);
     void moveToLineStart();
     void moveToLineEnd();
     void moveLineUp();
     void moveLineDown();
 
     int boundCursor(int expectedPosition) const;
+
+    void setTabString(std::string aTabString);
 };
