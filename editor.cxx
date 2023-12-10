@@ -196,6 +196,7 @@ void Editor::adjustExpectedOffset(int lineStart, int lineEnd) {
 void Editor::putChar(AChar c) {
     text.insert(text.cbegin() + cursor , c);
     ++cursor;
+    resetExpectedOffset();
 }
 
 void Editor::moveCursor(int offset) {
