@@ -13,6 +13,13 @@ void feedEditor(std::string input, Editor &e) {
     }
 }
 
+void assertCursor(Editor &e, int expectedPosition) {
+    if (expectedPosition != e.getCursor()) {
+        ERR << "Cursor should be at " << expectedPosition << ", got " << e.getCursor() << endl;
+        exit(1);
+    }
+}
+
 void TestClearEditor() {
     Editor e;
     if ("" != e.getText()) {
@@ -188,10 +195,7 @@ void TestMovingCursorHomeInLine() {
     k.type = HOME;
     e.consume(k);
 
-    if (1 != e.getCursor()) {
-        ERR << "Cursor should be at position 1, got " << e.getCursor() << endl;
-        exit(1);
-    }
+    assertCursor(e, 1);
 }
 
 void TestMovingCursorEndInLine() {
@@ -204,10 +208,7 @@ void TestMovingCursorEndInLine() {
     k.type = END;
     e.consume(k);
 
-    if (3 != e.getCursor()) {
-        ERR << "Cursor should be at position 3, got " << e.getCursor() << endl;
-        exit(1);
-    }
+    assertCursor(e, 3);
 }
 
 void TestMovingCursorArrowDown() {
@@ -225,28 +226,16 @@ void TestMovingCursorArrowDown() {
     k.type = ARROW_DOWN;
     e.consume(k);
 
-    if (5 != e.getCursor()) {
-        ERR << "Cursor should be at position 5, got " << e.getCursor() << endl;
-        exit(1);
-    }
+    assertCursor(e, 5);
 
     e.consume(k);
-    if (46 != e.getCursor()) {
-        ERR << "Cursor should be at position 46, got " << e.getCursor() << endl;
-        exit(1);
-    }
+    assertCursor(e, 46);
 
     e.consume(k);
-    if (52 != e.getCursor()) {
-        ERR << "Cursor should be at position 52, got " << e.getCursor() << endl;
-        exit(1);
-    }
+    assertCursor(e, 52);
 
     e.consume(k);
-    if (e.getText().length() != e.getCursor()) {
-        ERR << "Cursor should be at string end, got " << e.getCursor() << endl;
-        exit(1);
-    }
+    assertCursor(e, e.getText().length());
 }
 
 void TestMovingCursorArrowUp() {
@@ -262,22 +251,50 @@ void TestMovingCursorArrowUp() {
     k.type = ARROW_UP;
     e.consume(k);
 
-    if (9 != e.getCursor()) {
-        ERR << "Cursor should be at position 9, got " << e.getCursor() << endl;
-        exit(1);
-    }
+    assertCursor(e, 9);
 
     e.consume(k);
-    if (4 != e.getCursor()) {
-        ERR << "Cursor should be at position 4, got " << e.getCursor() << endl;
-        exit(1);
-    }
+    assertCursor(e, 4);
 
     e.consume(k);
-    if (0 != e.getCursor()) {
-        ERR << "Cursor should be at string start, got " << e.getCursor() << endl;
-        exit(1);
-    }
+    assertCursor(e, 0);
+    
+}
+
+void TestMovingCursorArrowUpAndDownFromEndOfString() {
+    Editor e;
+    Key k;
+
+    e.setText(
+        "THIS LINE HAS 40 CHARACTERS............\n"
+        "THIS LINE HAS 30 CHARACTERS..\n"
+        "THIS LINE HAS 40 CHARACTERS............\n"
+    );
+
+    e.setCursor(0);
+    k.type = END;
+    e.consume(k);
+
+    assertCursor(e, 39);
+    k.type = ARROW_DOWN;
+    e.consume(k);
+    assertCursor(e, 69);
+
+    e.consume(k);
+    assertCursor(e, 109);
+
+    e.consume(k);
+    assertCursor(e, 110);
+
+    k.type = ARROW_UP;
+    e.consume(k);
+    assertCursor(e, 109);
+
+    e.consume(k);
+    assertCursor(e, 69);
+
+    e.consume(k);
+    assertCursor(e, 39);
 }
 
 int main() {
@@ -292,4 +309,5 @@ int main() {
     TestMovingCursorEndInLine();
     TestMovingCursorArrowDown();
     TestMovingCursorArrowUp();
+    TestMovingCursorArrowUpAndDownFromEndOfString();
 }

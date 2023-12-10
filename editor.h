@@ -5,7 +5,11 @@
 class Editor {
     std::string text;
     int cursor;
-    int lineOffset;
+    int storedOffset;
+    void updateExpectedOffset();
+    int loadExpectedOffset();
+    void resetExpectedOffset();
+    void adjustExpectedOffset(int lineStart, int lineEnd);
 
     public:
     Editor();
@@ -35,5 +39,4 @@ class Editor {
     void moveLineDown();
 
     int boundCursor(int expectedPosition) const;
-    
 };

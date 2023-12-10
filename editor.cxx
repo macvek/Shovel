@@ -4,6 +4,7 @@ Editor::Editor() : Editor(""){}
 
 Editor::Editor(std::string aText) : text(aText) {
     cursor = text.length();
+    resetExpectedOffset();
 }
 
 std::string Editor::getText() {
@@ -119,28 +120,59 @@ int Editor::offsetInLine() const {
 }
 
 void Editor::moveLineUp() {
+    updateExpectedOffset();
     int currentLineStart = findLineStart();
     if (currentLineStart == 0) {
-        cursor = 0;
+        // up arrow on beginning of a file => reset expectedOffset
+        if (cursor == 0) {
+            resetExpectedOffset();
+        }
+        else {
+            cursor = 0;
+            updateExpectedOffset();
+        }
+        return;
     }
 
-    int prevLineStart = findLineStart(currentLineStart-1);
+    int prevLineEnd = currentLineStart - 1;
+    int prevLineStart = findLineStart(prevLineEnd);
 
-    
-    int prevLineEnd = findLineEnd(prevLineStart);
-
-    int offset = offsetInLine();
-
-    int expectedPos = prevLineStart + offset;
-    cursor = expectedPos < prevLineEnd ? expectedPos : prevLineEnd;
+    adjustExpectedOffset(prevLineStart, prevLineEnd);
 }
 
 void Editor::moveLineDown() {
-    int nextLineStart = findLineEnd() + 1;
-    int offset = offsetInLine();
+    updateExpectedOffset();
+    int currentLineEnd = findLineEnd();
 
-    int expectedPos = nextLineStart + offset;
-    cursor = expectedPos > text.length() ? text.length() : expectedPos;
+    if (currentLineEnd == text.length()) {
+        // down arrow on end of a file => reset expectedOffset
+        if (cursor == currentLineEnd) {
+            resetExpectedOffset();
+        }
+        else {
+            cursor = currentLineEnd;
+            updateExpectedOffset();
+        }
+        
+        return;
+    }
+    
+    int nextLineStart = currentLineEnd + 1;
+    int nextLineEnd = findLineEnd(nextLineStart);
+
+    adjustExpectedOffset(nextLineStart, nextLineEnd);
+}
+
+void Editor::adjustExpectedOffset(int lineStart, int lineEnd) {
+    int expectedPos = lineStart + loadExpectedOffset();
+    if (expectedPos > lineEnd) {
+        cursor = lineEnd;
+    }
+    else {
+        cursor = expectedPos;
+    }
+
+    updateExpectedOffset();
 }
 
 void Editor::putChar(AChar c) {
@@ -160,4 +192,22 @@ void Editor::moveCursor(int offset) {
     }
     cursor = nCursor;
 
+}
+
+void Editor::updateExpectedOffset() {
+    int currentOffset = offsetInLine();
+    if (storedOffset == -1) {
+        storedOffset = currentOffset;
+    }
+    else if (currentOffset == storedOffset) {
+        storedOffset = -1;
+    }
+}
+
+int Editor::loadExpectedOffset() {
+    return storedOffset;
+}
+
+void Editor::resetExpectedOffset() {
+    storedOffset = -1;
 }
