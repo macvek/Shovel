@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
         console.enableRaw();
         t.clear();
         cout.flush();
-
+        bool cursorIsVisible = true;
         for(;;) {
             AChar buffer[16];
             int ret = read(STDIN_FILENO, buffer, 8);
@@ -33,6 +33,11 @@ int main(int argc, char** argv) {
                 Key k = decoder.load();
                 if (k.type == ESCAPE) {
                     return 0;
+                }
+                else if (k.type == F2) {
+                    cursorIsVisible = !cursorIsVisible;
+                    t.showCursor(cursorIsVisible);
+                    cout.flush();
                 }
                 else {
                     e.consume(k);

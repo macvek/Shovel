@@ -21,6 +21,8 @@ class Terminal {
     void placeCursor(int x, int y);
     void clear();
 
+    void showCursor(bool visibile);
+
     inline int getCalculatedX() const { return calculatedX;} 
     inline int getCalculatedY() const { return calculatedY;} 
 };

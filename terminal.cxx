@@ -37,6 +37,10 @@ void Terminal::backColorRGB(int r, int g, int b) {
     out << CSI() << "48;2;"<<r<<";"<<g<<";"<<b<<"m";
 }
 
+void Terminal::showCursor(bool visible) {
+    out << CSI() << (visible ? "?25h" : "?25l");
+}
+
 void Terminal::moveCursor(int x, int y) {
     calculatedX += x;
     calculatedY += y;
