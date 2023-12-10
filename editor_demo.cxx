@@ -38,6 +38,7 @@ int main(int argc, char** argv) {
                     e.consume(k);
                     t.clear();
                     cout << e.getText();
+                    t.placeCursor(1+e.getCurrentColumn(), 1+e.getCurrentLine());
                     cout.flush();
                 }
             }
