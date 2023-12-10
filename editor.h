@@ -15,7 +15,12 @@ class Editor {
     void setText(std::string);
     
     void consume(Key k);
-    int getCursor();
+    
+    int findLineStart() const;
+    int findLineEnd() const;
+    int offsetInLine() const;
+    
+    int getCursor() const;
     void setCursor(int where);
 
     void moveCursor(int offset);
@@ -24,4 +29,6 @@ class Editor {
     void putChar(AChar c);
     void moveToLineStart();
     void moveToLineEnd();
+    void moveLineDown();
+    
 };

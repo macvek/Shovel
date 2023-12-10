@@ -210,6 +210,38 @@ void TestMovingCursorEndInLine() {
     }
 }
 
+void TestMovingCursorArrowDown() {
+    Editor e;
+    Key k;
+
+    e.setText(
+        "Idx0\n"
+        "Idx5\n"
+        "Idx10, here line does not end with LF"
+    );
+    e.setCursor(0);
+
+    k.type = ARROW_DOWN;
+    e.consume(k);
+
+    if (5 != e.getCursor()) {
+        ERR << "Cursor should be at position 5, got " << e.getCursor() << endl;
+        exit(1);
+    }
+
+    e.consume(k);
+    if (10 != e.getCursor()) {
+        ERR << "Cursor should be at position 10, got " << e.getCursor() << endl;
+        exit(1);
+    }
+
+    e.consume(k);
+    if (e.getText().length() != e.getCursor()) {
+        ERR << "Cursor should be at string end, got " << e.getCursor() << endl;
+        exit(1);
+    }
+}
+
 int main() {
     TestClearEditor();
     TestConsumeSampleInput();
@@ -220,4 +252,5 @@ int main() {
     TestAddingLineEnding();
     TestMovingCursorHomeInLine();
     TestMovingCursorEndInLine();
+    TestMovingCursorArrowDown();
 }

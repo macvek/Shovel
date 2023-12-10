@@ -10,7 +10,7 @@ std::string Editor::getText() {
    return text;
 }
 
-int Editor::getCursor() {
+int Editor::getCursor() const {
     return cursor;
 }
 
@@ -63,31 +63,52 @@ void Editor::consume(Key k) {
         else if (k.type == ARROW_LEFT) {
             moveCursor(-1);
         }
+        else if (k.type == ARROW_DOWN) {
+            moveLineDown();
+        }
     } else {
         putChar(k.value);
     }
 }
 
-void Editor::moveToLineStart() {
+int Editor::findLineStart() const {
     for (auto here = text.begin() + cursor; here-- > text.begin();) { 
         if ( *here == '\n') {
-            cursor = (here - text.begin()) + 1;
-            return;
+            return (here - text.begin()) + 1;
         }
     }
 
-    cursor = 0;
+    return 0;
+}
+
+int Editor::findLineEnd() const{
+    for (auto here = text.begin() + cursor; here < text.end(); ++here) { 
+        if ( *here == '\n') {
+            return here - text.begin();
+        }
+    }
+
+    return text.length();
+}
+
+void Editor::moveToLineStart() {
+    cursor = findLineStart();
 }
 
 void Editor::moveToLineEnd() {
-    for (auto here = text.begin() + cursor; here < text.end(); ++here) { 
-        if ( *here == '\n') {
-            cursor = here - text.begin();
-            return;
-        }
-    }
+    cursor = findLineEnd();
+}
 
-    cursor = text.length();
+int Editor::offsetInLine() const {
+    return findLineStart() - cursor;
+}
+
+void Editor::moveLineDown() {
+    int nextLineStart = findLineEnd() + 1;
+    int offset = offsetInLine();
+
+    int expectedPos = nextLineStart + offset;
+    cursor = expectedPos > text.length() ? text.length() : expectedPos;
 }
 
 void Editor::putChar(AChar c) {
