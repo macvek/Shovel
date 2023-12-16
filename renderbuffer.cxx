@@ -34,6 +34,15 @@ std::string RenderBuffer::asLine(int line) const {
     return std::string(frontBuffer.data() + offset.ptr, offset.charsInLine);
 }
 
+std::string RenderBuffer::dumpToString(char emptyChar) const {
+    std::string ret;
+    for (int i=0;i<height;i++) {
+        ret += asLine(i) + "\n";
+    }
+
+    return ret;
+}
+
 int RenderBuffer::getWidth() const { 
     return width;
 }

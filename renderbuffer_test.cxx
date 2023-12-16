@@ -3,6 +3,15 @@
 
 using namespace std;
 
+void assertBuffer(RenderBuffer &b, string expectedState) {
+    string currentState = b.dumpToString();
+    if (expectedState != currentState) {  
+        cerr << "State does not match. EXPECTED:\n" << expectedState <<" \nCURRENT:\n" << currentState << endl;
+        exit(1);
+    }
+}
+
+
 void TestOneLineBuffer() {
     RenderBuffer b(10,1); // 10-chars, buffer should always keep extra 0 in the end
     if (1 != b.getHeight() || 10 != b.getWidth()) {
@@ -72,11 +81,34 @@ void TestWriteTextToBufferShouldRespectLFandTreatTABAsSpace() {
     }
 }
 
+
+void TestWriteBuffer() {
+    RenderBuffer b(3,3,' ');
+    
+    b.writeText(
+        " X "
+        " O "
+        " X "    
+    ,0,0);
+
+    RenderBuffer overlay(2,1);
+    overlay.writeText("X ", 1,0);
+    
+
+    string expectedState = 
+        " X \n"
+        " X \n"
+        " X \n";
+
+    assertBuffer(b, expectedState);
+}
+
 int main() {
     TestOneLineBuffer();
     TestWriteMultipleLines();
     TestShouldUseInitializer();
     TestWriteTextShouldSpanOverLinesAndNotOverflow();
     TestWriteTextToBufferShouldRespectLFandTreatTABAsSpace();
+    TestWriteBuffer();
     return 0;
 }
