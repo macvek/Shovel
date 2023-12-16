@@ -33,7 +33,6 @@ void TestWriteMultipleLines() {
     }
 }
 
-
 void TestShouldUseInitializer() {
     RenderBuffer b(10,1,' ');
 
@@ -46,11 +45,24 @@ void TestShouldUseInitializer() {
     }
 }
 
+void TestWriteTextShouldSpanOverLinesAndNotOverflow() {
+    RenderBuffer b(5,2,' ');
+
+    b.writeText("HELLOWORLD1234",0,0);
+
+    string lineA = b.asLine(0);
+    string lineB = b.asLine(1);
+    if ("HELLO" != lineA || "WORLD" != lineB) {  
+        cerr << "Expected 2 lines: HELLO and WORLD, got: '" << lineA << " and " <<lineB << endl;
+        exit(1);
+    }
+}
 
 
 int main() {
     TestOneLineBuffer();
     TestWriteMultipleLines();
     TestShouldUseInitializer();
+    TestWriteTextShouldSpanOverLinesAndNotOverflow();
     return 0;
 }
