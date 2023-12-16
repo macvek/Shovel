@@ -125,7 +125,7 @@ RenderBuffer::XYOffset RenderBuffer::xyOffset(int x, int y) const{
     return { .ptr = line * width + column, .charsInLine = width - column};
 }
 
-void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& out) {
+void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& out, int threshold) {
     if (other.width != width || other.height != height) {
         return;
     }

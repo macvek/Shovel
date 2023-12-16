@@ -43,7 +43,7 @@ class RenderBuffer {
     int getHeight() const;
 
     std::string dumpToString(char emptyChar = ' ') const;
-    void diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& out);
+    void diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& out, int threshold = 0);
 
     const RenderBufferView view(int left = -1, int right = -1, int top = -1, int bottom = -1) const;
 };

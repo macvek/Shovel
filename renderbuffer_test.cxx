@@ -227,6 +227,13 @@ void TestWriteOnlyPartOf() {
     assertBuffer(b, expectedState);
 }
 
+void assertDiff(RenderDiffUnit& unit, int left, int right, int top) {
+    if (unit.left != left || unit.right != right || unit.top != top) {
+        cerr << "Expected left/right/top => "<< left << "/" << right << "/" << top << ", got => " << unit.left << "/" << unit.right << "/" << unit.top << endl;
+        exit(1);
+    }
+}
+
 void TestRenderingDiff() {
     RenderBuffer pre(3,3);
     pre.writeText(
@@ -265,12 +272,32 @@ void TestRenderingDiff() {
         exit(1);
     }
 
-    RenderDiffUnit& unit = diffs[0];
-    if (unit.left != 1 || unit.right != 2 || unit.top != 1) {
-        cerr << "Expected left/right/top => 1/2/1, got => " << unit.left << "/" << unit.right << "/" << unit.top << endl;
+    assertDiff(diffs[0], 1,2,1);
+}
+
+void TestRenderingDiffWithThreshhold() {
+    RenderBuffer pre(10,2);
+    pre.writeText(
+        "HelloWorld"
+        "HelloWorld"
+    ,0,0);
+
+    RenderBuffer post(10,2);
+    post.writeText(
+        "H l o orld"
+        "HEllOWorld"
+    ,0,0);
+
+    vector<RenderDiffUnit> diffs;
+    post.diff(pre, diffs, 2);
+
+    if (diffs.size() != 2) {
+        cerr << "Expected 2 diff, got " << diffs.size() << endl;
         exit(1);
     }
 
+    assertDiff(diffs[0], 1, 5, 0);
+    assertDiff(diffs[1], 1, 4, 1);
 }
 
 int main() {
@@ -286,5 +313,6 @@ int main() {
     TestWriteBiggerAndOverlap();
     TestWriteOnlyPartOf();
     TestRenderingDiff();
+    TestRenderingDiffWithThreshhold();
     return 0;
 }
