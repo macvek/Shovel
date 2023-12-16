@@ -82,7 +82,7 @@ void TestWriteTextToBufferShouldRespectLFandTreatTABAsSpace() {
 }
 
 
-void TestWriteBuffer() {
+void TestWriteView() {
     RenderBuffer b(3,3,' ');
     
     b.writeText(
@@ -91,9 +91,10 @@ void TestWriteBuffer() {
         " X "    
     ,0,0);
 
-    RenderBuffer overlay(2,1);
-    overlay.writeText("X ", 1,0);
+    RenderBuffer overlay(1,1);
+    overlay.writeText("X",0,0);
     
+    b.writeView(overlay.view(), 1,1);
 
     string expectedState = 
         " X \n"
@@ -109,6 +110,6 @@ int main() {
     TestShouldUseInitializer();
     TestWriteTextShouldSpanOverLinesAndNotOverflow();
     TestWriteTextToBufferShouldRespectLFandTreatTABAsSpace();
-    TestWriteBuffer();
+    TestWriteView();
     return 0;
 }

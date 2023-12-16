@@ -3,18 +3,16 @@
 
 class RenderBuffer;
 
-class RenderBufferView {
-    const std::vector<char> &frontBuffer;
+struct RenderBufferView {
+    const RenderBuffer &from;
     const int left;
     const int right;
     const int top;
     const int bottom;
 
-    public:
-    RenderBufferView(const RenderBuffer &from, const int aLeft, const int aRight, const int aTop, const int aBottom);
-    int getWidth() const;
-    int getHeight() const;
-    void fillLine(int line, std::vector<char>::iterator &here);
+    private:
+    RenderBufferView(const RenderBuffer &aFrom, const int aLeft, const int aRight, const int aTop, const int aBottom);
+    friend RenderBuffer;
 };
 
 class RenderBuffer {
@@ -32,6 +30,7 @@ class RenderBuffer {
     public:
     RenderBuffer(int width, int height, char initial=0);
     void writeText(std::string text, int x, int y);
+    void writeView(const RenderBufferView& view, int x, int y);
 
     std::string asLine(int line) const;    
     int getWidth() const;
@@ -39,5 +38,5 @@ class RenderBuffer {
 
     std::string dumpToString(char emptyChar = ' ') const;
 
-    friend RenderBufferView;
+    const RenderBufferView view(int left = -1, int right = -1, int top = -1, int bottom = -1) const;
 };
