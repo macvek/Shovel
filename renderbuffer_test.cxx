@@ -11,7 +11,6 @@ void assertBuffer(RenderBuffer &b, string expectedState) {
     }
 }
 
-
 void TestOneLineBuffer() {
     RenderBuffer b(10,1); // 10-chars, buffer should always keep extra 0 in the end
     if (1 != b.getHeight() || 10 != b.getWidth()) {
@@ -228,6 +227,52 @@ void TestWriteOnlyPartOf() {
     assertBuffer(b, expectedState);
 }
 
+void TestRenderingDiff() {
+    RenderBuffer pre(3,3);
+    pre.writeText(
+        "---"
+        "---"
+        "---"    
+    ,0,0);
+
+    RenderBuffer post(3,3);
+    post.writeText(
+        "---"
+        "-X-"
+        "---"    
+    ,0,0);
+
+    vector<RenderDiffUnit> diffs;
+    post.diff(post, diffs);
+
+    if (!diffs.empty()) {
+        cerr << "diff to itself should not produce any output" << endl;
+        exit(1);
+    }
+
+    RenderBuffer otherDimentions(1,1);
+    otherDimentions.writeText("!", 0,0);
+
+    post.diff(otherDimentions, diffs);
+    if (!diffs.empty()) {
+        cerr << "diff should not happen in case dimentions do not match for buffers" << endl;
+        exit(1);
+    }
+
+    post.diff(pre, diffs);
+    if (diffs.size() != 1) {
+        cerr << "Expected 1 diff, got " << diffs.size() << endl;
+        exit(1);
+    }
+
+    RenderDiffUnit& unit = diffs[0];
+    if (unit.left != 1 || unit.right != 2 || unit.top != 1) {
+        cerr << "Expected left/right/top => 1/2/1, got => " << unit.left << "/" << unit.right << "/" << unit.top << endl;
+        exit(1);
+    }
+
+}
+
 int main() {
     TestOneLineBuffer();
     TestWriteMultipleLines();
@@ -240,5 +285,6 @@ int main() {
     TestWriteViewUnderflow();
     TestWriteBiggerAndOverlap();
     TestWriteOnlyPartOf();
+    TestRenderingDiff();
     return 0;
 }

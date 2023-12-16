@@ -1,6 +1,6 @@
 #include "renderbuffer.h"
 
-RenderBufferView::RenderBufferView(const RenderBuffer &aFrom, const int aLeft, const int aRight, const int aTop, const int aBottom) 
+RenderBufferView::RenderBufferView(const RenderBuffer& aFrom, const int aLeft, const int aRight, const int aTop, const int aBottom) 
     :from(aFrom), left(aLeft), right(aRight), top(aTop), bottom(aBottom) {
 }
 
@@ -45,7 +45,7 @@ static struct PaddedAxis paddAxis(int input, int limit, int viewOffset, int view
     return ret;
 }
 
-void RenderBuffer::writeView(const RenderBufferView &view, int x, int y) {
+void RenderBuffer::writeView(const RenderBufferView& view, int x, int y) {
     if (x >= width || y >= height) return;
 
     auto paddX = paddAxis(x, width, view.left, view.right);    
@@ -123,4 +123,38 @@ RenderBuffer::XYOffset RenderBuffer::xyOffset(int x, int y) const{
     int line = y < 0 ? 0 : y >= height ? height : y;
     int column = x < 0 ? 0 : x >= width ? width : x;
     return { .ptr = line * width + column, .charsInLine = width - column};
+}
+
+#include <iostream>
+void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& out) {
+    if (other.width != width || other.height != height) {
+        return;
+    }
+
+    auto herePtr = frontBuffer.cbegin();
+    auto otherPtr = other.frontBuffer.cbegin();
+    RenderDiffUnit unit;
+
+    for (int line=0;line<height; ++line) {
+        int changeIdx = -1;
+        for (int i=0;i<width; ++i, ++herePtr, ++otherPtr) {
+            if (-1 == changeIdx && *herePtr != *otherPtr) {
+                changeIdx = i;
+            }
+            else if ( -1 != changeIdx && *herePtr == *otherPtr) {
+                unit.left = changeIdx;
+                unit.right = i;
+                unit.top = line;
+                out.push_back(unit);
+                changeIdx = -1;
+            }
+        }
+
+        if (changeIdx != -1) {
+            unit.left = changeIdx;
+            unit.right = width;
+            unit.top = line;
+            out.push_back(unit);
+        }
+    }
 }

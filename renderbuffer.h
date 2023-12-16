@@ -11,8 +11,14 @@ struct RenderBufferView {
     const int bottom;
 
     private:
-    RenderBufferView(const RenderBuffer &aFrom, const int aLeft, const int aRight, const int aTop, const int aBottom);
+    RenderBufferView(const RenderBuffer& aFrom, const int aLeft, const int aRight, const int aTop, const int aBottom);
     friend RenderBuffer;
+};
+
+struct RenderDiffUnit {
+    int top;
+    int left;
+    int right;
 };
 
 class RenderBuffer {
@@ -37,6 +43,7 @@ class RenderBuffer {
     int getHeight() const;
 
     std::string dumpToString(char emptyChar = ' ') const;
+    void diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& out);
 
     const RenderBufferView view(int left = -1, int right = -1, int top = -1, int bottom = -1) const;
 };
