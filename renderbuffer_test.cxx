@@ -34,8 +34,23 @@ void TestWriteMultipleLines() {
 }
 
 
+void TestShouldUseInitializer() {
+    RenderBuffer b(10,1,' ');
+
+    b.writeText("HELLO",2,0);
+
+    string line = b.asLine(0);
+    if ("  HELLO   " != line) {  
+        cerr << "Expected '  HELLO   ', got '" << line << "'" << endl;
+        exit(1);
+    }
+}
+
+
+
 int main() {
     TestOneLineBuffer();
     TestWriteMultipleLines();
+    TestShouldUseInitializer();
     return 0;
 }
