@@ -58,11 +58,25 @@ void TestWriteTextShouldSpanOverLinesAndNotOverflow() {
     }
 }
 
+void TestWriteTextToBufferShouldRespectLFandTreatTABAsSpace() {
+    RenderBuffer b(5,3,'.');
+
+    b.writeText("1st\n\t2nd\n3rd\n4th This Is Ignored",0,0);
+
+    string lineA = b.asLine(0);
+    string lineB = b.asLine(1);
+    string lineC = b.asLine(2);
+    if ("1st.." != lineA || " 2nd." != lineB || "3rd.." != lineC) {  
+        cerr << "Expected 3 lines: to match  1st../ 2nd./3rd.., got: '" << lineA << "/" <<lineB << "/" << lineC << endl;
+        exit(1);
+    }
+}
 
 int main() {
     TestOneLineBuffer();
     TestWriteMultipleLines();
     TestShouldUseInitializer();
     TestWriteTextShouldSpanOverLinesAndNotOverflow();
+    TestWriteTextToBufferShouldRespectLFandTreatTABAsSpace();
     return 0;
 }

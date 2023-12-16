@@ -12,7 +12,20 @@ void RenderBuffer::writeText(std::string text, int x, int y) {
     auto dest = frontBuffer.begin() + offset.ptr;
 
     for (; src < text.end() && dest < frontBuffer.end(); ++src, ++dest) {
-        *dest = *src;
+        if (*src == '\t') {
+            *dest = ' ';
+        }
+        else if (*src == '\n') {
+            if (y+1 == height) {
+                return;
+            }
+            
+            writeText( std::string(src+1, text.end()), 0, y+1);
+            return;
+        }
+        else {
+            *dest = *src;
+        }
     }
 }
 
