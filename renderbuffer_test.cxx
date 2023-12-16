@@ -81,7 +81,6 @@ void TestWriteTextToBufferShouldRespectLFandTreatTABAsSpace() {
     }
 }
 
-
 void TestWriteView() {
     RenderBuffer b(3,3,' ');
     
@@ -104,6 +103,131 @@ void TestWriteView() {
     assertBuffer(b, expectedState);
 }
 
+void TestWriteViewComplete() {
+    RenderBuffer b(3,3);
+    
+    RenderBuffer overlay(3,3);
+    overlay.writeText(
+        "XXX"
+        "XOX"
+        "XXX"    
+    ,0,0);
+        
+    b.writeView(overlay.view(), 0,0);
+
+    string expectedState = 
+        "XXX\n"
+        "XOX\n"
+        "XXX\n";
+
+    assertBuffer(b, expectedState);
+}
+
+void TestWriteViewOverflow() {
+    RenderBuffer b(3,3);
+    b.writeText(
+        "XXX"
+        "XOX"
+        "XXX"    
+    ,0,0);
+
+    RenderBuffer overlay(3,3);
+    overlay.writeText(
+        "---"
+        "---"
+        "---"    
+    ,0,0);
+    
+    b.writeView(overlay.view(), 4,4);   // too far to right/bottom
+
+    string expectedState = 
+        "XXX\n"
+        "XOX\n"
+        "XXX\n";
+
+    assertBuffer(b, expectedState);
+}
+
+void TestWriteViewUnderflow() {
+    RenderBuffer b(3,3);
+    b.writeText(
+        "XXX"
+        "XOX"
+        "XXX"    
+    ,0,0);
+
+    RenderBuffer overlay(3,3);
+    overlay.writeText(
+        "---"
+        "---"
+        "---"    
+    ,0,0);
+    
+    b.writeView(overlay.view(), -4,-4);   // in negative space with no overlap
+
+    string expectedState = 
+        "XXX\n"
+        "XOX\n"
+        "XXX\n";
+
+    assertBuffer(b, expectedState);
+}
+
+
+void TestWriteBiggerAndOverlap() {
+    RenderBuffer b(3,3);
+    b.writeText(
+        "---"
+        "---"
+        "---"    
+    ,0,0);
+
+    RenderBuffer overlay(5,5);
+    overlay.writeText(
+        "-----"
+        "-XXX-"
+        "-XXX-"    
+        "-XXX-"
+        "-----"
+    ,0,0);
+    
+    b.writeView(overlay.view(), -1,-1);
+
+    string expectedState = 
+        "XXX\n"
+        "XXX\n"
+        "XXX\n";
+
+    assertBuffer(b, expectedState);
+}
+
+void TestWriteOnlyPartOf() {
+    RenderBuffer b(3,3);
+    b.writeText(
+        "---"
+        "---"
+        "---"    
+    ,0,0);
+
+    RenderBuffer overlay(5,5);
+    overlay.writeText(
+        "-----"
+        "-XXX-"
+        "-XXX-"    
+        "-XXX-"
+        "-----"
+    ,0,0);
+    
+    b.writeView(overlay.view(1,3, 1,3), 1, 0);
+
+    string expectedState = 
+        "-XX\n"
+        "-XX\n"
+        "---\n";
+
+    assertBuffer(b, expectedState);
+}
+
 int main() {
     TestOneLineBuffer();
     TestWriteMultipleLines();
@@ -111,5 +235,10 @@ int main() {
     TestWriteTextShouldSpanOverLinesAndNotOverflow();
     TestWriteTextToBufferShouldRespectLFandTreatTABAsSpace();
     TestWriteView();
+    TestWriteViewComplete();
+    TestWriteViewOverflow();
+    TestWriteViewUnderflow();
+    TestWriteBiggerAndOverlap();
+    TestWriteOnlyPartOf();
     return 0;
 }
