@@ -21,13 +21,13 @@ std::ostream& Log::error() {
     int nbOfTraces = backtrace((void**)&backtraceBuffer, FRAMESCOUNT);
     char **strings = backtrace_symbols(backtraceBuffer, nbOfTraces);
     if (strings == nullptr) {
-        errorStream << "failed to produce backtrace: " << strerror(errno) << CRLF;
+        errorStream << "failed to produce backtrace: " << strerror(errno) << ENDLINE;
     }
     else {
         for (int i = 0; i < nbOfTraces; i++) {
-            errorStream << strings[i] << CRLF;
+            errorStream << strings[i] << ENDLINE;
         }
-        errorStream << CRLF;
+        errorStream << ENDLINE;
         free(strings);
     }
     
@@ -42,7 +42,7 @@ void Log::panicOnError() {
 
 void Log::panic() {
     std::string message = errorStream.str();
-    std::cerr << "PANIC:" << message << CRLF;
+    std::cerr << "PANIC:" << message << ENDLINE;
     LogPanic panic;
     panic.str = message;
     throw panic;
@@ -53,6 +53,6 @@ void Log::clear() {
 }
 
 void Log::panicWithErrno(std::string msg) {
-    error() << msg << "; errno:" << errno << ", strerror: " << strerror(errno) << CRLF;
+    error() << msg << "; errno:" << errno << ", strerror: " << strerror(errno) << ENDLINE;
     panic();
 }

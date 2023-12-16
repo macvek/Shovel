@@ -2,4 +2,4 @@
 
 #include <iostream>
 
-#define CRLF "\r\n"
+#define ENDLINE "\n"

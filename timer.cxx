@@ -8,7 +8,7 @@
 static void handler(int sig, siginfo_t *info, void *ucontext) {
     Timer* owner = (Timer*)info->si_value.sival_ptr;
     if (owner == nullptr) {
-        Log::warn() << "Triggered timer event handler with NULL pointer" << CRLF;
+        Log::warn() << "Triggered timer event handler with NULL pointer" << ENDLINE;
     }
     else {
         owner->trigger();
@@ -44,7 +44,7 @@ Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMil
 
 Timer::~Timer() {
     if (timer_delete(id)) {
-        Log::warn() << "Failed to delete timer: " << id << CRLF;
+        Log::warn() << "Failed to delete timer: " << id << ENDLINE;
     }
 }
 

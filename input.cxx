@@ -22,6 +22,6 @@ void Input::decodeBuffer(int size) {
     for (int i=0;i<size;i++) {
         printf("0x%x, ", buffer[i]);
     }
-    std::cout << CRLF;
+    std::cout << ENDLINE;
     key = buffer[0];
 }

@@ -8,7 +8,7 @@ using namespace std;
 
 struct MyOnTick : public TimerOnTick {
     void onTick() {
-        std::cout << "On My Tick" << CRLF;
+        std::cout << "On My Tick" << ENDLINE;
     }
 };
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
             printf("Got 0x%x;%i;%c\r\n", what,what,what);
 
             if (what == 'x') {
-                cout << "I'm done" << CRLF;
+                cout << "I'm done" << ENDLINE;
                 break;
             } 
             else if (what == 's') {
@@ -36,12 +36,12 @@ int main(int argc, char** argv) {
                 timer.start();
             } 
             else if (what == 'E') {
-                Log::error() << "Call me inside a method" << CRLF;
+                Log::error() << "Call me inside a method" << ENDLINE;
                 Log::panicOnError();
-                cout << "No error" << CRLF;
+                cout << "No error" << ENDLINE;
             } 
             else {
-                cout << "not x , try again" << CRLF;
+                cout << "not x , try again" << ENDLINE;
             }
         }
     }

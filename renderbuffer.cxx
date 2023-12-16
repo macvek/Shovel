@@ -1,4 +1,17 @@
 #include "renderbuffer.h"
+#include "log.h"
+
+RenderBufferView::RenderBufferView(const RenderBuffer &from, const int aLeft, const int aRight, const int aTop, const int aBottom) 
+    :frontBuffer(from.frontBuffer), left(aLeft), right(aRight), top(aTop), bottom(aBottom) {
+
+    if (left < 0 || right <= left || right >= from.width ) {
+        std::stringstream msg;
+        msg << "RenderBufferView, left/right/width assert failed: " << left << "/" << right << "/" << from.width;
+        
+        Log::panicWithErrno(msg.str());
+    }
+        
+}
 
 RenderBuffer::RenderBuffer(int aWidth, int aHeight, char initial) : width(aWidth), height(aHeight) {
     frontBuffer.resize(aWidth * aHeight+1, initial);

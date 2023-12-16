@@ -1,6 +1,22 @@
 #include "terminal.h"
 #include <vector>
 
+class RenderBuffer;
+
+class RenderBufferView {
+    const std::vector<char> &frontBuffer;
+    const int left;
+    const int right;
+    const int top;
+    const int bottom;
+
+    public:
+    RenderBufferView(const RenderBuffer &from, const int aLeft, const int aRight, const int aTop, const int aBottom);
+    int getWidth() const;
+    int getHeight() const;
+    void fillLine(int line, std::vector<char>::iterator &here);
+};
+
 class RenderBuffer {
     struct XYOffset {
         int ptr;
@@ -22,4 +38,6 @@ class RenderBuffer {
     int getHeight() const;
 
     std::string dumpToString(char emptyChar = ' ') const;
+
+    friend RenderBufferView;
 };
