@@ -134,24 +134,34 @@ void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& 
     auto otherPtr = other.frontBuffer.cbegin();
     RenderDiffUnit unit;
 
+    int noise = 0;
     for (int line=0;line<height; ++line) {
         int changeIdx = -1;
         for (int i=0;i<width; ++i, ++herePtr, ++otherPtr) {
-            if (-1 == changeIdx && *herePtr != *otherPtr) {
-                changeIdx = i;
+            if (*herePtr != *otherPtr) {
+                if (-1 == changeIdx) {
+                    changeIdx = i;
+                }
+
+                noise = threshold;
             }
-            else if ( -1 != changeIdx && *herePtr == *otherPtr) {
-                unit.left = changeIdx;
-                unit.right = i;
-                unit.top = line;
-                out.push_back(unit);
-                changeIdx = -1;
+            else if ( -1 != changeIdx) {
+                if (0 == noise) {
+                    unit.left = changeIdx;
+                    unit.right = i - threshold;
+                    unit.top = line;
+                    out.push_back(unit);
+                    changeIdx = -1;
+                }
+                else {
+                    --noise;
+                }
             }
         }
 
         if (changeIdx != -1) {
             unit.left = changeIdx;
-            unit.right = width;
+            unit.right = width - (threshold - noise);
             unit.top = line;
             out.push_back(unit);
         }

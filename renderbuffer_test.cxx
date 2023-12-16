@@ -285,19 +285,20 @@ void TestRenderingDiffWithThreshhold() {
     RenderBuffer post(10,2);
     post.writeText(
         "H l o orld"
-        "HEllOWorld"
+        "XXlloXXrld"
     ,0,0);
 
     vector<RenderDiffUnit> diffs;
     post.diff(pre, diffs, 2);
 
-    if (diffs.size() != 2) {
-        cerr << "Expected 2 diff, got " << diffs.size() << endl;
+    if (diffs.size() != 3) {
+        cerr << "Expected 3 diff, got " << diffs.size() << endl;
         exit(1);
     }
 
-    assertDiff(diffs[0], 1, 5, 0);
-    assertDiff(diffs[1], 1, 4, 1);
+    assertDiff(diffs[0], 1, 6, 0);
+    assertDiff(diffs[1], 0, 2, 1);
+    assertDiff(diffs[2], 5, 7, 1);
 }
 
 int main() {
