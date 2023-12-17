@@ -1,21 +1,16 @@
 #include "terminal.h"
 
 
-#define COLOR_RESET         0
-#define COLOR_RED           1
-#define COLOR_BRIGHT_RED    61
-
-
 using namespace std;
 
 int main(int argc, char** argv) {
     Terminal t(cout);
     t.clear();
-    t.foreColor(COLOR_RED);
+    t.foreColor(Terminal::RED);
     cout << "I'm red" << endl;
 
-    t.foreColor(COLOR_BRIGHT_RED);
-    t.backColor(COLOR_RED);
+    t.foreColor(Terminal::BRIGHT_RED);
+    t.backColor(Terminal::RED);
     cout << "I'm red with background" << endl;
 
     t.foreColorRGB(10,255,10);
@@ -30,8 +25,8 @@ int main(int argc, char** argv) {
     t.foreDefault();
     cout << "Foreground to default" << endl;
 
-    t.foreColor(4);
-    t.backColor(3);
+    t.foreColor(Terminal::GREEN);
+    t.backColor(Terminal::YELLOW);
     cout << "Text before reset" << endl;
 
     t.reset();

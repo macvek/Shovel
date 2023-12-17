@@ -14,18 +14,18 @@ void Terminal::reset() {
 }
 
 void Terminal::foreDefault() {
-    foreColor(9);
+    foreColor(DEFAULT);
 }
 
 void Terminal::backDefault() {
-    backColor(9);
+    backColor(DEFAULT);
 }
 
-void Terminal::foreColor(int it) {
+void Terminal::foreColor(COLOR it) {
     out << CSI() << 30+it << "m";
 }
 
-void Terminal::backColor(int it) {
+void Terminal::backColor(COLOR it) {
     out << CSI() << 40+it << "m";
 }
 

@@ -26,7 +26,19 @@ int main(int argc, char** argv) {
 
     RenderBuffer scene(80,24,'.');
 
-    int renderColor = 1;
+    Terminal::COLOR colors[] = {
+        Terminal::BLACK,
+        Terminal::RED,
+        Terminal::GREEN,
+        Terminal::YELLOW,
+        Terminal::BLUE,
+        Terminal::MAGENTA,
+        Terminal::CYAN,
+        Terminal::WHITE,
+    };
+    
+    int renderColor = 7;
+
     int diffThreshold = 0;
     bool fullWrite = true;
     bool coloring = true;
@@ -44,8 +56,8 @@ int main(int argc, char** argv) {
             RenderBuffer backBuffer(scene);
             scene.writeView(b.view(), x,y);
             if (coloring) {
-                t.foreColor(renderColor % 8);
-                t.backColor( (renderColor+1) % 8);
+                t.foreColor(colors[renderColor % 8]);
+                t.backColor(colors[ (1+renderColor) % 8]);
             }
             else {
                 t.foreDefault();

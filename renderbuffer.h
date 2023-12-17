@@ -27,15 +27,15 @@ class RenderBuffer {
         int charsInLine;
     };
 
-
     std::vector<char> frontBuffer;
+    std::vector<TermColor> colorBuffer;
     const int width;
     const int height;
     XYOffset xyOffset(int x, int y) const;
 
     char transparentChar;
     public:
-    RenderBuffer(int width, int height, char initial=0);
+    RenderBuffer(int width, int height, char initial=0, bool hasColorBuffer = false);
     void writeText(std::string text, int x, int y);
     void writeView(const RenderBufferView& view, int x, int y);
 

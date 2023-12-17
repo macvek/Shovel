@@ -70,9 +70,13 @@ void RenderBuffer::writeView(const RenderBufferView& view, int x, int y) {
     }
 }
 
-RenderBuffer::RenderBuffer(int aWidth, int aHeight, char initial) : width(aWidth), height(aHeight), transparentChar(0) {
-    frontBuffer.resize(aWidth * aHeight+1, initial);
+RenderBuffer::RenderBuffer(int aWidth, int aHeight, char initial, bool hasColorBuffer) : width(aWidth), height(aHeight), transparentChar(0) {
+    int size = aWidth * aHeight+1;
+    frontBuffer.resize(size, initial);
     frontBuffer[aWidth * aHeight] = 0;  // always keep extra 0 in the end so it can be dumped safely
+    if (hasColorBuffer) {
+        colorBuffer.resize(size, Terminal::MakeColor(Terminal::DEFAULT, Terminal::DEFAULT));
+    }
 }
 
 void RenderBuffer::writeText(std::string text, int x, int y) {

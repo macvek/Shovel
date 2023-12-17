@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 
+typedef unsigned short TermColor;
+
 class Terminal {
     std::ostream &out;
     int calculatedX;
@@ -9,13 +11,46 @@ class Terminal {
     public:
     Terminal(std::ostream& aOut);
 
+    enum COLOR {
+        BLACK = 0,
+        RED,
+        GREEN,
+        YELLOW,
+        BLUE,
+        MAGENTA,
+        CYAN,
+        WHITE,
+        DEFAULT,
+
+        BRIGHT_BLACK = 60,
+        BRIGHT_RED,
+        BRIGHT_GREEN,
+        BRIGHT_YELLOW,
+        BRIGHT_BLUE,
+        BRIGHT_MAGENTA,
+        BRIGHT_CYAN,
+        BRIGHT_WHITE,
+    };
+
+    static inline TermColor MakeColor(COLOR foreground, COLOR background) {
+        return foreground | (background << 8);
+    }
+
+    static inline COLOR ForeColor(TermColor combined) {
+        return (COLOR)(combined & 0xFF);
+    }
+
+    static inline COLOR BackColor(int combined) {
+        return (COLOR)(combined >> 8 & 0xFF);
+    }
+
     void reset();
     void foreDefault();
-    void foreColor(int num);
+    void foreColor(COLOR num);
     void foreColorRGB(int r,int g, int b);
 
     void backDefault();
-    void backColor(int num);
+    void backColor(COLOR num);
     void backColorRGB(int r,int g, int b);
 
     void moveCursor(int x, int y);
