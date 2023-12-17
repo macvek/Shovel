@@ -33,6 +33,7 @@ class RenderBuffer {
     const int height;
     XYOffset xyOffset(int x, int y) const;
 
+    char transparentChar;
     public:
     RenderBuffer(int width, int height, char initial=0);
     void writeText(std::string text, int x, int y);
@@ -47,7 +48,15 @@ class RenderBuffer {
     std::string asLine(int line) const;    
     std::string dumpToString(char emptyChar = ' ') const;
     
-    int getWidth() const;
-    int getHeight() const;
+    inline int getWidth() const {
+        return width;
+    }
+    inline int getHeight() const {
+        return height;
+    }
+
+    inline void setTransparentChar(char c) {
+        transparentChar = c;
+    }
     
 };

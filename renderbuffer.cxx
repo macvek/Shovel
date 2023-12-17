@@ -48,7 +48,7 @@ static struct PaddedAxis paddAxis(int input, int limit, int viewOffset, int view
 void RenderBuffer::writeView(const RenderBufferView& view, int x, int y) {
     if (x >= width || y >= height) return;
 
-    auto paddX = paddAxis(x, width, view.left, view.right);    
+    auto paddX = paddAxis(x, width, view.left, view.right);
     auto paddY = paddAxis(y, height, view.top, view.bottom);
 
     int lineLength = paddX.srcLimit - paddX.srcOffset;
@@ -63,12 +63,14 @@ void RenderBuffer::writeView(const RenderBufferView& view, int x, int y) {
         auto hereStart = frontBuffer.begin() + offsetInHere.ptr;
 
         for (; srcStart < srcEnd; ++srcStart, ++hereStart) {
-            *hereStart = *srcStart;
+            if (*srcStart != view.from.transparentChar) {
+                *hereStart = *srcStart;
+            }
         }
-    } 
+    }
 }
 
-RenderBuffer::RenderBuffer(int aWidth, int aHeight, char initial) : width(aWidth), height(aHeight) {
+RenderBuffer::RenderBuffer(int aWidth, int aHeight, char initial) : width(aWidth), height(aHeight), transparentChar(0) {
     frontBuffer.resize(aWidth * aHeight+1, initial);
     frontBuffer[aWidth * aHeight] = 0;  // always keep extra 0 in the end so it can be dumped safely
 }
@@ -109,14 +111,6 @@ std::string RenderBuffer::dumpToString(char emptyChar) const {
     }
 
     return ret;
-}
-
-int RenderBuffer::getWidth() const { 
-    return width;
-}
-
-int RenderBuffer::getHeight() const {
-    return height;
 }
 
 RenderBuffer::XYOffset RenderBuffer::xyOffset(int x, int y) const{

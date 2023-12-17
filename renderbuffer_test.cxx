@@ -301,6 +301,19 @@ void TestRenderingDiffWithThreshhold() {
     assertDiff(diffs[2], 5, 7, 1);
 }
 
+void TestUsingTransparentLayer() {
+    RenderBuffer base(10,1);
+    base.writeText("HelloWorld" ,0,0);
+
+    RenderBuffer layer(10,1);
+    layer.setTransparentChar(' ');
+    layer.writeText("X        X" ,0,0);
+
+    base.writeView(layer.view(),0,0);
+
+    assertBuffer(base, "XelloWorlX\n");
+}
+
 int main() {
     TestOneLineBuffer();
     TestWriteMultipleLines();
@@ -315,5 +328,6 @@ int main() {
     TestWriteOnlyPartOf();
     TestRenderingDiff();
     TestRenderingDiffWithThreshhold();
+    TestUsingTransparentLayer();
     return 0;
 }
