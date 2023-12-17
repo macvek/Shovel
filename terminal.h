@@ -20,7 +20,7 @@ class Terminal {
         MAGENTA,
         CYAN,
         WHITE,
-        DEFAULT,
+        DEFAULT=9,
 
         BRIGHT_BLACK = 60,
         BRIGHT_RED,
@@ -30,17 +30,19 @@ class Terminal {
         BRIGHT_MAGENTA,
         BRIGHT_CYAN,
         BRIGHT_WHITE,
+
+        UNKNOWN = -1
     };
 
     static inline TermColor MakeColor(COLOR foreground, COLOR background) {
         return foreground | (background << 8);
     }
 
-    static inline COLOR ForeColor(TermColor combined) {
+    static inline COLOR ToForeColor(TermColor combined) {
         return (COLOR)(combined & 0xFF);
     }
 
-    static inline COLOR BackColor(int combined) {
+    static inline COLOR ToBackColor(int combined) {
         return (COLOR)(combined >> 8 & 0xFF);
     }
 

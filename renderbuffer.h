@@ -38,11 +38,12 @@ class RenderBuffer {
     RenderBuffer(int width, int height, char initial=0, bool hasColorBuffer = false);
     void writeText(std::string text, int x, int y);
     void writeView(const RenderBufferView& view, int x, int y);
+    void writeColorLine(int x, int y, int len, TermColor color);
 
     void diff(const RenderBuffer& other, std::vector<RenderUnit>& out, int threshold = 0);
     const RenderBufferView view(int left = -1, int right = -1, int top = -1, int bottom = -1) const;
 
-    void toTerminal(Terminal& t, int posX, int posY);
+    void toTerminal(Terminal& t, int posX, int posY, bool useColor=true);
     void unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units, int x, int y);
 
     std::string asLine(int line) const;    

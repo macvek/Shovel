@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     Console console;
     InputDecoder decoder;
     Terminal t(std::cout);
-    RenderBuffer b(23,7);
+    RenderBuffer b(23,7, 0, true);
     b.writeText(
         "                       "
         " --------------------- "
@@ -24,7 +24,10 @@ int main(int argc, char** argv) {
         "                       ",
     0,0);
 
-    RenderBuffer scene(80,24,'.');
+    b.writeColorLine(0,1,23, Terminal::MakeColor(Terminal::MAGENTA, Terminal::RED));
+    b.writeColorLine(0,5,23, Terminal::MakeColor(Terminal::MAGENTA, Terminal::RED));
+
+    RenderBuffer scene(80,24,'.',true);
 
     Terminal::COLOR colors[] = {
         Terminal::BLACK,
@@ -66,7 +69,7 @@ int main(int argc, char** argv) {
             ++renderColor;
             
             if (fullWrite) {
-                scene.toTerminal(t,1,1);
+                scene.toTerminal(t,1,1,!coloring);
             }
             else {
                 scene.diff(backBuffer, diffs, diffThreshold);

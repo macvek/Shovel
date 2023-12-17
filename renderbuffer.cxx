@@ -65,6 +65,11 @@ void RenderBuffer::writeView(const RenderBufferView& view, int x, int y) {
         for (; srcStart < srcEnd; ++srcStart, ++hereStart) {
             if (*srcStart != view.from.transparentChar) {
                 *hereStart = *srcStart;
+
+                if (!colorBuffer.empty() && !view.from.colorBuffer.empty()) {
+                    int offset = hereStart - frontBuffer.begin();
+                    colorBuffer[offset] = view.from.colorBuffer[offset];
+                }
             }
         }
     }
@@ -101,6 +106,12 @@ void RenderBuffer::writeText(std::string text, int x, int y) {
             *dest = *src;
         }
     }
+}
+
+void RenderBuffer::writeColorLine(int x, int y, int len, TermColor color) {
+    if (colorBuffer.empty()) return;    
+    auto offset = xyOffset(x,y);
+    for (auto begin = colorBuffer.begin()+offset.ptr; begin < colorBuffer.begin()+len; ++begin ) *begin = color;
 }
 
 std::string RenderBuffer::asLine(int line) const {
@@ -166,12 +177,31 @@ void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderUnit>& out,
     }
 }
 
-void RenderBuffer::toTerminal(Terminal& t, int posX, int posY) {
-    auto ptr = frontBuffer.cbegin();
+void RenderBuffer::toTerminal(Terminal& t, int posX, int posY, bool useColor) {
+    TermColor currentColor = -1;
+    
+    Terminal::COLOR foreColor = Terminal::UNKNOWN;
+    Terminal::COLOR backColor = Terminal::UNKNOWN;
+
+    int offset = 0;
     for (int line = 0; line<height; line++) {
         t.placeCursor(posX,posY+line);
-        for (int col = 0; col<width; ++col) {
-            t.stream() << *(ptr++);
+        for (int col = 0; col<width; ++col, ++offset) {
+            if (useColor && !colorBuffer.empty() && currentColor != colorBuffer[offset]) {
+                currentColor = colorBuffer[offset];
+                Terminal::COLOR loadedColor = Terminal::ToForeColor(currentColor);
+                if (loadedColor != foreColor) {
+                    foreColor = loadedColor;
+                    t.foreColor(foreColor);
+                }
+
+                loadedColor = Terminal::ToBackColor(currentColor);
+                if (loadedColor != backColor) {
+                    backColor = loadedColor;
+                    t.backColor(backColor);
+                }
+            }
+            t.stream() << frontBuffer[offset];
         }
     }
 }
