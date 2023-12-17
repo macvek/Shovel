@@ -25,6 +25,9 @@ int main(int argc, char** argv) {
     0,0);
 
     RenderBuffer scene(80,24,'.');
+
+    
+    int renderColor = 1;
     try {
         console.enableRaw();
         t.clear();
@@ -32,6 +35,9 @@ int main(int argc, char** argv) {
         int y = 0;
         for(;;) {
             scene.writeView(b.view(), x,y);
+            t.foreColor(renderColor % 8);
+            t.backColor( (renderColor+1) % 8);
+            ++renderColor;
             scene.toTerminal(t,1,1);
             t.flush();
 

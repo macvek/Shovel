@@ -125,14 +125,14 @@ RenderBuffer::XYOffset RenderBuffer::xyOffset(int x, int y) const{
     return { .ptr = line * width + column, .charsInLine = width - column};
 }
 
-void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& out, int threshold) {
+void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderUnit>& out, int threshold) {
     if (other.width != width || other.height != height) {
         return;
     }
 
     auto herePtr = frontBuffer.cbegin();
     auto otherPtr = other.frontBuffer.cbegin();
-    RenderDiffUnit unit;
+    RenderUnit unit;
 
     int noise = 0;
     for (int line=0;line<height; ++line) {
@@ -176,4 +176,8 @@ void RenderBuffer::toTerminal(Terminal& t, int posX, int posY) {
             t.stream() << *(ptr++);
         }
     }
+}
+
+void RenderBuffer::unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units) {
+    
 }

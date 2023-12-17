@@ -227,7 +227,7 @@ void TestWriteOnlyPartOf() {
     assertBuffer(b, expectedState);
 }
 
-void assertDiff(RenderDiffUnit& unit, int left, int right, int top) {
+void assertDiff(RenderUnit& unit, int left, int right, int top) {
     if (unit.left != left || unit.right != right || unit.top != top) {
         cerr << "Expected left/right/top => "<< left << "/" << right << "/" << top << ", got => " << unit.left << "/" << unit.right << "/" << unit.top << endl;
         exit(1);
@@ -249,7 +249,7 @@ void TestRenderingDiff() {
         "---"    
     ,0,0);
 
-    vector<RenderDiffUnit> diffs;
+    vector<RenderUnit> diffs;
     post.diff(post, diffs);
 
     if (!diffs.empty()) {
@@ -288,7 +288,7 @@ void TestRenderingDiffWithThreshhold() {
         "XXlloXXrld"
     ,0,0);
 
-    vector<RenderDiffUnit> diffs;
+    vector<RenderUnit> diffs;
     post.diff(pre, diffs, 2);
 
     if (diffs.size() != 3) {

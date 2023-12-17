@@ -15,7 +15,7 @@ struct RenderBufferView {
     friend RenderBuffer;
 };
 
-struct RenderDiffUnit {
+struct RenderUnit {
     int top;
     int left;
     int right;
@@ -38,10 +38,11 @@ class RenderBuffer {
     void writeText(std::string text, int x, int y);
     void writeView(const RenderBufferView& view, int x, int y);
 
-    void diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& out, int threshold = 0);
+    void diff(const RenderBuffer& other, std::vector<RenderUnit>& out, int threshold = 0);
     const RenderBufferView view(int left = -1, int right = -1, int top = -1, int bottom = -1) const;
 
     void toTerminal(Terminal& t, int posX, int posY);
+    void unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units);
 
     std::string asLine(int line) const;    
     std::string dumpToString(char emptyChar = ' ') const;
