@@ -7,7 +7,8 @@ class Terminal {
     int calculatedY;
 
     public:
-    Terminal(std::ostream &aOut);
+    Terminal(std::ostream& aOut);
+
     void reset();
     void foreDefault();
     void foreColor(int num);
@@ -20,10 +21,15 @@ class Terminal {
     void moveCursor(int x, int y);
     void placeCursor(int x, int y);
     void clear();
+    void flush();
 
     void showCursor(bool visibile);
 
     inline int getCalculatedX() const { return calculatedX;} 
     inline int getCalculatedY() const { return calculatedY;} 
+
+    inline std::ostream& stream() const {
+         return out;
+    }
 };
 

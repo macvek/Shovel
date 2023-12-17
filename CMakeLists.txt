@@ -44,5 +44,6 @@ add_executable(EditorDemo editor_demo.cxx editor.cxx terminal.cxx log.cxx consol
 add_executable(EditorTest editor_test.cxx editor.cxx inputdecoder.cxx)
 add_test(NAME EditorTest COMMAND EditorTest)
 
-add_executable(RenderBufferTest renderbuffer_test.cxx renderbuffer.cxx)
+add_executable(RenderBufferDemo renderbuffer_demo.cxx renderbuffer.cxx terminal.cxx log.cxx console.cxx inputdecoder.cxx )
+add_executable(RenderBufferTest renderbuffer_test.cxx renderbuffer.cxx terminal.cxx )
 add_test(NAME RenderBufferTest COMMAND RenderBufferTest)

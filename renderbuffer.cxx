@@ -167,3 +167,13 @@ void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& 
         }
     }
 }
+
+void RenderBuffer::toTerminal(Terminal& t, int posX, int posY) {
+    auto ptr = frontBuffer.cbegin();
+    for (int line = 0; line<height; line++) {
+        t.placeCursor(posX,posY+line);
+        for (int col = 0; col<width; ++col) {
+            t.stream() << *(ptr++);
+        }
+    }
+}

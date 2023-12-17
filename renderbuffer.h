@@ -38,12 +38,15 @@ class RenderBuffer {
     void writeText(std::string text, int x, int y);
     void writeView(const RenderBufferView& view, int x, int y);
 
+    void diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& out, int threshold = 0);
+    const RenderBufferView view(int left = -1, int right = -1, int top = -1, int bottom = -1) const;
+
+    void toTerminal(Terminal& t, int posX, int posY);
+
     std::string asLine(int line) const;    
+    std::string dumpToString(char emptyChar = ' ') const;
+    
     int getWidth() const;
     int getHeight() const;
-
-    std::string dumpToString(char emptyChar = ' ') const;
-    void diff(const RenderBuffer& other, std::vector<RenderDiffUnit>& out, int threshold = 0);
-
-    const RenderBufferView view(int left = -1, int right = -1, int top = -1, int bottom = -1) const;
+    
 };

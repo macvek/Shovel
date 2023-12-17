@@ -62,3 +62,8 @@ void Terminal::clear() {
     out << CSI() << 2 << "J";
     placeCursor(1,1);
 }
+
+void Terminal::flush() {
+    out.flush();
+}
+
