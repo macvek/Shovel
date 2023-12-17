@@ -26,19 +26,41 @@ int main(int argc, char** argv) {
 
     RenderBuffer scene(80,24,'.');
 
-    
     int renderColor = 1;
+    int diffThreshold = 0;
+    bool fullWrite = true;
+    bool coloring = true;
     try {
         console.enableRaw();
         t.clear();
         int x = 0;
         int y = 0;
+        scene.toTerminal(t,1,1);
+        scene.writeView(b.view(), x,y);
+        t.flush();
+        vector<RenderUnit> diffs;
         for(;;) {
+            
+            RenderBuffer backBuffer(scene);
             scene.writeView(b.view(), x,y);
-            t.foreColor(renderColor % 8);
-            t.backColor( (renderColor+1) % 8);
+            if (coloring) {
+                t.foreColor(renderColor % 8);
+                t.backColor( (renderColor+1) % 8);
+            }
+            else {
+                t.foreDefault();
+                t.backDefault();
+            }
             ++renderColor;
-            scene.toTerminal(t,1,1);
+            
+            if (fullWrite) {
+                scene.toTerminal(t,1,1);
+            }
+            else {
+                scene.diff(backBuffer, diffs, diffThreshold);
+                scene.unitsToTerminal(t, diffs, 1, 1);
+                diffs.clear();
+            }
             t.flush();
 
             AChar buffer[16];
@@ -53,6 +75,12 @@ int main(int argc, char** argv) {
                 if (k.type == ESCAPE) {
                     return 0;
                 }
+                else if (k.type == TAB) {
+                    fullWrite = !fullWrite;
+                }
+                else if (k.type == ENTER) {
+                    coloring = !coloring;
+                }
                 else if (k.type == ARROW_RIGHT) {
                     ++x;
                 }
@@ -64,6 +92,9 @@ int main(int argc, char** argv) {
                 }
                 else if (k.type == ARROW_UP) {
                     --y;
+                }
+                else if (k.value >= '0' && k.value <= '9') {
+                    diffThreshold = k.value - '0';
                 }
             }
         }

@@ -42,7 +42,7 @@ class RenderBuffer {
     const RenderBufferView view(int left = -1, int right = -1, int top = -1, int bottom = -1) const;
 
     void toTerminal(Terminal& t, int posX, int posY);
-    void unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units);
+    void unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units, int x, int y);
 
     std::string asLine(int line) const;    
     std::string dumpToString(char emptyChar = ' ') const;

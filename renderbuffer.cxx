@@ -178,6 +178,14 @@ void RenderBuffer::toTerminal(Terminal& t, int posX, int posY) {
     }
 }
 
-void RenderBuffer::unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units) {
-    
+void RenderBuffer::unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units, int x, int y) {
+    for (auto ptr = units.cbegin(); ptr != units.cend(); ++ptr) {
+        t.placeCursor(x + ptr->left, y + ptr->top);
+        auto offset = xyOffset(ptr->left, ptr->top);
+        auto writePtr = frontBuffer.cbegin() + offset.ptr;
+        auto writeEnd = writePtr + (ptr->right - ptr->left);
+        for (;writePtr != writeEnd; ++writePtr) {
+            t.stream() << *writePtr;
+        }
+    }
 }
