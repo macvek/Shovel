@@ -495,6 +495,69 @@ void TestRenderingColoredDiffWithThreshhold() {
     assertDiff(diffs[2], 5, 7, 1);
 }
 
+void TestUnitsToTerminal() {
+    RenderBuffer b(10,1);
+    b.writeText("HELLOWORLD",0,0);
+    vector<RenderUnit> diffs;
+    RenderUnit unit;
+    unit.left = 5;
+    unit.right = 10;
+    unit.top = 0;
+
+
+    diffs.push_back(unit);
+
+    stringstream bwOut;
+    Terminal bw(bwOut);
+
+    b.unitsToTerminal(bw, diffs, 1,1);
+
+    stringstream reference;
+    Terminal ref(reference);
+    ref.placeCursor(6,1);
+    ref.stream() << "WORLD";
+
+    if (bwOut.str() != reference.str()) {
+        cerr << "Unit should produce the same output as referenced terminal.\nExpected:" << Terminal::NoEscape(reference.str()) << "\nGot:"<< Terminal::NoEscape(bwOut.str()) << endl;
+        exit(1);
+    }
+}
+
+
+void TestUnitsToTerminalColor() {
+    auto color = Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT);
+
+    RenderBuffer b(10,1);
+    b.writeText("HELLOWORLD",0,0);
+    b.writeColorLine(0,0,10,color);
+
+    vector<RenderUnit> diffs;
+    RenderUnit unit;
+    unit.left = 5;
+    unit.right = 10;
+    unit.top = 0;
+
+
+    diffs.push_back(unit);
+
+    stringstream bwOut;
+    Terminal bw(bwOut);
+
+    b.unitsToTerminal(bw, diffs, 1,1);
+
+    stringstream reference;
+    Terminal ref(reference);
+    ref.placeCursor(6,1);
+    ref.foreColor(Terminal::ToForeColor(color));
+    ref.backColor(Terminal::ToBackColor(color));
+    ref.stream() << "WORLD";
+
+    if (bwOut.str() != reference.str()) {
+        cerr << "Unit should produce the same output as referenced terminal.\nExpected:" << Terminal::NoEscape(reference.str()) << "\nGot:"<< Terminal::NoEscape(bwOut.str()) << endl;
+        exit(1);
+    }
+}
+
 
 int main() {
     TestOneLineBuffer();
@@ -517,5 +580,7 @@ int main() {
     TestVerifyColoredOutput();
     TestWriteViewWithColors();
     TestRenderingColoredDiffWithThreshhold();
+    TestUnitsToTerminal();
+    TestUnitsToTerminalColor();
     return 0;
 }
