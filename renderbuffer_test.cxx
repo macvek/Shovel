@@ -465,6 +465,36 @@ void TestWriteViewWithColors() {
     }
 }
 
+void TestRenderingColoredDiffWithThreshhold() {
+    RenderBuffer pre(10,2, ' ',true);
+    pre.writeText(
+        "HelloWorld"
+        "HelloWorld"
+    ,0,0);
+
+    RenderBuffer post(pre);
+    
+    auto red = Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT);
+    post.writeColorLine(1,0,1, red);
+    post.writeColorLine(3,0,1, red);
+    post.writeColorLine(5,0,1, red);
+    
+    post.writeColorLine(0,1,2, red);
+    post.writeColorLine(5,1,2, red);
+
+    vector<RenderUnit> diffs;
+    post.diff(pre, diffs, 2);
+
+    if (diffs.size() != 3) {
+        cerr << "Expected 3 diff, got " << diffs.size() << endl;
+        exit(1);
+    }
+
+    assertDiff(diffs[0], 1, 6, 0);
+    assertDiff(diffs[1], 0, 2, 1);
+    assertDiff(diffs[2], 5, 7, 1);
+}
+
 
 int main() {
     TestOneLineBuffer();
@@ -486,5 +516,6 @@ int main() {
     TestApplyingColor();
     TestVerifyColoredOutput();
     TestWriteViewWithColors();
+    TestRenderingColoredDiffWithThreshhold();
     return 0;
 }

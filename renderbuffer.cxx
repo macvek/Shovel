@@ -162,15 +162,16 @@ void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderUnit>& out,
         return;
     }
 
-    auto herePtr = frontBuffer.cbegin();
-    auto otherPtr = other.frontBuffer.cbegin();
+    auto idx = 0;
     RenderUnit unit;
 
     int noise = 0;
     for (int line=0;line<height; ++line) {
         int changeIdx = -1;
-        for (int i=0;i<width; ++i, ++herePtr, ++otherPtr) {
-            if (*herePtr != *otherPtr) {
+        for (int i=0;i<width; ++i, ++idx) {
+            if ( frontBuffer[idx] != other.frontBuffer[idx] || 
+                (!colorBuffer.empty() && !other.colorBuffer.empty() && colorBuffer[idx] != other.colorBuffer[idx])) {
+                
                 if (-1 == changeIdx) {
                     changeIdx = i;
                 }
