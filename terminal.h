@@ -10,7 +10,7 @@ class Terminal {
 
     public:
     Terminal(std::ostream& aOut);
-
+    static std::string NoEscape(std::string);
     enum COLOR {
         BLACK = 0,
         RED,

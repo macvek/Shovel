@@ -9,6 +9,20 @@ Terminal::Terminal(std::ostream &aOut) : out(aOut) {
 
 }
 
+std::string Terminal::NoEscape(std::string src) {
+    std::string out;
+    for (int i=0;i<src.size();i++) {
+        if (src[i] == '\x1B') {
+            out += '^';
+        }
+        else {
+            out += src[i];
+        }
+    }
+
+    return out;
+}
+
 void Terminal::reset() {
     out << "\x1B[0m";
 }

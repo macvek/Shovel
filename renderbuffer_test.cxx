@@ -1,5 +1,6 @@
 #include "renderbuffer.h"
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -360,7 +361,62 @@ void TestApplyingColor() {
             exit(1);
         }
     }
+}
 
+void TestVerifyColoredOutput() {
+    auto sample = "HelloWorld!";
+    auto first = Terminal::MakeColor(Terminal::BLUE, Terminal::YELLOW);
+    auto snd = Terminal::MakeColor(Terminal::BLACK, Terminal::WHITE);
+    auto defaultcolor = Terminal::MakeColor(Terminal::DEFAULT, Terminal::DEFAULT);
+
+    RenderBuffer base(11, 1, '|', true);
+    base.writeText(sample,0,0);
+    base.writeColorLine(0,0,5, first);
+    base.writeColorLine(0,5,5, snd);
+
+    stringstream terminalPrefix;
+    Terminal moveOnly(terminalPrefix);
+    moveOnly.placeCursor(0,0);
+
+    auto prefix = terminalPrefix.str();
+
+    stringstream colorlessOut;
+    Terminal colorless(colorlessOut);
+    base.toTerminal(colorless,0,0,false);
+    
+    auto shouldBeColorless = colorlessOut.str().substr(prefix.size());
+
+    if (shouldBeColorless != sample) {
+        cerr << "Expected colorless to be equal to sample, got:" << shouldBeColorless << endl;
+        exit(1);
+    }
+
+    stringstream colorfulPatternOut;
+    Terminal colorfulPattern(colorfulPatternOut);
+    colorfulPattern.placeCursor(0,0);
+    colorfulPattern.foreColor(Terminal::COLOR::BLUE);
+    colorfulPattern.backColor(Terminal::COLOR::YELLOW);
+    colorfulPattern.stream() << "Hello";
+    colorfulPattern.foreColor(Terminal::COLOR::BLACK);
+    colorfulPattern.backColor(Terminal::COLOR::WHITE);
+    colorfulPattern.stream() << "World";
+    colorfulPattern.foreColor(Terminal::COLOR::DEFAULT);
+    colorfulPattern.backColor(Terminal::COLOR::DEFAULT);
+    colorfulPattern.stream() << "!";
+
+    stringstream colorfulOut;
+    Terminal colorful(colorfulOut);
+    base.toTerminal(colorful, 0,0);
+
+    auto outFromPattern = colorfulPatternOut.str();
+    auto outFromColor = colorfulOut.str();
+
+    if (outFromColor != outFromPattern) {
+        cerr << "Expected predictable buffer communication with terminal, got something else ...\nEXPECTED:" << Terminal::NoEscape(outFromPattern) << "\nGOT:" << Terminal::NoEscape(outFromColor) << endl;
+        exit(1);
+    }
+
+    
 }
 
 int main() {
@@ -381,5 +437,6 @@ int main() {
     TestShouldReturnEmptyBufferForNoColor();
     TestShouldReturnNonEmptyBufferForColor();
     TestApplyingColor();
+    TestVerifyColoredOutput();
     return 0;
 }
