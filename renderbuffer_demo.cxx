@@ -24,8 +24,8 @@ int main(int argc, char** argv) {
         "                       ",
     0,0);
 
-    b.writeColorLine(0,1,23, Terminal::MakeColor(Terminal::MAGENTA, Terminal::RED));
-    b.writeColorLine(0,5,23, Terminal::MakeColor(Terminal::MAGENTA, Terminal::RED));
+    b.writeColorLine(1,1,21, Terminal::MakeColor(Terminal::MAGENTA, Terminal::RED));
+    b.writeColorLine(1,5,21, Terminal::MakeColor(Terminal::MAGENTA, Terminal::RED));
 
     RenderBuffer scene(80,24,'.',true);
 
