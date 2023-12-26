@@ -372,7 +372,7 @@ void TestVerifyColoredOutput() {
     RenderBuffer base(11, 1, '|', true);
     base.writeText(sample,0,0);
     base.writeColorLine(0,0,5, first);
-    base.writeColorLine(0,5,5, snd);
+    base.writeColorLine(5,0,5, snd);
 
     stringstream terminalPrefix;
     Terminal moveOnly(terminalPrefix);
