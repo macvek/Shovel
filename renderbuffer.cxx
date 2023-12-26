@@ -198,7 +198,7 @@ void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderUnit>& out,
     }
 }
 
-void RenderBuffer::toTerminal(Terminal& t, int posX, int posY, bool useColor) {
+void RenderBuffer::toTerminal(Terminal& t, int terminalPosX, int terminalPosY, bool useColor) {
     TermColor currentColor = -1;
     
     Terminal::COLOR foreColor = Terminal::UNKNOWN;
@@ -206,7 +206,7 @@ void RenderBuffer::toTerminal(Terminal& t, int posX, int posY, bool useColor) {
 
     int offset = 0;
     for (int line = 0; line<height; line++) {
-        t.placeCursor(posX,posY+line);
+        t.placeCursor(terminalPosX,terminalPosY+line);
         for (int col = 0; col<width; ++col, ++offset) {
             if (useColor && !colorBuffer.empty() && currentColor != colorBuffer[offset]) {
                 currentColor = colorBuffer[offset];

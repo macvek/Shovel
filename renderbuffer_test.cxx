@@ -376,13 +376,13 @@ void TestVerifyColoredOutput() {
 
     stringstream terminalPrefix;
     Terminal moveOnly(terminalPrefix);
-    moveOnly.placeCursor(0,0);
+    moveOnly.placeCursor(1,1);
 
     auto prefix = terminalPrefix.str();
 
     stringstream colorlessOut;
     Terminal colorless(colorlessOut);
-    base.toTerminal(colorless,0,0,false);
+    base.toTerminal(colorless,1,1,false);
     
     auto shouldBeColorless = colorlessOut.str().substr(prefix.size());
 
@@ -393,7 +393,7 @@ void TestVerifyColoredOutput() {
 
     stringstream colorfulPatternOut;
     Terminal colorfulPattern(colorfulPatternOut);
-    colorfulPattern.placeCursor(0,0);
+    colorfulPattern.placeCursor(1,1);
     colorfulPattern.foreColor(Terminal::COLOR::BLUE);
     colorfulPattern.backColor(Terminal::COLOR::YELLOW);
     colorfulPattern.stream() << "Hello";
@@ -406,7 +406,7 @@ void TestVerifyColoredOutput() {
 
     stringstream colorfulOut;
     Terminal colorful(colorfulOut);
-    base.toTerminal(colorful, 0,0);
+    base.toTerminal(colorful, 1,1);
 
     auto outFromPattern = colorfulPatternOut.str();
     auto outFromColor = colorfulOut.str();

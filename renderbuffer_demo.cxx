@@ -50,12 +50,13 @@ int main(int argc, char** argv) {
         t.clear();
         int x = 0;
         int y = 0;
-        scene.toTerminal(t,1,1);
+        t.placeCursor(1,1);
+        t.stream() << "TOGGLES: TAB(full write) / ENTER(coloring) / 0-9(diff threshold)";
+        scene.toTerminal(t,1,2);
         scene.writeView(b.view(), x,y);
         t.flush();
         vector<RenderUnit> diffs;
         for(;;) {
-            
             RenderBuffer backBuffer(scene);
             scene.writeView(b.view(), x,y);
             if (coloring) {
@@ -69,11 +70,11 @@ int main(int argc, char** argv) {
             ++renderColor;
             
             if (fullWrite) {
-                scene.toTerminal(t,1,1,!coloring);
+                scene.toTerminal(t,1,2,!coloring);
             }
             else {
                 scene.diff(backBuffer, diffs, diffThreshold);
-                scene.unitsToTerminal(t, diffs, 1, 1);
+                scene.unitsToTerminal(t, diffs, 1, 2);
                 diffs.clear();
             }
             t.flush();
