@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
             }
             else {
                 scene.diff(backBuffer, diffs, diffThreshold);
-                scene.unitsToTerminal(t, diffs, 1, 2);
+                scene.unitsToTerminal(t, diffs, 1, 2, !coloring);
                 diffs.clear();
             }
             t.flush();
