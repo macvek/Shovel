@@ -3,6 +3,14 @@
 #include <sstream>
 
 using namespace std;
+std::string DisplayColorCode(TermColor src) {
+        auto fore = Terminal::ToForeColor(src);
+        auto back = Terminal::ToBackColor(src);
+
+        stringstream s;
+        s << "(" << fore << "," << back << ")";
+        return s.str();
+}
 
 void assertBuffer(RenderBuffer &b, string expectedState) {
     string currentState = b.dumpToString();
@@ -415,9 +423,48 @@ void TestVerifyColoredOutput() {
         cerr << "Expected predictable buffer communication with terminal, got something else ...\nEXPECTED:" << Terminal::NoEscape(outFromPattern) << "\nGOT:" << Terminal::NoEscape(outFromColor) << endl;
         exit(1);
     }
-
-    
 }
+
+void TestWriteViewWithColors() {
+    RenderBuffer scene(10,2,' ',true);
+    RenderBuffer noColor(10,1);
+    RenderBuffer withColor(10,1, 'X', true);
+
+    noColor.writeText("HelloWorld",0,0);
+    withColor.writeText("HelloWorld",0,0);
+    
+    auto defaultColor = Terminal::MakeColor(Terminal::DEFAULT, Terminal::DEFAULT);
+    auto color = Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT);
+    withColor.writeColorLine(0,0,10,color);
+
+    scene.writeView(noColor.view(),0,0);
+    scene.writeView(withColor.view(),0,1);
+
+    if ("HelloWorld" != scene.asLine(0)) {
+        cerr << "Expected HelloWorld, got: " << scene.asLine(0) << " at line 0";
+    }
+
+    if ("HelloWorld" != scene.asLine(1)) {
+        cerr << "Expected HelloWorld, got: " << scene.asLine(1) << " at line 1";
+    }
+
+    auto color0 = scene.asColorLine(0);
+    for (int i=0;i<10;++i) {
+        if (color0[i] != defaultColor) {
+            cerr << "Expected first line to have default color, got: " << color0[i] << ", at idx: " << i << endl;
+            exit(1);
+        }
+    }
+
+    auto color1 = scene.asColorLine(1);
+    for (int i=0;i<10;++i) {
+        if (color1[i] != color) {
+            cerr << "Expected snd line to have "<<DisplayColorCode(color)<<" color, got: " << DisplayColorCode(color1[i]) << ", at idx: " << i << endl;
+            exit(1);
+        }
+    }
+}
+
 
 int main() {
     TestOneLineBuffer();
@@ -438,5 +485,6 @@ int main() {
     TestShouldReturnNonEmptyBufferForColor();
     TestApplyingColor();
     TestVerifyColoredOutput();
+    TestWriteViewWithColors();
     return 0;
 }
