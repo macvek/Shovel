@@ -56,19 +56,21 @@ void RenderBuffer::writeView(const RenderBufferView& view, int x, int y) {
 
     for (int l=0; l<lines; ++l) {
         auto offsetInView = view.from.xyOffset(paddX.srcOffset, paddY.srcOffset + l);
-        auto srcStart = view.from.frontBuffer.begin() + offsetInView.ptr;
-        auto srcEnd = srcStart + lineLength;
+
+        auto viewIdx = offsetInView.ptr;
+        auto viewEnd = viewIdx + lineLength;
 
         auto offsetInHere = xyOffset(paddX.here, paddY.here + l);
-        auto hereStart = frontBuffer.begin() + offsetInHere.ptr;
+        auto hereIdx = offsetInHere.ptr;
 
-        for (; srcStart < srcEnd; ++srcStart, ++hereStart) {
-            if (*srcStart != view.from.transparentChar) {
-                *hereStart = *srcStart;
+        for (; viewIdx < viewEnd; ++viewIdx, ++hereIdx) {
+            auto valueToCopy = view.from.frontBuffer[viewIdx];
+            
+            if (valueToCopy != view.from.transparentChar) {
+                frontBuffer[hereIdx] = valueToCopy;
 
                 if (!colorBuffer.empty() && !view.from.colorBuffer.empty()) {
-                    int offset = hereStart - frontBuffer.begin();
-                    colorBuffer[offset] = view.from.colorBuffer[offset];
+                    colorBuffer[hereIdx] = view.from.colorBuffer[viewIdx];
                 }
             }
         }
