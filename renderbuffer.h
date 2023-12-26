@@ -46,8 +46,11 @@ class RenderBuffer {
     void toTerminal(Terminal& t, int posX, int posY, bool useColor=true);
     void unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units, int x, int y);
 
-    std::string asLine(int line) const;    
+    std::string asLine(int line) const;
     std::string dumpToString(char emptyChar = ' ') const;
+
+    std::vector<TermColor> asColorLine(int line) const;
+    std::string dumpToColoredString(int line) const;
     
     inline int getWidth() const {
         return width;

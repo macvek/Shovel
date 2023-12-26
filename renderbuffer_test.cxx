@@ -314,6 +314,55 @@ void TestUsingTransparentLayer() {
     assertBuffer(base, "XelloWorlX\n");
 }
 
+void TestShouldReturnEmptyBufferForNoColor() {
+    RenderBuffer base(10,1);
+    base.writeText("          " ,0,0);
+    if (!base.asColorLine(0).empty()) {
+        cerr << "Got non empty color buffer for non-color RenderBuffer" << endl;
+        exit(1);
+    }
+}
+
+void TestShouldReturnNonEmptyBufferForColor() {
+    RenderBuffer base(10,1,' ',true);
+    if (base.asColorLine(0).empty()) {
+        cerr << "Got empty color buffer for color RenderBuffer" << endl;
+        exit(1);
+    }
+}
+
+void TestApplyingColor() {
+    RenderBuffer base(10,1,' ', true);
+    
+    auto first = Terminal::MakeColor(Terminal::MAGENTA, Terminal::RED);
+    auto snd = Terminal::MakeColor(Terminal::RED, Terminal::MAGENTA);
+
+    base.writeColorLine(0,0,5, first);
+    base.writeColorLine(5,0,5, snd);
+
+    auto line = base.asColorLine(0);
+
+    if (line.size() != 10) {
+        cerr << "Expected line to have size 10, got " << line.size() << endl;
+        exit(1);
+    }
+
+    for (int i=0;i<5;++i) {
+        if (line[i] != first) {
+            cerr << "Expected first color ("<< first << ") at idx " << i << ", got color: " << line[i] << endl;
+            exit(1);
+        }
+    }
+
+    for (int i=5;i<10;++i) {
+        if (line[i] != snd) {
+            cerr << "Expected snd color ("<< snd << ") at idx " << i << ", got color: " << line[i] << endl;
+            exit(1);
+        }
+    }
+
+}
+
 int main() {
     TestOneLineBuffer();
     TestWriteMultipleLines();
@@ -329,5 +378,8 @@ int main() {
     TestRenderingDiff();
     TestRenderingDiffWithThreshhold();
     TestUsingTransparentLayer();
+    TestShouldReturnEmptyBufferForNoColor();
+    TestShouldReturnNonEmptyBufferForColor();
+    TestApplyingColor();
     return 0;
 }

@@ -111,12 +111,33 @@ void RenderBuffer::writeText(std::string text, int x, int y) {
 void RenderBuffer::writeColorLine(int x, int y, int len, TermColor color) {
     if (colorBuffer.empty()) return;    
     auto offset = xyOffset(x,y);
-    for (auto begin = colorBuffer.begin()+offset.ptr; begin < colorBuffer.begin()+len; ++begin ) *begin = color;
+    auto here = colorBuffer.begin()+offset.ptr;
+
+    auto end = here + len < colorBuffer.end() ? here + len : colorBuffer.end();
+   
+    for (; here < end; ++here ) *here = color;
 }
 
 std::string RenderBuffer::asLine(int line) const {
     auto offset = xyOffset(0, line);
     return std::string(frontBuffer.data() + offset.ptr, offset.charsInLine);
+}
+
+std::vector<TermColor> RenderBuffer::asColorLine(int line) const {
+    std::vector<TermColor> ret;
+    if (!colorBuffer.empty()) {
+        auto offset = xyOffset(0, line);
+        auto here = colorBuffer.cbegin() + offset.ptr;
+        auto end = here + offset.charsInLine;
+        for ( ;here<end; ++here) {
+            ret.push_back(*here);
+        }
+    }
+    return ret;
+}
+
+std::string RenderBuffer::dumpToColoredString(int line) const {
+    return "";
 }
 
 std::string RenderBuffer::dumpToString(char emptyChar) const {
