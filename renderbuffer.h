@@ -32,6 +32,7 @@ class RenderBuffer {
     const int width;
     const int height;
     XYOffset xyOffset(int x, int y) const;
+    TermColor fragmentToTerminal(Terminal &t, int terminalX, int terminalY, int offset, int offsetEnd, TermColor currentColor, bool useColor);
 
     char transparentChar;
     public:
@@ -44,7 +45,7 @@ class RenderBuffer {
     const RenderBufferView view(int left = -1, int right = -1, int top = -1, int bottom = -1) const;
 
     void toTerminal(Terminal& t, int posX, int posY, bool useColor=true);
-    void unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units, int x, int y);
+    void unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units, int x, int y, bool useColor = true);
 
     std::string asLine(int line) const;
     std::string dumpToString(char emptyChar = ' ') const;

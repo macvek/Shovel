@@ -31,7 +31,7 @@ class Terminal {
         BRIGHT_CYAN,
         BRIGHT_WHITE,
 
-        UNKNOWN = -1
+        UNKNOWN = 255
     };
 
     static inline TermColor MakeColor(COLOR foreground, COLOR background) {

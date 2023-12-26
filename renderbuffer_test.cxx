@@ -518,16 +518,15 @@ void TestUnitsToTerminal() {
     ref.stream() << "WORLD";
 
     if (bwOut.str() != reference.str()) {
-        cerr << "Unit should produce the same output as referenced terminal.\nExpected:" << Terminal::NoEscape(reference.str()) << "\nGot:"<< Terminal::NoEscape(bwOut.str()) << endl;
+        cerr << __FUNCTION__ << " Unit should produce the same output as referenced terminal.\nExpected:" << Terminal::NoEscape(reference.str()) << "\nGot:"<< Terminal::NoEscape(bwOut.str()) << endl;
         exit(1);
     }
 }
 
-
 void TestUnitsToTerminalColor() {
-    auto color = Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT);
+    auto color = Terminal::MakeColor(Terminal::UNKNOWN, Terminal::UNKNOWN);
 
-    RenderBuffer b(10,1);
+    RenderBuffer b(10,1,'.',true);
     b.writeText("HELLOWORLD",0,0);
     b.writeColorLine(0,0,10,color);
 
@@ -536,7 +535,6 @@ void TestUnitsToTerminalColor() {
     unit.left = 5;
     unit.right = 10;
     unit.top = 0;
-
 
     diffs.push_back(unit);
 
@@ -553,7 +551,7 @@ void TestUnitsToTerminalColor() {
     ref.stream() << "WORLD";
 
     if (bwOut.str() != reference.str()) {
-        cerr << "Unit should produce the same output as referenced terminal.\nExpected:" << Terminal::NoEscape(reference.str()) << "\nGot:"<< Terminal::NoEscape(bwOut.str()) << endl;
+        cerr << __FUNCTION__ << " Unit should produce the same output as referenced terminal.\nExpected:" << Terminal::NoEscape(reference.str()) << "\nGot:"<< Terminal::NoEscape(bwOut.str()) << endl;
         exit(1);
     }
 }

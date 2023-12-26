@@ -202,42 +202,47 @@ void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderUnit>& out,
 }
 
 void RenderBuffer::toTerminal(Terminal& t, int terminalPosX, int terminalPosY, bool useColor) {
-    TermColor currentColor = -1;
+    TermColor currentColor = Terminal::MakeColor(Terminal::DEFAULT, Terminal::DEFAULT);
     
-    Terminal::COLOR foreColor = Terminal::UNKNOWN;
-    Terminal::COLOR backColor = Terminal::UNKNOWN;
-
     int offset = 0;
     for (int line = 0; line<height; line++) {
-        t.placeCursor(terminalPosX,terminalPosY+line);
-        for (int col = 0; col<width; ++col, ++offset) {
-            if (useColor && !colorBuffer.empty() && currentColor != colorBuffer[offset]) {
-                currentColor = colorBuffer[offset];
-                Terminal::COLOR loadedColor = Terminal::ToForeColor(currentColor);
-                if (loadedColor != foreColor) {
-                    foreColor = loadedColor;
-                    t.foreColor(foreColor);
-                }
-
-                loadedColor = Terminal::ToBackColor(currentColor);
-                if (loadedColor != backColor) {
-                    backColor = loadedColor;
-                    t.backColor(backColor);
-                }
-            }
-            t.stream() << frontBuffer[offset];
-        }
+        currentColor = fragmentToTerminal(t, terminalPosX, terminalPosY+line, offset, offset+width, currentColor, useColor);
+        offset += width;
     }
 }
 
-void RenderBuffer::unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units, int x, int y) {
+void RenderBuffer::unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units, int x, int y, bool useColor) {
+    TermColor currentColor = Terminal::MakeColor(Terminal::DEFAULT, Terminal::DEFAULT);
     for (auto ptr = units.cbegin(); ptr != units.cend(); ++ptr) {
-        t.placeCursor(x + ptr->left, y + ptr->top);
         auto offset = xyOffset(ptr->left, ptr->top);
-        auto writePtr = frontBuffer.cbegin() + offset.ptr;
-        auto writeEnd = writePtr + (ptr->right - ptr->left);
-        for (;writePtr != writeEnd; ++writePtr) {
-            t.stream() << *writePtr;
-        }
+        auto offsetEnd = offset.ptr + ptr->right - ptr->left;
+        currentColor = fragmentToTerminal(t, x + ptr->left, y + ptr->top, offset.ptr, offsetEnd, currentColor, useColor);
     }
+}
+
+TermColor RenderBuffer::fragmentToTerminal(Terminal &t, int terminalX, int terminalY, int offset, int offsetEnd, TermColor currentColor, bool useColor) {
+    Terminal::COLOR foreColor = Terminal::ToForeColor(currentColor);
+    Terminal::COLOR backColor = Terminal::ToBackColor(currentColor);
+    
+    t.placeCursor(terminalX,terminalY);
+
+    for (;offset < offsetEnd ; ++offset) {
+        if (useColor && !colorBuffer.empty() && currentColor != colorBuffer[offset]) {
+            currentColor = colorBuffer[offset];
+            Terminal::COLOR loadedColor = Terminal::ToForeColor(currentColor);
+            if (loadedColor != foreColor) {
+                foreColor = loadedColor;
+                t.foreColor(foreColor);
+            }
+
+            loadedColor = Terminal::ToBackColor(currentColor);
+            if (loadedColor != backColor) {
+                backColor = loadedColor;
+                t.backColor(backColor);
+            }
+        }
+        t.stream() << frontBuffer[offset];
+    }
+
+    return currentColor;
 }
