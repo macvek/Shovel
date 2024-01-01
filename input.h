@@ -1,20 +1,16 @@
 #pragma once
 
-#include <vector>
-
-struct KeyPressed {
-    char c;
-};
+#include <queue>
+#include "inputdecoder.h"
 
 class Input {
-    int key;
-    char buffer[8];
-    std::vector<KeyPressed> keyPressed;
+    AChar buffer[16];
+    std::queue<Key> keyPressed;
+    InputDecoder decoder;
 
     void decodeBuffer(int);
 
     public:
-    static const int KEY_FAILED = -1;
     void waitFor();
-    int getKey();
+    Key getKey();
 };

@@ -22,20 +22,19 @@ int main(int argc, char** argv) {
 
         for (;;) {
             input.waitFor();
-            char what = input.getKey();
-            printf("Got 0x%x;%i;%c\r\n", what,what,what);
+            Key what = input.getKey();
 
-            if (what == 'x') {
+            if (what.value == 'x') {
                 cout << "I'm done" << ENDLINE;
                 break;
             } 
-            else if (what == 's') {
+            else if (what.value == 's') {
                 timer.stop();
             } 
-            else if (what == 'r') {
+            else if (what.value == 'r') {
                 timer.start();
             } 
-            else if (what == 'E') {
+            else if (what.value == 'E') {
                 Log::error() << "Call me inside a method" << ENDLINE;
                 Log::panicOnError();
                 cout << "No error" << ENDLINE;
