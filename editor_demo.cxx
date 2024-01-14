@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "input.h"
 #include "console.h"
-#include "inputdecoder.h"
 #include "log.h"
 #include "output.h"
 #include "editor.h"
