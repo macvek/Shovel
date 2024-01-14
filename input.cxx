@@ -1,13 +1,20 @@
+#ifdef BUILDONWINDOWS
+
+#else
 #include <unistd.h>
+#endif
+
 #include "input.h"
 #include "output.h"
-#include <stdio.h>
 
 void Input::waitFor() {
     if (!keyPressed.empty()) {
         return;
     }
     
+#ifdef BUILDONWINDOWS
+
+#else
     int ret = read(STDIN_FILENO, buffer, 8);
     if (ret <= 0) {
         Key k;
@@ -19,6 +26,7 @@ void Input::waitFor() {
     else {
         decodeBuffer(ret);
     }
+#endif
 }
 
 Key Input::getKey() {

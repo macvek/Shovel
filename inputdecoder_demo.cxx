@@ -1,6 +1,9 @@
 #include <stdio.h>
-#include <unistd.h>
+#ifdef BUILDONWINDOWS
 
+#else
+#include <unistd.h>
+#endif
 #include "console.h"
 #include "inputdecoder.h"
 #include "log.h"
@@ -17,7 +20,11 @@ int main(int argc, char** argv) {
 
         for(;;) {
             AChar buffer[16];
+#ifdef BUILDONWINDOWS
+            int ret = 0;
+#else
             int ret = read(STDIN_FILENO, buffer, 8);
+#endif
             if (ret <= 0) {
                 return 0;
             }

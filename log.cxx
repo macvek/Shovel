@@ -1,4 +1,9 @@
+#ifdef BUILDONWINDOWS
+
+#else
 #include <execinfo.h> 
+#endif
+
 #include <errno.h>
 #include <string.h>
 
@@ -18,6 +23,9 @@ std::ostream& Log::warn() {
 }
 
 std::ostream& Log::error() {
+#ifdef BUILDONWINDOWS
+
+#else
     int nbOfTraces = backtrace((void**)&backtraceBuffer, FRAMESCOUNT);
     char **strings = backtrace_symbols(backtraceBuffer, nbOfTraces);
     if (strings == nullptr) {
@@ -30,7 +38,8 @@ std::ostream& Log::error() {
         errorStream << ENDLINE;
         free(strings);
     }
-    
+
+#endif
     return errorStream;
 }
 

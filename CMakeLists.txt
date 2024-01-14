@@ -6,6 +6,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU,LCC>")
 set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
 
+IF (WIN32)
+  add_definitions(-DBUILDONWINDOWS)
+ENDIF()
+
 add_library(shared_compiler_flags INTERFACE)
 target_compile_features(shared_compiler_flags INTERFACE cxx_std_11)
 target_compile_options(shared_compiler_flags INTERFACE
