@@ -87,9 +87,15 @@ int Editor::findLineStart() const {
 }
 
 int Editor::findLineStart(int from) const {
-    for (auto here = text.begin() + boundCursor(from); here-- > text.begin();) { 
+    auto here = text.begin() + boundCursor(from);
+    for (;;) {
+        --here;
         if ( *here == '\n') {
             return (here - text.begin()) + 1;
+        }
+
+        if (here == text.begin()) {
+            break;
         }
     }
 
