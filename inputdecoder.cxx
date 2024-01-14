@@ -188,12 +188,21 @@ static int decodeCharSequence(AChar* buffer, AChar* limit, Key& k) {
 }
 
 #ifdef BUILDONWINDOWS
+
 static KeyType checkType(KEY_EVENT_RECORD* of) {
-    if (of->uChar.AsciiChar >= STANDARD_BEGIN && of->uChar.AsciiChar <= STANDARD_END && of->dwControlKeyState & (LEFT_ALT_PRESSED | LEFT_CTRL_PRESSED | RIGHT_ALT_PRESSED | RIGHT_CTRL_PRESSED)) {
+    if (of->uChar.AsciiChar >= STANDARD_MODIFIED_START && of->uChar.AsciiChar < STANDARD_MODIFIED_END && of->uChar.AsciiChar != HEX_ENTER && of->uChar.AsciiChar != HEX_LF && of->uChar.AsciiChar != HEX_TAB
+            && of->wVirtualKeyCode >= 0x30 && of->wVirtualKeyCode <= 0x5A // POOL of keyboard keys from 0 to Z
+        ) {
         return STANDARD_MODIFIED;
     }
+    
     else if (of->uChar.AsciiChar >= STANDARD_BEGIN && of->uChar.AsciiChar <= STANDARD_END) {
-        return STANDARD;
+        if (of->dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) {
+            return STANDARD_MODIFIED;
+        }
+        else {
+            return STANDARD;
+        }
     }
     else {
         return SPECIALS;
@@ -219,6 +228,7 @@ void InputDecoder::feed(INPUT_RECORD* ptr, int bufferSize) {
         
         KEY_EVENT_RECORD* key = &here->Event.KeyEvent;
         KeyType type = checkType(key);
+
         if (type == STANDARD) {
             k.value = key->uChar.AsciiChar;
             k.type = STANDARD;
@@ -228,7 +238,15 @@ void InputDecoder::feed(INPUT_RECORD* ptr, int bufferSize) {
         else if (type == STANDARD_MODIFIED) {
             k.value = key->uChar.AsciiChar;
             k.type = STANDARD_MODIFIED;
-            if (key->dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) {
+            
+            if (k.value >= STANDARD_MODIFIED_START && k.value < STANDARD_MODIFIED_END) {
+                if (k.value == 0) {
+                    k.value = ' ';
+                }
+                else {
+                    k.value = k.value + STANDARD_MODIFIED_OFFSET;
+                }
+                k.type = STANDARD_MODIFIED;
                 k.modifier = CTRL;
             }
             else if (key->dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) {
@@ -237,6 +255,7 @@ void InputDecoder::feed(INPUT_RECORD* ptr, int bufferSize) {
             else {
                 k.modifier = NONE;
             }
+
             queue.push(k);
         }
         else if (type == SPECIALS) {
@@ -296,6 +315,7 @@ void InputDecoder::feed(INPUT_RECORD* ptr, int bufferSize) {
 }
 
 #else
+
 static KeyType checkType(AChar* of) {
     if (*of >= STANDARD_MODIFIED_START && *of < STANDARD_MODIFIED_END && *of != HEX_ENTER && *of != HEX_LF && *of != HEX_TAB) {
         return STANDARD_MODIFIED;
