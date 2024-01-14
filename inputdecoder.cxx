@@ -157,19 +157,7 @@ std::string Key::modifierName() {
     return "UnknownModifier";
 }
 
-static KeyType checkType(AChar *of) {
-    if (*of >= STANDARD_MODIFIED_START && *of < STANDARD_MODIFIED_END && *of != HEX_ENTER && *of != HEX_LF && *of != HEX_TAB) {
-        return STANDARD_MODIFIED;
-    }
-    else if (*of >= STANDARD_BEGIN && *of <= STANDARD_END) {
-        return STANDARD;
-    }
-    else {
-        return SPECIALS;
-    }
-}
-
-static int asSpecial(Key& k, KeyType t, Modifier m,  int ret) {
+static int asSpecial(Key& k, KeyType t, Modifier m, int ret) {
     k.type = t;
     k.value = '~';
     k.modifier = m;
@@ -200,11 +188,126 @@ static int decodeCharSequence(AChar* buffer, AChar* limit, Key& k) {
 }
 
 #ifdef BUILDONWINDOWS
-void InputDecoder::feed(INPUT_RECORD* ptr, int bufferSize) {
+static KeyType checkType(KEY_EVENT_RECORD* of) {
+    if (of->uChar.AsciiChar >= STANDARD_BEGIN && of->uChar.AsciiChar <= STANDARD_END && of->dwControlKeyState & (LEFT_ALT_PRESSED | LEFT_CTRL_PRESSED | RIGHT_ALT_PRESSED | RIGHT_CTRL_PRESSED)) {
+        return STANDARD_MODIFIED;
+    }
+    else if (of->uChar.AsciiChar >= STANDARD_BEGIN && of->uChar.AsciiChar <= STANDARD_END) {
+        return STANDARD;
+    }
+    else {
+        return SPECIALS;
+    }
+}
 
+static bool shouldDiscardEvent(INPUT_RECORD* ptr) {
+    if (ptr->EventType != KEY_EVENT) return true;
+    KEY_EVENT_RECORD& key = ptr->Event.KeyEvent;
+    
+    if (false == key.bKeyDown) return true;
+
+    return false;
+}
+
+void InputDecoder::feed(INPUT_RECORD* ptr, int bufferSize) {
+    Key k = {};
+    for (int i = 0; i < bufferSize; i++) {
+        INPUT_RECORD* here = ptr + i;
+        if (shouldDiscardEvent(here)) {
+            continue;
+        }
+        
+        KEY_EVENT_RECORD* key = &here->Event.KeyEvent;
+        KeyType type = checkType(key);
+        if (type == STANDARD) {
+            k.value = key->uChar.AsciiChar;
+            k.type = STANDARD;
+            k.modifier = NONE;
+            queue.push(k);
+        }
+        else if (type == STANDARD_MODIFIED) {
+            k.value = key->uChar.AsciiChar;
+            k.type = STANDARD_MODIFIED;
+            if (key->dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) {
+                k.modifier = CTRL;
+            }
+            else if (key->dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) {
+                k.modifier = META;
+            }
+            else {
+                k.modifier = NONE;
+            }
+            queue.push(k);
+        }
+        else if (type == SPECIALS) {
+            k.value = '?';
+            if (key->dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) {
+                k.modifier = CTRL;
+            }
+            else if (key->dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) {
+                k.modifier = META;
+            }
+            else {
+                k.modifier = NONE;
+            }
+
+            if (false);
+            else if (key->wVirtualKeyCode == VK_RETURN) k.type = ENTER;
+            else if (key->wVirtualKeyCode == VK_TAB) k.type = TAB;
+            else if (key->wVirtualKeyCode == VK_ESCAPE) k.type = ESCAPE;
+            else if (key->wVirtualKeyCode == VK_BACK) k.type = BACKSPACE;
+                
+            else if (key->wVirtualKeyCode == VK_UP) k.type = ARROW_UP;
+            else if (key->wVirtualKeyCode == VK_DOWN) k.type = ARROW_DOWN;
+            else if (key->wVirtualKeyCode == VK_RIGHT) k.type = ARROW_RIGHT;
+            else if (key->wVirtualKeyCode == VK_LEFT) k.type = ARROW_LEFT;
+                
+            else if (key->wVirtualKeyCode == VK_END) k.type = END;
+            else if (key->wVirtualKeyCode == VK_HOME) k.type = HOME;
+                
+            else if (key->wVirtualKeyCode == VK_F1) k.type = F1;
+            else if (key->wVirtualKeyCode == VK_F2) k.type = F2;
+            else if (key->wVirtualKeyCode == VK_F3) k.type = F3;
+            else if (key->wVirtualKeyCode == VK_F4) k.type = F4;
+                
+            else if (key->wVirtualKeyCode == VK_F5) k.type = F5;
+            else if (key->wVirtualKeyCode == VK_F6) k.type = F6;
+            else if (key->wVirtualKeyCode == VK_F7) k.type = F7;
+            else if (key->wVirtualKeyCode == VK_F8) k.type = F8;
+            else if (key->wVirtualKeyCode == VK_F9) k.type = F9;
+            else if (key->wVirtualKeyCode == VK_F10) k.type = F10;
+            else if (key->wVirtualKeyCode == VK_F11) k.type = F11;
+            else if (key->wVirtualKeyCode == VK_F12) k.type = F12;
+
+            else if (key->wVirtualKeyCode == VK_INSERT) k.type = INSERT;
+            else if (key->wVirtualKeyCode == VK_DELETE) k.type = DELETE;
+            else if (key->wVirtualKeyCode == VK_PRIOR) k.type = PAGEUP;
+            else if (key->wVirtualKeyCode == VK_NEXT) k.type = PAGEDOWN;
+
+            else {
+                k.type = ERROR;
+            }
+
+            if (k.type != ERROR) {
+                queue.push(k);
+            }
+        }
+    }
 }
 
 #else
+static KeyType checkType(AChar* of) {
+    if (*of >= STANDARD_MODIFIED_START && *of < STANDARD_MODIFIED_END && *of != HEX_ENTER && *of != HEX_LF && *of != HEX_TAB) {
+        return STANDARD_MODIFIED;
+    }
+    else if (*of >= STANDARD_BEGIN && *of <= STANDARD_END) {
+        return STANDARD;
+    }
+    else {
+        return SPECIALS;
+    }
+}
+
 void InputDecoder::feed(AChar* ptr, int bufferSize) {
     AChar *end = ptr+bufferSize;
     Key k = {};

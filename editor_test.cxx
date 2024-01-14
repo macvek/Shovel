@@ -1,13 +1,28 @@
 #include <iostream>
 #include "editor.h"
 
+#ifdef BUILDONWINDOWS
+#include "buildonwindows.h"
+#endif
+
 using namespace std;
 
 #define ERR cerr << __FUNCTION__ << " " 
 
 void feedEditor(std::string input, Editor &e) {
     InputDecoder d;
-    d.feed( (AChar*)input.c_str(),  input.length());
+#ifdef BUILDONWINDOWS
+    INPUT_RECORD rec = {};
+    rec.EventType = KEY_EVENT;
+    rec.Event.KeyEvent.bKeyDown = 1;
+    for (int i = 0; i < input.length(); ++i) {
+        rec.Event.KeyEvent.uChar.AsciiChar = input[i];
+        d.feed(&rec, 1);
+    }
+#else 
+    d.feed((AChar*)input.c_str(), input.length());
+#endif
+    
     while(d.canLoad()) {
         e.consume(d.load());
     }
@@ -60,8 +75,9 @@ void TestConsumeSampleInput() {
     Editor e;
     feedEditor("HelloWorld", e);
     
-    if ("HelloWorld" != e.getText()) {
-        ERR << "Editor should return HelloWorld" << endl;
+    auto text = e.getText();
+    if ("HelloWorld" != text) {
+        ERR << "Editor should return HelloWorld, got " << text << endl;
         exit(1);
     }
 }

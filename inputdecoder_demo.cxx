@@ -19,10 +19,15 @@ int main(int argc, char** argv) {
         console.enableRaw();
 
         for(;;) {
-            AChar buffer[16];
 #ifdef BUILDONWINDOWS
-            int ret = 0;
+            DWORD readCount;
+            INPUT_RECORD buffer[64];
+            int ret = ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), buffer, 64, &readCount);
+            if (ret == TRUE) {
+                ret = readCount;
+            }
 #else
+            AChar buffer[8];
             int ret = read(STDIN_FILENO, buffer, 8);
 #endif
             if (ret <= 0) {
