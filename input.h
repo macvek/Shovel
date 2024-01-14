@@ -3,8 +3,16 @@
 #include <queue>
 #include "inputdecoder.h"
 
+#ifdef BUILDONWINDOWS
+#include "buildonwindows.h"
+#endif
+
 class Input {
-    AChar buffer[16];
+#ifdef BUILDONWINDOWS
+    INPUT_RECORD buffer[8];
+#else
+    AChar buffer[8];
+#endif
     std::queue<Key> keyPressed;
     InputDecoder decoder;
 

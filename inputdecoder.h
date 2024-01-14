@@ -3,6 +3,9 @@
 #include <queue>
 #include <string>
 
+#ifdef BUILDONWINDOWS
+#include "buildonwindows.h"
+#endif
 typedef char AChar;
 
 enum KeyType {
@@ -64,7 +67,11 @@ class InputDecoder {
     std::queue<Key> queue;
 
     public:
+#ifdef BUILDONWINDOWS
+    void feed(INPUT_RECORD* buffer, int size);
+#else 
     void feed(AChar* buffer, int size);
+#endif
     bool canLoad();
     Key load();
 };

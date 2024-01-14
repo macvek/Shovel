@@ -1,12 +1,20 @@
 #pragma once
 #include <iostream>
 
+#ifdef BUILDONWINDOWS
+#include "buildonwindows.h"
+#endif
+
 typedef unsigned short TermColor;
 
 class Terminal {
     std::ostream &out;
     int calculatedX;
     int calculatedY;
+
+#ifdef BUILDONWINDOWS
+    DWORD initialConsoleMode;
+#endif
 
     public:
     Terminal(std::ostream& aOut);

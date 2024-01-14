@@ -1,12 +1,24 @@
 #include "terminal.h"
 #include <iostream>
 
+#ifdef BUILDONWINDOWS
+#include "buildonwindows.h"
+#endif
+
+
 static inline std::string CSI() {
     return "\x1B[";
 }
 
-Terminal::Terminal(std::ostream &aOut) : out(aOut) {
+Terminal::Terminal(std::ostream &aOut) : out(aOut), calculatedX(1), calculatedY(1) {
+#ifdef BUILDONWINDOWS
+    HANDLE outHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (FALSE == GetConsoleMode(outHandle, &initialConsoleMode)) {
+        aOut << "!! Failed on GetConsoleMode OUTPUT !!";
+    }
 
+    SetConsoleMode(outHandle, initialConsoleMode | ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+#endif
 }
 
 std::string Terminal::NoEscape(std::string src) {

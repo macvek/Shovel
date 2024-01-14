@@ -199,6 +199,12 @@ static int decodeCharSequence(AChar* buffer, AChar* limit, Key& k) {
     return 1;
 }
 
+#ifdef BUILDONWINDOWS
+void InputDecoder::feed(INPUT_RECORD* ptr, int bufferSize) {
+
+}
+
+#else
 void InputDecoder::feed(AChar* ptr, int bufferSize) {
     AChar *end = ptr+bufferSize;
     Key k = {};
@@ -242,6 +248,7 @@ void InputDecoder::feed(AChar* ptr, int bufferSize) {
         
     }
 }
+#endif
 
 Key InputDecoder::load() {
     if (!canLoad()) {

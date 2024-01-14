@@ -7,8 +7,8 @@
 
 class Console {
 #ifdef BUILDONWINDOWS
-    DWORD initialInput, initialOutput;
-    DWORD appliedInput, appliedOutput;
+    DWORD initial;
+    DWORD applied;
 #else
     struct termios initial;
     struct termios applied;

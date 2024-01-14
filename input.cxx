@@ -1,9 +1,5 @@
 #ifdef BUILDONWINDOWS
 #include "buildonwindows.h"
-
-HANDLE winOutput;
-HANDLE winInput;
-
 #else
 #include <unistd.h>
 #endif
@@ -19,16 +15,10 @@ void Input::waitFor() {
 #ifdef BUILDONWINDOWS
     
     DWORD readCount;
-    winInput = GetStdHandle(STD_INPUT_HANDLE);
-    winOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    int ret = ReadFile(winInput, buffer, 8, &readCount, NULL);
-    if (readCount >= 2 && buffer[readCount - 2] == '\r') {
-        buffer[readCount - 2] = '\n';
-    }
+    int ret = ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), buffer, 8, &readCount);
     if (ret == TRUE) {
-        ret = readCount-1; // on Windows enter is \r\n
+        ret = readCount;
     }
-
 #else
     int ret = read(STDIN_FILENO, buffer, 8);
 #endif
