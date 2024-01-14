@@ -341,6 +341,27 @@ void TestStats() {
     assertStat(e, 5, 0);
 }
 
+
+void TestEditorConsumesErrorAndIgnoresIt() {
+    Editor e;
+    if ("" != e.getText()) {
+        ERR << "Editor should return empty text" << endl;
+        exit(1);
+    }
+
+    Key k;
+    k.type = ERROR;
+    k.value = '@';
+    e.consume(k);
+
+    if ("" != e.getText()) {
+        ERR << "Editor should return empty text after consuming ERROR key, got " << e.getText() << endl;
+        exit(1);
+    }
+
+}
+
+
 int main() {
     TestClearEditor();
     TestConsumeSampleInput();
@@ -355,4 +376,5 @@ int main() {
     TestMovingCursorArrowUp();
     TestMovingCursorArrowUpAndDownFromEndOfString();
     TestStats();
+    TestEditorConsumesErrorAndIgnoresIt();
 }

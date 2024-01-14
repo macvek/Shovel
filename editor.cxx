@@ -73,7 +73,7 @@ void Editor::consume(Key k) {
         else if (k.type == ARROW_UP) {
             moveLineUp();
         }
-    } else {
+    } else if (k.type != ERROR) {
         putChar(k.value);
     }
 }
