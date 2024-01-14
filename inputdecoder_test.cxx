@@ -226,7 +226,7 @@ void TestFeeding5BytesChars() {
 
 void TestFeedingCtrlPlusBasicChars() {
     InputDecoder decoder;
-    int size = 0x1b;
+    const int size = 0x1b;
     
     AChar input[size];
     AChar output[size];
@@ -248,7 +248,7 @@ void TestFeedingCtrlPlusBasicChars() {
 void TestFeedingAll0x20PlusCharactersWithMeta() {
     InputDecoder decoder;
     AChar* buffer = ascii+0x20; //0x20 is 'space' as first of typable characters
-    int size = 0x7F - 0x20; // 0x7F is excluded as it is DEL character
+    const int size = 0x7F - 0x20; // 0x7F is excluded as it is DEL character
 
     AChar metaBuffer[size*2];
     for (int i=0;i<size;i++) {
