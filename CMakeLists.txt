@@ -29,7 +29,10 @@ set(sources main.cxx
 
 add_executable(Shovel ${sources})
 
-target_link_libraries(Shovel rt)
+IF (NOT WIN32)
+  target_link_libraries(Shovel rt)
+ENDIF()
+
 target_link_options(Shovel PUBLIC 
   "$<${gcc_like_cxx}:-rdynamic>"  
 )
