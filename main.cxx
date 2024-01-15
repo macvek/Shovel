@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
         for (;;) {
             input.waitFor();
             Key what = input.getKey();
-            if (what.type == ERROR) {
+            if (what.type != STANDARD) {
                 continue;
             }
 

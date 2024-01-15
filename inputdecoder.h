@@ -10,6 +10,7 @@ typedef char AChar;
 
 enum KeyType {
     ERROR,
+    EMPTY,
     STANDARD,
     SPECIALS, // MARKER for checking for special CHARACTERS by k.type > SPECIALS
     

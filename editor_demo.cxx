@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
                 t.showCursor(cursorIsVisible);
                 cout.flush();
             }
-            else {
+            else if (k.type >= STANDARD) {
                 e.consume(k);
                 t.clear();
                 cout << e.getText();

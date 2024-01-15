@@ -37,14 +37,7 @@ void Input::waitFor() {
 #else
     int ret = read(STDIN_FILENO, buffer, 8);
 #endif
-    if (ret <= 0) {
-        Key k;
-        k.type = KeyType::ERROR;
-        k.value = '?';
-        k.modifier = NONE;
-        keyPressed.push(k);
-    }
-    else {
+    if (ret > 0) {
         decodeBuffer(ret);
     }
 }
@@ -52,8 +45,8 @@ void Input::waitFor() {
 Key Input::getKey() {
     if (keyPressed.empty()) {
         Key k;
-        k.type = KeyType::ERROR;
-        k.value = '?';
+        k.type = KeyType::EMPTY;
+        k.value = '!';
         k.modifier = NONE;
         return k;
     } else {
