@@ -11,19 +11,24 @@
 #include "output.h"
 
 #ifdef BUILDONWINDOWS
-HANDLE hTimer = NULL;
-//https://learn.microsoft.com/en-us/windows/win32/sync/using-waitable-timer-objects
 
-void OnTimerComplete(
-    LPVOID lpArgToCompletionRoutine,
-    DWORD dwTimerLowValue,
-    DWORD dwTimerHighValue
+// https://learn.microsoft.com/en-us/windows/win32/sync/using-a-waitable-timer-with-an-asynchronous-procedure-call
+// 
+static void handler(
+    LPVOID pointerToTimerClass,
+    DWORD unused1,
+    DWORD unused2
 ) {
-    std::cout << "ON TIMER COMPLETE" << std::endl;
-
+    Timer* owner = (Timer*)pointerToTimerClass;
+    if (owner == nullptr) {
+        Log::warn() << "Triggered timer event handler with NULL pointer" << ENDLINE;
+    }
+    else {
+        owner->trigger();
+    }
 }
 
-Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMilisecInternval), onTick(aOnTick) {
+Timer::Timer(int aMilisecInterval, TimerOnTick* aOnTick) : milisecInterval(aMilisecInterval), onTick(aOnTick) {
     hTimer = CreateWaitableTimer(NULL, TRUE, NULL);
     if (NULL == hTimer)
     {
@@ -33,21 +38,21 @@ Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMil
 }
 
 Timer::~Timer() {
-    
+    CloseHandle(hTimer);
 } 
 
 void Timer::start() {
     LARGE_INTEGER liDueTime;
-    liDueTime.QuadPart = -1 * 1000 * 10000LL; // -1 stands for relative interval
+    liDueTime.QuadPart = -1 * milisecInterval * 10000; // -1 stands for relative interval
 
-    if (false == SetWaitableTimer(hTimer, &liDueTime, 1000, OnTimerComplete, NULL, 0)) {
+    if (false == SetWaitableTimer(hTimer, &liDueTime, milisecInterval, handler, this, 0)) {
         Log::error() << "Failed to start timer: " << GetLastError() << ENDLINE;
         Log::panicOnError();
     }
 }
 
 void Timer::stop() {
-    
+    CancelWaitableTimer(hTimer);
 }
 
 

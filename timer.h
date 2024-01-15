@@ -14,9 +14,8 @@ class Timer {
     const int milisecInterval;
     TimerOnTick *onTick;
 
-
 #ifdef BUILDONWINDOWS
-
+    HANDLE hTimer;
 #else
     timer_t id;
 #endif

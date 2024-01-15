@@ -7,15 +7,21 @@
 #include "input.h"
 #include "output.h"
 
+
+Input::Input() : buffer() {
+#ifdef BUILDONWINDOWS
+    consoleInput = GetStdHandle(STD_INPUT_HANDLE);
+#endif
+}
+
+
 void Input::waitFor() {
     if (!keyPressed.empty()) {
         return;
     }
     
 #ifdef BUILDONWINDOWS
-    
     DWORD readCount;
-    HANDLE consoleInput = GetStdHandle(STD_INPUT_HANDLE);
     DWORD waitResult = WaitForSingleObjectEx(consoleInput, INFINITE, TRUE); // in alertable state => would trigger timer callback
     int ret;
     if (waitResult == WAIT_OBJECT_0) {
@@ -25,10 +31,9 @@ void Input::waitFor() {
         }
     }
     else {
-        // wait interrupted
+        // wait interrupted, behave as if no input was loaded
         ret = 0;
     }
-    
 #else
     int ret = read(STDIN_FILENO, buffer, 8);
 #endif
