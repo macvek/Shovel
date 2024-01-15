@@ -4,6 +4,10 @@
 #include "log.h"
 #include "output.h"
 
+#ifndef BUILDONWINDOWS
+#include <unistd.h>
+#endif
+
 using namespace std;
 
 int main(int argc, char** argv) {
