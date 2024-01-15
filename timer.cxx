@@ -1,10 +1,36 @@
+#ifdef BUILDONWINDOWS
+#include "buildonwindows.h"
+#else
 #include <signal.h>
+#endif
+
 #include <iostream>
 
 #include "timer.h"
 #include "log.h"
 #include "output.h"
 
+#ifdef BUILDONWINDOWS
+
+//https://learn.microsoft.com/en-us/windows/win32/sync/using-waitable-timer-objects
+Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMilisecInternval), onTick(aOnTick) {
+    
+}
+
+Timer::~Timer() {
+    
+}
+
+void Timer::start() {
+    
+}
+
+void Timer::stop() {
+    
+}
+
+
+#else 
 static void handler(int sig, siginfo_t *info, void *ucontext) {
     Timer* owner = (Timer*)info->si_value.sival_ptr;
     if (owner == nullptr) {
@@ -66,6 +92,8 @@ void Timer::stop() {
         Log::panicWithErrno("Timer - stop() failed");
     }
 }
+
+#endif
 
 void Timer::trigger() {
     onTick->onTick();

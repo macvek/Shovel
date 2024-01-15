@@ -1,9 +1,4 @@
 #include <stdio.h>
-#ifdef BUILDONWINDOWS
-
-#else
-#include <unistd.h>
-#endif
 #include "console.h"
 #include "inputdecoder.h"
 #include "log.h"

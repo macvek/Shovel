@@ -1,5 +1,10 @@
 #pragma once
+
+#ifdef BUILDONWINDOWS
+
+#else
 #include <time.h>
+#endif
 
 struct TimerOnTick {
     virtual void onTick() = 0;
@@ -8,7 +13,13 @@ struct TimerOnTick {
 class Timer {
     const int milisecInterval;
     TimerOnTick *onTick;
+
+
+#ifdef BUILDONWINDOWS
+
+#else
     timer_t id;
+#endif
     
     public:
     Timer(int aMilisecInternval, TimerOnTick* aOnTick);
