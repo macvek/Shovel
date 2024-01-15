@@ -11,18 +11,39 @@
 #include "output.h"
 
 #ifdef BUILDONWINDOWS
-
+HANDLE hTimer = NULL;
 //https://learn.microsoft.com/en-us/windows/win32/sync/using-waitable-timer-objects
+
+void OnTimerComplete(
+    LPVOID lpArgToCompletionRoutine,
+    DWORD dwTimerLowValue,
+    DWORD dwTimerHighValue
+) {
+    std::cout << "ON TIMER COMPLETE" << std::endl;
+
+}
+
 Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMilisecInternval), onTick(aOnTick) {
-    
+    hTimer = CreateWaitableTimer(NULL, TRUE, NULL);
+    if (NULL == hTimer)
+    {
+        Log::error() << "Failed to CreateWaitableTimer " << GetLastError() << ENDLINE;
+        Log::panicOnError();
+    }
 }
 
 Timer::~Timer() {
     
-}
+} 
 
 void Timer::start() {
-    
+    LARGE_INTEGER liDueTime;
+    liDueTime.QuadPart = -1 * 1000 * 10000LL; // -1 stands for relative interval
+
+    if (false == SetWaitableTimer(hTimer, &liDueTime, 1000, OnTimerComplete, NULL, 0)) {
+        Log::error() << "Failed to start timer: " << GetLastError() << ENDLINE;
+        Log::panicOnError();
+    }
 }
 
 void Timer::stop() {

@@ -15,10 +15,20 @@ void Input::waitFor() {
 #ifdef BUILDONWINDOWS
     
     DWORD readCount;
-    int ret = ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), buffer, 8, &readCount);
-    if (ret == TRUE) {
-        ret = readCount;
+    HANDLE consoleInput = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD waitResult = WaitForSingleObjectEx(consoleInput, INFINITE, TRUE); // in alertable state => would trigger timer callback
+    int ret;
+    if (waitResult == WAIT_OBJECT_0) {
+        ret = ReadConsoleInput(consoleInput, buffer, 8, &readCount);
+        if (ret == TRUE) {
+            ret = readCount;
+        }
     }
+    else {
+        // wait interrupted
+        ret = 0;
+    }
+    
 #else
     int ret = read(STDIN_FILENO, buffer, 8);
 #endif

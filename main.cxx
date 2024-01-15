@@ -23,6 +23,9 @@ int main(int argc, char** argv) {
         for (;;) {
             input.waitFor();
             Key what = input.getKey();
+            if (what.type == ERROR) {
+                continue;
+            }
 
             if (what.value == 'x') {
                 cout << "I'm done" << ENDLINE;
