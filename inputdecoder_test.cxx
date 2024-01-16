@@ -3,6 +3,13 @@
 #include <string.h>
 
 using namespace std;
+#ifdef BUILDONWINDOWS
+int main() {
+    cerr << "This test is skipped on Windows as there is no logic in reading input keys and mapping it back to pressed characters" << endl;
+    return 0;
+}
+#else
+
 AChar ascii[128];
 
 void assertCanLoad(std::string prefix, InputDecoder& decoder, int i) {
@@ -336,3 +343,5 @@ int main() {
     TestFeedingAll0x20PlusCharactersWithMeta();
     TestFeedingMultiBytePlusCtrl();
 }
+
+#endif
