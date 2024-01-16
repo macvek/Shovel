@@ -68,7 +68,7 @@ static void handler(int sig, siginfo_t *info, void *ucontext) {
 }
 
 static int signalSeq = 0;
-Timer::Timer(int aMilisecInternval, TimerOnTick* aOnTick) : milisecInterval(aMilisecInternval), onTick(aOnTick) {
+Timer::Timer(int aMilisecInterval, TimerOnTick* aOnTick) : milisecInterval(aMilisecInterval), onTick(aOnTick) {
     if (SIGRTMIN + signalSeq >= SIGRTMAX) {
         Log::panicWithErrno("Timer() failed, sequence exhausted");
     }
