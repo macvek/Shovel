@@ -17,41 +17,58 @@ target_compile_options(shared_compiler_flags INTERFACE
   "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
 )
 
-set(sources main.cxx
-  console.cxx
-  timer.cxx
-  log.cxx
-  input.cxx
-  inputdecoder.cxx
-  terminal.cxx
-  editor.cxx
+set (liblog log.cxx)
+
+set (libinputdecoder inputdecoder.cxx)
+set (libterminal terminal.cxx)
+
+set (libconsole console.cxx ${liblog})
+
+set (libeditor editor.cxx ${libinputdecoder})
+set (librenderbuffer renderbuffer.cxx ${libterminal})
+
+set (libtimer timer.cxx ${liblog} )
+set (libinput input.cxx ${libinputdecoder} ${liblog})
+
+set (libsources ${liblog}
+  ${libconsole}
+  ${libtimer}
+  ${libinput}
+  ${libterminal}
+  ${librenderbuffer}
 )
 
-add_executable(Shovel ${sources})
+set(sources ${libsources}
+  main.cxx
+)
 
 IF (NOT WIN32)
-  target_link_libraries(Shovel rt)
+  link_libraries(rt)
 ENDIF()
 
+add_executable(Shovel ${sources})
 target_link_options(Shovel PUBLIC 
   "$<${gcc_like_cxx}:-rdynamic>"  
 )
 
 enable_testing()
 
-add_executable(InputDecoderDemo inputdecoder_demo.cxx log.cxx console.cxx inputdecoder.cxx )
-add_executable(InputDecoderTest inputdecoder_test.cxx inputdecoder.cxx )
+add_executable(InputDecoderDemo inputdecoder_demo.cxx ${libconsole} ${libinputdecoder} )
+add_executable(InputDecoderTest inputdecoder_test.cxx ${libinputdecoder} )
 add_test(NAME InputDecoderTest COMMAND InputDecoderTest)
 
 add_executable(NameEnumTest nameenum_test.cxx)
 add_test(NAME NameEnumTest COMMAND NameEnumTest)
 
-add_executable(TerminalDemo terminal_demo.cxx terminal.cxx)
+add_executable(TerminalDemo terminal_demo.cxx ${libterminal})
 
-add_executable(EditorDemo editor_demo.cxx editor.cxx terminal.cxx log.cxx console.cxx inputdecoder.cxx input.cxx)
-add_executable(EditorTest editor_test.cxx editor.cxx inputdecoder.cxx)
+add_executable(EditorDemo editor_demo.cxx ${libeditor} ${libterminal} ${libinput} ${libconsole})
+add_executable(EditorTest editor_test.cxx ${libeditor})
 add_test(NAME EditorTest COMMAND EditorTest)
 
-add_executable(RenderBufferDemo renderbuffer_demo.cxx renderbuffer.cxx terminal.cxx log.cxx console.cxx inputdecoder.cxx input.cxx )
-add_executable(RenderBufferTest renderbuffer_test.cxx renderbuffer.cxx terminal.cxx )
+add_executable(RenderBufferDemo renderbuffer_demo.cxx ${librenderbuffer} ${libconsole} ${libinput} )
+add_executable(RenderBufferTest renderbuffer_test.cxx ${librenderbuffer} )
 add_test(NAME RenderBufferTest COMMAND RenderBufferTest)
+
+add_executable(TimerDemo timer_demo.cxx ${libtimer} ${libinput} ${libconsole})
+
