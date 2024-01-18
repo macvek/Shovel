@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
         "@x                   x@",
     0,0);
 
-    f.drawFrame(b, 1, 1, 21, 5);
+    f.drawFrame(b, 1, 1, 21, 5, Frame::HashFrame);
 
     RenderBuffer scene(80,24,'.',true);
 

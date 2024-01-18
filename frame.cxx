@@ -1,6 +1,8 @@
 #include "frame.h"
 
-static void prepareLine(char* source, std::string& dest) {
+const std::string Frame::HashFrame = "#### ####";
+
+static void prepareLine(const char* source, std::string& dest) {
     dest[0] = source[0];
     int limit = dest.length()-1;
     for (int i=1; i<limit; ++i) {
@@ -9,7 +11,7 @@ static void prepareLine(char* source, std::string& dest) {
     dest[limit] = source[2];
 }
 
-void Frame::drawFrame(RenderBuffer& where, int left, int top, int right, int bottom) {
+void Frame::drawFrame(RenderBuffer& where, int left, int top, int right, int bottom, std::string input) {
     /*
     a bbbbb c
     d eeeee f
@@ -23,9 +25,10 @@ void Frame::drawFrame(RenderBuffer& where, int left, int top, int right, int bot
         return;
     }
 
-    char first[3]   = {'1','2','3'};
-    char middle[3]  = {'4','5','6'};
-    char last[3]    = {'7','8','9'};
+    const char* rawInput = input.c_str();
+    const char *first = rawInput;
+    const char *middle = rawInput+3;
+    const char *last = middle+3;
 
     RenderBuffer f(width, height, 0);
 
