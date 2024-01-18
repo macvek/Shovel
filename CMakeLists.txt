@@ -27,6 +27,8 @@ set (libconsole console.cxx ${liblog})
 set (libeditor editor.cxx ${libinputdecoder})
 set (librenderbuffer renderbuffer.cxx ${libterminal})
 
+set (libframe frame.cxx ${librenderbuffer})
+
 set (libtimer timer.cxx ${liblog} )
 set (libinput input.cxx ${libinputdecoder} ${liblog})
 
@@ -72,3 +74,4 @@ add_test(NAME RenderBufferTest COMMAND RenderBufferTest)
 
 add_executable(TimerDemo timer_demo.cxx ${libtimer} ${libinput} ${libconsole})
 
+add_executable(FrameDemo frame_demo.cxx ${libframe})
