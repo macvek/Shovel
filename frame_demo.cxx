@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <string.h>
 #include "frame.h"
 #include "log.h"
 
@@ -19,7 +19,8 @@ int main(int argc, char** argv) {
         "@x                   x@",
     0,0);
 
-    f.drawFrame(b, 1, 1, 21, 5, Frame::HashFrame);
+    f.drawFrame(b, 1, 1, 21, 5,     Frame::Hash);
+    f.drawFrame(b, 2, 2, 4, 4,      Frame::DashAndSlash);
 
     RenderBuffer scene(80,24,'.',true);
 

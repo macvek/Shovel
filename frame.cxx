@@ -1,6 +1,8 @@
 #include "frame.h"
 
-const std::string Frame::HashFrame = "#### ####";
+const std::string Frame::Hash = "#### ####";
+const std::string Frame::DashAndSlash = "/-\\| |\\-/";
+const std::string Frame::Window = "/-\\| |\\-/";
 
 static void prepareLine(const char* source, std::string& dest) {
     dest[0] = source[0];
