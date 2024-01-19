@@ -1,5 +1,6 @@
 #include "terminal.h"
 #include <vector>
+#include <unordered_map>
 
 class RenderBuffer;
 
@@ -21,6 +22,8 @@ struct RenderUnit {
     int right;
 };
 
+typedef std::unordered_map<unsigned char, std::string> SpecialCharsMap;
+
 class RenderBuffer {
     struct XYOffset {
         int ptr;
@@ -35,8 +38,11 @@ class RenderBuffer {
     TermColor fragmentToTerminal(Terminal &t, int terminalX, int terminalY, int offset, int offsetEnd, TermColor currentColor, bool useColor);
 
     char transparentChar;
+    SpecialCharsMap specialChars;
+
     public:
     RenderBuffer(int width, int height, char initial=0, bool hasColorBuffer = false);
+    RenderBuffer(int width, int height, char initial, bool hasColorBuffer, SpecialCharsMap aSpecialChars);
     void writeText(std::string text, int x, int y);
     void writeView(const RenderBufferView& view, int x, int y);
     void writeColorLine(int x, int y, int len, TermColor color);

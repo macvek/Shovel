@@ -556,6 +556,28 @@ void TestUnitsToTerminalColor() {
     }
 }
 
+void TestUseSpecialCharacters() {
+    stringstream tst;
+    Terminal tstTerminal(tst);
+    
+    std::unordered_map<unsigned char, std::string> charMap;
+    charMap[0x80] = "HELLO";
+    charMap[0x81] = "WORLD";
+    RenderBuffer b(3,1,'.',true, charMap);
+    b.writeText("\x80x\x81",0,0);
+    b.toTerminal(tstTerminal, 1,1);
+
+    stringstream reference;
+    Terminal ref(reference);
+    ref.placeCursor(1,1);
+    ref.stream() << "HELLOxWORLD";
+
+    if (tst.str() != reference.str()) {
+        cerr << __FUNCTION__ << " Unit should produce the same output as referenced terminal.\nExpected:" << Terminal::NoEscape(reference.str()) << "\nGot:"<< Terminal::NoEscape(tst.str()) << endl;
+        exit(1);
+    }
+}
+
 
 int main() {
     TestOneLineBuffer();
@@ -580,5 +602,6 @@ int main() {
     TestRenderingColoredDiffWithThreshhold();
     TestUnitsToTerminal();
     TestUnitsToTerminalColor();
+    TestUseSpecialCharacters();
     return 0;
 }

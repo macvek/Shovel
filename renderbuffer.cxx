@@ -77,7 +77,10 @@ void RenderBuffer::writeView(const RenderBufferView& view, int x, int y) {
     }
 }
 
-RenderBuffer::RenderBuffer(int aWidth, int aHeight, char initial, bool hasColorBuffer) : width(aWidth), height(aHeight), transparentChar(0) {
+RenderBuffer::RenderBuffer(int aWidth, int aHeight, char initial, bool hasColorBuffer) : RenderBuffer(aWidth, aHeight, initial, hasColorBuffer, SpecialCharsMap()) {
+}
+
+RenderBuffer::RenderBuffer(int aWidth, int aHeight, char initial, bool hasColorBuffer, SpecialCharsMap aSpecialChars) : width(aWidth), height(aHeight), transparentChar(0), specialChars(aSpecialChars) {
     int size = aWidth * aHeight+1;
     frontBuffer.resize(size, initial);
     frontBuffer[aWidth * aHeight] = 0;  // always keep extra 0 in the end so it can be dumped safely
@@ -241,7 +244,19 @@ TermColor RenderBuffer::fragmentToTerminal(Terminal &t, int terminalX, int termi
                 t.backColor(backColor);
             }
         }
-        t.stream() << frontBuffer[offset];
+        char renderMe = frontBuffer[offset];
+        if (renderMe >= 0 || specialChars.empty()) {
+            t.stream() << renderMe;
+        }
+        else {
+            auto found = specialChars.find( (unsigned char)renderMe );
+            if (found != specialChars.end()) {
+                t.stream() << found->second;
+            }
+            else {
+                t.stream() << renderMe;
+            }
+        }
     }
 
     return currentColor;
