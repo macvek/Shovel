@@ -21,7 +21,8 @@ int main(int argc, char** argv) {
 
     f.drawFrame(b, 1, 1, 21, 5,     Frame::Hash);
     f.drawFrame(b, 2, 2, 4, 4,      Frame::DashAndSlash);
-    f.drawFrame(b, 5, 2, 7, 4,      Frame::Window);
+    f.drawFrame(b, 5, 2, 7, 4,      Frame::SingleBorder);
+    f.drawFrame(b, 8, 2, 11, 4,     Frame::DoubleBorder);
 
     SpecialCharsMap base = SpecialCharsMapFactory::create();
     
