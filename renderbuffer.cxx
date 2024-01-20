@@ -261,3 +261,18 @@ TermColor RenderBuffer::fragmentToTerminal(Terminal &t, int terminalX, int termi
 
     return currentColor;
 }
+
+bool RenderBuffer::copyFrom(const RenderBuffer &other) {
+    if ( this == &other ) {
+        return true;
+    }
+
+    if (width != other.width || height != other.height) {
+        return false;
+    }
+
+    frontBuffer = other.frontBuffer;
+    colorBuffer = other.colorBuffer;
+
+    return true;
+}

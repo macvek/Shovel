@@ -1,3 +1,5 @@
+#pragma once
+
 #include "terminal.h"
 #include "specialcharsmap.h"
 #include <vector>
@@ -28,15 +30,17 @@ class RenderBuffer {
         int charsInLine;
     };
 
-    std::vector<char> frontBuffer;
-    std::vector<TermColor> colorBuffer;
     const int width;
     const int height;
+    const SpecialCharsMap specialChars;
+
+    std::vector<char> frontBuffer;
+    std::vector<TermColor> colorBuffer;
+    
     XYOffset xyOffset(int x, int y) const;
     TermColor fragmentToTerminal(Terminal &t, int terminalX, int terminalY, int offset, int offsetEnd, TermColor currentColor, bool useColor);
 
     char transparentChar;
-    SpecialCharsMap specialChars;
 
     public:
     RenderBuffer(int width, int height, char initial=0, bool hasColorBuffer = false);
@@ -67,5 +71,7 @@ class RenderBuffer {
     inline void setTransparentChar(char c) {
         transparentChar = c;
     }
+
+    bool copyFrom(const RenderBuffer &other);
     
 };
