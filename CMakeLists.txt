@@ -19,13 +19,14 @@ target_compile_options(shared_compiler_flags INTERFACE
 
 set (liblog log.cxx)
 
+set (libspecialcharsmap specialcharsmap.cxx)
 set (libinputdecoder inputdecoder.cxx)
 set (libterminal terminal.cxx)
 
 set (libconsole console.cxx ${liblog})
 
 set (libeditor editor.cxx ${libinputdecoder})
-set (librenderbuffer renderbuffer.cxx ${libterminal})
+set (librenderbuffer renderbuffer.cxx ${libspecialcharsmap} ${libterminal})
 
 set (libframe frame.cxx ${librenderbuffer})
 

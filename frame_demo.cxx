@@ -19,21 +19,13 @@ int main(int argc, char** argv) {
         "@x                   x@",
     0,0);
 
-    std::string MappedWindow = "\x81\x82\x83\x84 \x84\x85\x82\x86";
-    
     f.drawFrame(b, 1, 1, 21, 5,     Frame::Hash);
     f.drawFrame(b, 2, 2, 4, 4,      Frame::DashAndSlash);
-    f.drawFrame(b, 5, 2, 7, 4,      MappedWindow);
+    f.drawFrame(b, 5, 2, 7, 4,      Frame::Window);
 
-    SpecialCharsMap utf8Frame;
-    utf8Frame[0x81] = "┌";
-    utf8Frame[0x82] = "─";
-    utf8Frame[0x83] = "┐";
-    utf8Frame[0x84] = "│";
-    utf8Frame[0x85] = "└";
-    utf8Frame[0x86] = "┘";
+    SpecialCharsMap base = SpecialCharsMapFactory::create();
     
-    RenderBuffer scene(80,24,'.',true, utf8Frame);
+    RenderBuffer scene(80,24,'.',true, base);
 
     t.clear();
   

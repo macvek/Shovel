@@ -2,7 +2,7 @@
 
 const std::string Frame::Hash = "#### ####";
 const std::string Frame::DashAndSlash = "/-\\| |\\-/";
-const std::string Frame::Window = "/-\\| |\\-/";
+const std::string Frame::Window = "\xDA\xC4\xBF\xB3 \xB3\xC0\xC4\xD9";
 
 static void prepareLine(const char* source, std::string& dest) {
     dest[0] = source[0];

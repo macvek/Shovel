@@ -1,6 +1,6 @@
 #include "terminal.h"
+#include "specialcharsmap.h"
 #include <vector>
-#include <unordered_map>
 
 class RenderBuffer;
 
@@ -21,8 +21,6 @@ struct RenderUnit {
     int left;
     int right;
 };
-
-typedef std::unordered_map<unsigned char, std::string> SpecialCharsMap;
 
 class RenderBuffer {
     struct XYOffset {
