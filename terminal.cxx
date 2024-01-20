@@ -10,6 +10,25 @@ static inline std::string CSI() {
     return "\x1B[";
 }
 
+#ifdef BUILDONWINDOWS
+static int hasUnicode = 0;
+static BOOL CALLBACK enumCodePagesProc(LPTSTR lpCodePageString) {
+    if (std::string("65001") == std::string(lpCodePageString)) {
+        hasUnicode = 1;
+        return FALSE;
+    }
+    else {
+        return TRUE;
+    }
+}
+
+static bool setupCodePage() {
+    EnumSystemCodePagesA(enumCodePagesProc, CP_INSTALLED);
+    return hasUnicode && !SetConsoleOutputCP(65001);
+}
+
+#endif
+
 Terminal::Terminal(std::ostream &aOut) : out(aOut), calculatedX(1), calculatedY(1) {
 #ifdef BUILDONWINDOWS
     HANDLE outHandle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -18,6 +37,10 @@ Terminal::Terminal(std::ostream &aOut) : out(aOut), calculatedX(1), calculatedY(
     }
 
     SetConsoleMode(outHandle, initialConsoleMode | ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+    if (!setupCodePage()) {
+        aOut << "!! Failed to set UTF-8 console code page !!";
+    }
+    
 #endif
 }
 
