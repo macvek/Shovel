@@ -164,7 +164,7 @@ void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderUnit>& out,
     if (other.width != width || other.height != height) {
         return;
     }
-
+    
     auto idx = 0;
     RenderUnit unit;
 

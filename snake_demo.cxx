@@ -1,4 +1,3 @@
-#include <stdio.h>
 
 #include "console.h"
 #include "input.h"
@@ -20,15 +19,47 @@ RenderBuffer frontBuffer = blankScene;
 vector<RenderUnit> diffs;
 Frame f;
 
-int offset = 0;
+int x = 39, y = 11;
+int mx = 1, my = 0;
 
+typedef pair<int,int> Point;
+
+deque<Point> points;
+
+void gameFrame() {
+    
+    x+= mx;
+    y+= my;
+
+    if (x < 1) {
+        x = 78;
+    }
+    else if (x > 78) {
+        x = 1;
+    }
+    else if (y < 1) {
+        y = 22;
+    }
+    else if (y > 22) {
+        y = 1;
+    }
+    
+    points.push_back({x,y});
+
+    if (points.size() > 5) {
+        points.pop_front();
+    }
+}
 
 void render() {
     backBuffer.copyFrom(frontBuffer);
     frontBuffer.copyFrom(blankScene);
+    
     f.drawFrame(frontBuffer,0,0,79,23, Frame::SingleBorder);
-    frontBuffer.writeText("HelloWorld", offset,offset);
-    ++offset;
+    for (auto ptr = points.cbegin(); ptr < points.cend(); ++ptr) {
+        frontBuffer.writeText("X", ptr->first, ptr->second);
+    }
+    
 
     frontBuffer.diff(backBuffer, diffs, 3);
     frontBuffer.unitsToTerminal(t, diffs, 1, 1, true);
@@ -39,6 +70,7 @@ void render() {
 
 struct Snake : public TimerOnTick {
     void onTick() {
+        gameFrame();
         render();
     }
 };
@@ -50,7 +82,7 @@ int main(int argc, char** argv) {
 
     Snake snake;
 
-    Timer timer(500, &snake);
+    Timer timer(100, &snake);
 
     render();
     timer.start();
@@ -61,8 +93,22 @@ int main(int argc, char** argv) {
             timer.stop();
             break;
         }
+
+        if (k.type == ARROW_RIGHT) {
+            mx = 1; my = 0;
+        }
+        if (k.type == ARROW_LEFT) {
+            mx = -1; my = 0;
+        }
+        if (k.type == ARROW_UP) {
+            my = -1; mx = 0;
+        }
+        if (k.type == ARROW_DOWN) {
+            my = 1; mx = 0;
+        }
     }
 
     t.showCursor(true);
     return 0;
 }
+ 
