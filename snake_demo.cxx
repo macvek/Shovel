@@ -108,7 +108,7 @@ string HeadLeft = "<";
 string HeadUp= "^";
 string HeadDown = "v";
 
-string Unknown = "?";
+string UnknownSign = "?";
 string Horisontal = "\xC4";
 string Vertical = "\xB3";
 string TurnA = "\xBF";
@@ -168,7 +168,7 @@ x
 */
     }
 
-    return Unknown;
+    return UnknownSign;
 }
 
 void render() {
@@ -191,17 +191,19 @@ void render() {
              tail.first, tail.second);
     }
 
-    for (auto ptr = points.cbegin()+1; ptr < points.cend()-1; ++ptr) {
-        
-        const Point& here = *ptr;
-        const Point& prev = *(ptr-1);
-        const Point& next = *(ptr+1);
+    if (points.size() > 2) {
+        for (auto ptr = points.cbegin() + 1; ptr < points.cend() - 1; ++ptr) {
 
-        
-        frontBuffer.writeText(CharForPoints(
-            {next.first - here.first, next.second - here.second},
-            {prev.first - here.first, prev.second - here.second}),
-             here.first, here.second);
+            const Point& here = *ptr;
+            const Point& prev = *(ptr - 1);
+            const Point& next = *(ptr + 1);
+
+
+            frontBuffer.writeText(CharForPoints(
+                { next.first - here.first, next.second - here.second },
+                { prev.first - here.first, prev.second - here.second }),
+                here.first, here.second);
+        }
     }
 
     if (points.size() > 0) {

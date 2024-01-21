@@ -24,7 +24,7 @@ static BOOL CALLBACK enumCodePagesProc(LPTSTR lpCodePageString) {
 
 static bool setupCodePage() {
     EnumSystemCodePagesA(enumCodePagesProc, CP_INSTALLED);
-    return hasUnicode && !SetConsoleOutputCP(65001);
+    return hasUnicode && SetConsoleOutputCP(65001);
 }
 
 #endif
