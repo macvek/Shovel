@@ -19,6 +19,7 @@ RenderBuffer backBuffer = blankScene;
 RenderBuffer frontBuffer = blankScene;
 vector<RenderUnit> diffs;
 Frame f;
+int score;
 
 int x, y, mx, my;
 
@@ -37,6 +38,7 @@ void resetGame() {
     lastRemoved = {x-1, y};
     mx = 1;
     my = 0;
+    score = 0;
     nextGoal = 1;
     points.clear();
     goals.clear();
@@ -85,6 +87,7 @@ void gameFrame() {
     for (auto i = goals.cbegin(); i < goals.cend(); ++i) {
         if (x == i->first && y == i->second ) {
             hasGoal = true;
+            ++score;
             goals.erase(i);
             break;
         }
@@ -177,6 +180,11 @@ void render() {
     
     f.drawFrame(frontBuffer,0,0,79,23, Frame::SingleBorder);
     
+    stringstream scoreLabel;
+    scoreLabel << " Score: " << score << " ";
+
+    frontBuffer.writeText(scoreLabel.str(), 2,0);
+
     for (auto ptr = goals.cbegin(); ptr < goals.cend(); ++ptr) {
         frontBuffer.writeText("*", ptr->first, ptr->second);
     }
