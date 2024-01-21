@@ -1,4 +1,3 @@
-
 #include "console.h"
 #include "input.h"
 #include "terminal.h"
@@ -6,6 +5,7 @@
 #include "frame.h"
 #include "timer.h"
 #include "log.h"
+#include <cstdlib>
 
 using namespace std;
 
@@ -22,9 +22,15 @@ Frame f;
 int x = 39, y = 11;
 int mx = 1, my = 0;
 
+#define NEXT_GOAL_COUNTER 30
+int nextGoal = 1;
+
 typedef pair<int,int> Point;
 
 deque<Point> points;
+vector<Point> goals;
+
+
 
 void gameFrame() {
     
@@ -46,8 +52,24 @@ void gameFrame() {
     
     points.push_back({x,y});
 
-    if (points.size() > 5) {
+    bool hasGoal = false;
+    for (auto i = goals.cbegin(); i < goals.cend(); ++i) {
+        if (x == i->first && y == i->second ) {
+            hasGoal = true;
+            goals.erase(i);
+            break;
+        }
+    }
+
+    if (points.size() > 5 && !hasGoal) {
         points.pop_front();
+    }
+
+    if (--nextGoal == 0) {
+        nextGoal = NEXT_GOAL_COUNTER;
+        int x = 1 + (rand() % 78);
+        int y = 1 + (rand() % 22);
+        goals.push_back({x,y});
     }
 }
 
@@ -56,6 +78,11 @@ void render() {
     frontBuffer.copyFrom(blankScene);
     
     f.drawFrame(frontBuffer,0,0,79,23, Frame::SingleBorder);
+    
+    for (auto ptr = goals.cbegin(); ptr < goals.cend(); ++ptr) {
+        frontBuffer.writeText("*", ptr->first, ptr->second);
+    }
+    
     for (auto ptr = points.cbegin(); ptr < points.cend(); ++ptr) {
         frontBuffer.writeText("X", ptr->first, ptr->second);
     }
@@ -76,13 +103,14 @@ struct Snake : public TimerOnTick {
 };
 
 int main(int argc, char** argv) {
+    srand(0);
     console.enableRaw();
     t.showCursor(false);
     t.clear();
 
     Snake snake;
 
-    Timer timer(100, &snake);
+    Timer timer(50, &snake);
 
     render();
     timer.start();
