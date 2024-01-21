@@ -109,8 +109,16 @@ void render() {
         frontBuffer.writeText("*", ptr->first, ptr->second);
     }
     
-    for (auto ptr = points.cbegin(); ptr < points.cend(); ++ptr) {
+    auto tail = points.cbegin();
+    frontBuffer.writeText("T", tail->first, tail->second);
+
+    for (auto ptr = points.cbegin()+1; ptr < points.cend()-1; ++ptr) {
         frontBuffer.writeText("X", ptr->first, ptr->second);
+    }
+
+    if (points.size() > 1) {
+        auto head = points.cend()-1;
+        frontBuffer.writeText("H", head->first, head->second);
     }
 
     frontBuffer.diff(backBuffer, diffs, 3);
