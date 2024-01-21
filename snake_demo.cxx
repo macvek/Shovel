@@ -99,6 +99,11 @@ void gameFrame() {
     }
 }
 
+string HeadRight = ">";
+string HeadLeft = "<";
+string HeadUp= "^";
+string HeadDown = "v";
+
 void render() {
     backBuffer.copyFrom(frontBuffer);
     frontBuffer.copyFrom(blankScene);
@@ -109,16 +114,31 @@ void render() {
         frontBuffer.writeText("*", ptr->first, ptr->second);
     }
     
-    auto tail = points.cbegin();
-    frontBuffer.writeText("T", tail->first, tail->second);
+    if (points.size() > 1) {
+        auto tail = points.cbegin();
+        frontBuffer.writeText("#", tail->first, tail->second);
+    }
 
     for (auto ptr = points.cbegin()+1; ptr < points.cend()-1; ++ptr) {
         frontBuffer.writeText("X", ptr->first, ptr->second);
     }
 
-    if (points.size() > 1) {
+    if (points.size() > 0) {
         auto head = points.cend()-1;
-        frontBuffer.writeText("H", head->first, head->second);
+        string* headChar;
+        if (mx == 1) {
+            headChar = &HeadRight;
+        }
+        else if (mx == -1) {
+            headChar = &HeadLeft;
+        }
+        else if (my == -1) {
+            headChar = &HeadUp;
+        }
+        else {
+            headChar = &HeadDown;
+        }
+        frontBuffer.writeText(*headChar, head->first, head->second);
     }
 
     frontBuffer.diff(backBuffer, diffs, 3);
