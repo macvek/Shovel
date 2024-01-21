@@ -104,6 +104,69 @@ string HeadLeft = "<";
 string HeadUp= "^";
 string HeadDown = "v";
 
+string JustX = "X";
+string Horisontal = "-";
+string Vertical = "|";
+string TurnA = "A";
+string TurnB = "B";
+string TurnC = "C";
+string TurnD = "D";
+
+pair<Point&, Point&> sortPoints(Point& a, Point& b) {
+    if (a.first <= b.first) {
+        return {a,b};
+    }
+    else {
+        return {b,a};
+    }
+}
+
+string& CharForPoints(Point a, Point b) {
+    auto sorted = sortPoints(a,b);
+    Point& left = sorted.first;
+    Point& right = sorted.second;
+
+    if (left.first == right.first) {
+        return Vertical;
+    }
+    else if (left.second == right.second) {
+        return Horisontal;
+    }
+
+    if (left.second == 0) {
+        if (right.second > 0) {
+            return TurnA;
+        }
+        else {
+            return TurnB;
+        }
+    
+/*
+xA
+ x
+ 
+ x
+xB
+*/
+    } else {
+        if (left.second < 0) {
+            return TurnC;
+        }
+        else {
+            return TurnD;
+        }
+/*
+x
+Cx
+
+Dx
+x
+*/
+    }
+
+    return JustX;
+}
+
 void render() {
     backBuffer.copyFrom(frontBuffer);
     frontBuffer.copyFrom(blankScene);
@@ -120,7 +183,16 @@ void render() {
     }
 
     for (auto ptr = points.cbegin()+1; ptr < points.cend()-1; ++ptr) {
-        frontBuffer.writeText("X", ptr->first, ptr->second);
+        
+        const Point& here = *ptr;
+        const Point& prev = *(ptr-1);
+        const Point& next = *(ptr+1);
+
+        
+        frontBuffer.writeText(CharForPoints(
+            {next.first - here.first, next.second - here.second},
+            {prev.first - here.first, prev.second - here.second}),
+             ptr->first, ptr->second);
     }
 
     if (points.size() > 0) {
