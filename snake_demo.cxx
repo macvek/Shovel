@@ -191,7 +191,7 @@ void render() {
         frontBuffer.writeText("*", ptr->first, ptr->second);
     }
 
-    int colorCounter = 0;
+    int colorCounter = 1+points.size();
     
     if (points.size() > 1) {
         auto tail = *points.cbegin();
@@ -202,7 +202,7 @@ void render() {
             {next.first - tail.first, next.second - tail.second}),
              tail.first, tail.second);
 
-        if (++colorCounter % 3 == 0) {
+        if (--colorCounter % 3 == 0) {
             frontBuffer.writeColorLine(tail.first, tail.second, 1, AccentColor);
         }
     }
@@ -219,7 +219,7 @@ void render() {
                 { prev.first - here.first, prev.second - here.second }),
                 here.first, here.second);
 
-            if (++colorCounter % 3 == 0) {
+            if (--colorCounter % 3 == 0) {
                 frontBuffer.writeColorLine(here.first, here.second, 1, AccentColor);
             }
         }
@@ -242,7 +242,7 @@ void render() {
         }
         frontBuffer.writeText(*headChar, head->first, head->second);
         
-        if (++colorCounter % 3 == 0) {
+        if (--colorCounter % 3 == 0) {
             frontBuffer.writeColorLine(head->first, head->second, 1, AccentColor);
         }
     }
