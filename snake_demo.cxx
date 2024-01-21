@@ -32,7 +32,23 @@ deque<Point> points;
 Point lastRemoved;
 vector<Point> goals;
 
+bool gameOver;
+
+void renderGameOver() {
+    f.drawFrame(frontBuffer,30,8,50,12, Frame::DoubleBorder);
+    frontBuffer.writeText("Game Over", 36, 10);
+    frontBuffer.writeText("[ENTER] - try again", 31, 14);
+    
+    frontBuffer.writeColorLine(30,8, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
+    frontBuffer.writeColorLine(30,9, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
+    frontBuffer.writeColorLine(30,10, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
+    frontBuffer.writeColorLine(30,11, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
+    frontBuffer.writeColorLine(30,12, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
+
+}
+
 void resetGame() {
+    gameOver = false;
     x = 39;
     y = 11;
     lastRemoved = {x-1, y};
@@ -42,10 +58,6 @@ void resetGame() {
     nextGoal = 1;
     points.clear();
     goals.clear();
-}
-
-void gameOver() {
-    resetGame();
 }
 
 bool checkCollision() {
@@ -59,7 +71,10 @@ bool checkCollision() {
 }
 
 void gameFrame() {
-    
+    if (gameOver) {
+        return;
+    }
+
     x+= mx;
     y+= my;
 
@@ -77,7 +92,7 @@ void gameFrame() {
     }
     
     if (checkCollision()) {
-        gameOver();
+        gameOver = true;
         return;
     }
 
@@ -247,6 +262,10 @@ void render() {
         }
     }
 
+    if (gameOver) {
+        renderGameOver();
+    }
+
     frontBuffer.diff(backBuffer, diffs, 3);
     frontBuffer.unitsToTerminal(t, diffs, 1, 1, true);
     
@@ -282,20 +301,23 @@ int main(int argc, char** argv) {
             break;
         }
 
-        if (k.type == ENTER) {
+        if (gameOver && k.type == ENTER) {
             resetGame();
         }
-        if (k.type == ARROW_RIGHT && mx != -1) {
-            mx = 1; my = 0;
-        }
-        if (k.type == ARROW_LEFT && mx != 1) {
-            mx = -1; my = 0;
-        }
-        if (k.type == ARROW_UP && my != 1) {
-            my = -1; mx = 0;
-        }
-        if (k.type == ARROW_DOWN && my != -1) {
-            my = 1; mx = 0;
+
+        if (!gameOver) {
+            if (k.type == ARROW_RIGHT && mx != -1) {
+                mx = 1; my = 0;
+            }
+            if (k.type == ARROW_LEFT && mx != 1) {
+                mx = -1; my = 0;
+            }
+            if (k.type == ARROW_UP && my != 1) {
+                my = -1; mx = 0;
+            }
+            if (k.type == ARROW_DOWN && my != -1) {
+                my = 1; mx = 0;
+            }
         }
     }
 
