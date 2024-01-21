@@ -19,18 +19,25 @@ RenderBuffer frontBuffer = blankScene;
 vector<RenderUnit> diffs;
 Frame f;
 
-int x = 39, y = 11;
-int mx = 1, my = 0;
+int x, y, mx, my;
 
 #define NEXT_GOAL_COUNTER 30
-int nextGoal = 1;
+int nextGoal;
 
 typedef pair<int,int> Point;
 
 deque<Point> points;
 vector<Point> goals;
 
-
+void resetGame() {
+    x = 39;
+    y = 11;
+    mx = 1;
+    my = 0;
+    nextGoal = 1;
+    points.clear();
+    goals.clear();
+}
 
 void gameFrame() {
     
@@ -86,7 +93,6 @@ void render() {
     for (auto ptr = points.cbegin(); ptr < points.cend(); ++ptr) {
         frontBuffer.writeText("X", ptr->first, ptr->second);
     }
-    
 
     frontBuffer.diff(backBuffer, diffs, 3);
     frontBuffer.unitsToTerminal(t, diffs, 1, 1, true);
@@ -112,6 +118,7 @@ int main(int argc, char** argv) {
 
     Timer timer(50, &snake);
 
+    resetGame();
     render();
     timer.start();
     for (;;) {
@@ -122,6 +129,9 @@ int main(int argc, char** argv) {
             break;
         }
 
+        if (k.type == ENTER) {
+            resetGame();
+        }
         if (k.type == ARROW_RIGHT) {
             mx = 1; my = 0;
         }
