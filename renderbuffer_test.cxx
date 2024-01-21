@@ -549,6 +549,8 @@ void TestUnitsToTerminalColor() {
     ref.foreColor(Terminal::ToForeColor(color));
     ref.backColor(Terminal::ToBackColor(color));
     ref.stream() << "WORLD";
+    ref.foreColor(Terminal::DEFAULT);
+    ref.backColor(Terminal::DEFAULT);
 
     if (bwOut.str() != reference.str()) {
         cerr << __FUNCTION__ << " Unit should produce the same output as referenced terminal.\nExpected:" << Terminal::NoEscape(reference.str()) << "\nGot:"<< Terminal::NoEscape(bwOut.str()) << endl;

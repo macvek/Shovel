@@ -119,6 +119,8 @@ string TurnB = "\xD9";
 string TurnC = "\xC0";
 string TurnD = "\xDA";
 
+TermColor AccentColor = Terminal::MakeColor(Terminal::BRIGHT_BLUE, Terminal::DEFAULT);
+
 pair<Point&, Point&> sortPoints(Point& a, Point& b) {
     if (a.first <= b.first) {
         return {a,b};
@@ -188,6 +190,8 @@ void render() {
     for (auto ptr = goals.cbegin(); ptr < goals.cend(); ++ptr) {
         frontBuffer.writeText("*", ptr->first, ptr->second);
     }
+
+    int colorCounter = 0;
     
     if (points.size() > 1) {
         auto tail = *points.cbegin();
@@ -197,11 +201,14 @@ void render() {
             {lastRemoved.first - tail.first, lastRemoved.second - tail.second},
             {next.first - tail.first, next.second - tail.second}),
              tail.first, tail.second);
+
+        if (++colorCounter % 3 == 0) {
+            frontBuffer.writeColorLine(tail.first, tail.second, 1, AccentColor);
+        }
     }
 
     if (points.size() > 2) {
         for (auto ptr = points.cbegin() + 1; ptr < points.cend() - 1; ++ptr) {
-
             const Point& here = *ptr;
             const Point& prev = *(ptr - 1);
             const Point& next = *(ptr + 1);
@@ -211,6 +218,10 @@ void render() {
                 { next.first - here.first, next.second - here.second },
                 { prev.first - here.first, prev.second - here.second }),
                 here.first, here.second);
+
+            if (++colorCounter % 3 == 0) {
+                frontBuffer.writeColorLine(here.first, here.second, 1, AccentColor);
+            }
         }
     }
 
@@ -230,6 +241,10 @@ void render() {
             headChar = &HeadDown;
         }
         frontBuffer.writeText(*headChar, head->first, head->second);
+        
+        if (++colorCounter % 3 == 0) {
+            frontBuffer.writeColorLine(head->first, head->second, 1, AccentColor);
+        }
     }
 
     frontBuffer.diff(backBuffer, diffs, 3);

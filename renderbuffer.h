@@ -39,6 +39,7 @@ class RenderBuffer {
     
     XYOffset xyOffset(int x, int y) const;
     TermColor fragmentToTerminal(Terminal &t, int terminalX, int terminalY, int offset, int offsetEnd, TermColor currentColor, bool useColor);
+    void updateColor(Terminal &t, TermColor oldColor, TermColor newColor);
 
     char transparentChar;
 

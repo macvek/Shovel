@@ -205,44 +205,54 @@ void RenderBuffer::diff(const RenderBuffer& other, std::vector<RenderUnit>& out,
 }
 
 void RenderBuffer::toTerminal(Terminal& t, int terminalPosX, int terminalPosY, bool useColor) {
-    TermColor currentColor = Terminal::MakeColor(Terminal::DEFAULT, Terminal::DEFAULT);
+    TermColor initial = Terminal::MakeColor(Terminal::DEFAULT, Terminal::DEFAULT);
+    TermColor currentColor = initial;
     
     int offset = 0;
     for (int line = 0; line<height; line++) {
         currentColor = fragmentToTerminal(t, terminalPosX, terminalPosY+line, offset, offset+width, currentColor, useColor);
         offset += width;
     }
+
+    if (currentColor != initial) {
+        updateColor(t, currentColor, initial);
+    }
 }
 
 void RenderBuffer::unitsToTerminal(Terminal &t, std::vector<RenderUnit>& units, int x, int y, bool useColor) {
-    TermColor currentColor = Terminal::MakeColor(Terminal::DEFAULT, Terminal::DEFAULT);
+    TermColor initial = Terminal::MakeColor(Terminal::DEFAULT, Terminal::DEFAULT);
+    TermColor currentColor = initial;
+    
     for (auto ptr = units.cbegin(); ptr != units.cend(); ++ptr) {
         auto offset = xyOffset(ptr->left, ptr->top);
         auto offsetEnd = offset.ptr + ptr->right - ptr->left;
         currentColor = fragmentToTerminal(t, x + ptr->left, y + ptr->top, offset.ptr, offsetEnd, currentColor, useColor);
     }
+
+    if (currentColor != initial) {
+        updateColor(t, currentColor, initial);
+    }
+}
+
+void RenderBuffer::updateColor(Terminal &t, TermColor oldColor, TermColor newColor) {
+    Terminal::COLOR loadedColor = Terminal::ToForeColor(newColor);
+    if (loadedColor != Terminal::ToForeColor(oldColor)) {
+        t.foreColor(loadedColor);
+    }
+
+    loadedColor = Terminal::ToBackColor(newColor);
+    if (loadedColor != Terminal::ToBackColor(oldColor)) {
+        t.backColor(loadedColor);
+    }
 }
 
 TermColor RenderBuffer::fragmentToTerminal(Terminal &t, int terminalX, int terminalY, int offset, int offsetEnd, TermColor currentColor, bool useColor) {
-    Terminal::COLOR foreColor = Terminal::ToForeColor(currentColor);
-    Terminal::COLOR backColor = Terminal::ToBackColor(currentColor);
-    
     t.placeCursor(terminalX,terminalY);
 
     for (;offset < offsetEnd ; ++offset) {
         if (useColor && !colorBuffer.empty() && currentColor != colorBuffer[offset]) {
+            updateColor(t, currentColor, colorBuffer[offset]);
             currentColor = colorBuffer[offset];
-            Terminal::COLOR loadedColor = Terminal::ToForeColor(currentColor);
-            if (loadedColor != foreColor) {
-                foreColor = loadedColor;
-                t.foreColor(foreColor);
-            }
-
-            loadedColor = Terminal::ToBackColor(currentColor);
-            if (loadedColor != backColor) {
-                backColor = loadedColor;
-                t.backColor(backColor);
-            }
         }
         char renderMe = frontBuffer[offset];
         if (renderMe >= 0 || specialChars.empty()) {
