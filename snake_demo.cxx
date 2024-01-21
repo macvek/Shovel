@@ -28,11 +28,13 @@ int nextGoal;
 typedef pair<int,int> Point;
 
 deque<Point> points;
+Point lastRemoved;
 vector<Point> goals;
 
 void resetGame() {
     x = 39;
     y = 11;
+    lastRemoved = {x-1, y};
     mx = 1;
     my = 0;
     nextGoal = 1;
@@ -89,6 +91,7 @@ void gameFrame() {
     }
 
     if (points.size() > 5 && !hasGoal) {
+        lastRemoved = points.front();
         points.pop_front();
     }
 
@@ -179,8 +182,13 @@ void render() {
     }
     
     if (points.size() > 1) {
-        auto tail = points.cbegin();
-        frontBuffer.writeText("#", tail->first, tail->second);
+        auto tail = *points.cbegin();
+        auto next = *(points.cbegin()+1);
+        
+        frontBuffer.writeText(CharForPoints(
+            {lastRemoved.first - tail.first, lastRemoved.second - tail.second},
+            {next.first - tail.first, next.second - tail.second}),
+             tail.first, tail.second);
     }
 
     for (auto ptr = points.cbegin()+1; ptr < points.cend()-1; ++ptr) {
@@ -193,7 +201,7 @@ void render() {
         frontBuffer.writeText(CharForPoints(
             {next.first - here.first, next.second - here.second},
             {prev.first - here.first, prev.second - here.second}),
-             ptr->first, ptr->second);
+             here.first, here.second);
     }
 
     if (points.size() > 0) {
