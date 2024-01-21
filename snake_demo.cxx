@@ -7,6 +7,7 @@
 #include "log.h"
 #include <cstdlib>
 
+
 using namespace std;
 
 Console console;
@@ -104,13 +105,13 @@ string HeadLeft = "<";
 string HeadUp= "^";
 string HeadDown = "v";
 
-string JustX = "X";
-string Horisontal = "-";
-string Vertical = "|";
-string TurnA = "A";
-string TurnB = "B";
-string TurnC = "C";
-string TurnD = "D";
+string Unknown = "?";
+string Horisontal = "\xC4";
+string Vertical = "\xB3";
+string TurnA = "\xBF";
+string TurnB = "\xD9";
+string TurnC = "\xC0";
+string TurnD = "\xDA";
 
 pair<Point&, Point&> sortPoints(Point& a, Point& b) {
     if (a.first <= b.first) {
@@ -164,7 +165,7 @@ x
 */
     }
 
-    return JustX;
+    return Unknown;
 }
 
 void render() {
