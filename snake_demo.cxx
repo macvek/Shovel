@@ -201,6 +201,7 @@ void render() {
     scoreLabel << " Score: " << score << " ";
 
     frontBuffer.writeText(scoreLabel.str(), 2,0);
+    frontBuffer.writeText(" ESC - exit ", 66,0);
 
     for (auto ptr = goals.cbegin(); ptr < goals.cend(); ++ptr) {
         frontBuffer.writeText("*", ptr->first, ptr->second);
