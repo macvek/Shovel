@@ -39,6 +39,20 @@ void resetGame() {
     goals.clear();
 }
 
+void gameOver() {
+    resetGame();
+}
+
+bool checkCollision() {
+    for (auto i = points.cbegin(); i < points.cend(); ++i) {
+        if (x == i->first && y == i->second ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void gameFrame() {
     
     x+= mx;
@@ -57,6 +71,11 @@ void gameFrame() {
         y = 1;
     }
     
+    if (checkCollision()) {
+        gameOver();
+        return;
+    }
+
     points.push_back({x,y});
 
     bool hasGoal = false;
@@ -132,16 +151,16 @@ int main(int argc, char** argv) {
         if (k.type == ENTER) {
             resetGame();
         }
-        if (k.type == ARROW_RIGHT) {
+        if (k.type == ARROW_RIGHT && mx != -1) {
             mx = 1; my = 0;
         }
-        if (k.type == ARROW_LEFT) {
+        if (k.type == ARROW_LEFT && mx != 1) {
             mx = -1; my = 0;
         }
-        if (k.type == ARROW_UP) {
+        if (k.type == ARROW_UP && my != 1) {
             my = -1; mx = 0;
         }
-        if (k.type == ARROW_DOWN) {
+        if (k.type == ARROW_DOWN && my != -1) {
             my = 1; mx = 0;
         }
     }
