@@ -22,6 +22,7 @@ Frame f;
 int score;
 
 int x, y, mx, my;
+bool mChanged;
 
 #define NEXT_GOAL_COUNTER 30
 int nextGoal;
@@ -49,6 +50,7 @@ void renderGameOver() {
 
 void resetGame() {
     gameOver = false;
+    mChanged = false;
     x = 39;
     y = 11;
     lastRemoved = {x-1, y};
@@ -74,6 +76,8 @@ void gameFrame() {
     if (gameOver) {
         return;
     }
+
+    mChanged = false;
 
     x+= mx;
     y+= my;
@@ -306,18 +310,18 @@ int main(int argc, char** argv) {
             resetGame();
         }
 
-        if (!gameOver) {
+        if (!gameOver && !mChanged) {
             if (k.type == ARROW_RIGHT && mx != -1) {
-                mx = 1; my = 0;
+                mx = 1; my = 0; mChanged = true;
             }
             if (k.type == ARROW_LEFT && mx != 1) {
-                mx = -1; my = 0;
+                mx = -1; my = 0; mChanged = true;
             }
             if (k.type == ARROW_UP && my != 1) {
-                my = -1; mx = 0;
+                my = -1; mx = 0; mChanged = true;
             }
             if (k.type == ARROW_DOWN && my != -1) {
-                my = 1; mx = 0;
+                my = 1; mx = 0; mChanged = true;
             }
         }
     }
