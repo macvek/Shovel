@@ -79,3 +79,4 @@ add_executable(TimerDemo timer_demo.cxx ${libtimer} ${libinput} ${libconsole})
 add_executable(FrameDemo frame_demo.cxx ${libframe})
 
 add_executable(SnakeDemo snake_demo.cxx ${libsources})
+add_executable(TetrisDemo tetris_demo.cxx ${libsources})
