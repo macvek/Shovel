@@ -39,13 +39,6 @@ bool moveEveryFrame = false;
 bool gameOver;
 int tileSize = 4;
 
-string dot = 
-"@   "
-"    "
-"    "
-"    "
-;
-
 string partA = 
 "@@@@"
 "    "
@@ -53,7 +46,36 @@ string partA =
 "    "
 ;
 
-string currentTile = partA;
+string partB = 
+" @  "
+"@@@ "
+"    "
+"    "
+;
+
+string partC = 
+"@   "
+"@@@ "
+"    "
+"    "
+;
+
+string partD = 
+"@@  "
+"@@  "
+"    "
+"    "
+;
+
+string partE = 
+"  @ "
+"@@@ "
+"    "
+"    "
+;
+
+
+string currentTile = partB;
 
 void renderGameOver() {
     f.drawFrame(frontBuffer,30,8,50,12, Frame::DoubleBorder);
@@ -76,17 +98,31 @@ int range(int what, int min, int max) {
 }
 
 bool cursorCollides(int checkX, int checkY) {
-    if (checkY >= levelHeight ) {
-        return true;
-    }
 
-    int counter = 0;
-    for (int y=0;y<tileSize;++y)
-    for (int x=0;x<tileSize;++x) {
-        if (currentTile[counter] != ' ' && blocks[xy(checkX + x, checkY + y)]) {
+    for (int y=0;y<tileSize;++y) {
+        bool anyTile = false;
+        for (int x=0;x<tileSize;++x) {
+            if (currentTile[y*tileSize + x] != ' ') {
+                anyTile = true;
+                if (x + checkX >= levelWidth) {
+                   return true;
+                }
+            }
+        }
+
+        if (!anyTile) {
+            return false;
+        }
+
+        if (checkY + y >= levelHeight ) {
             return true;
         }
-        ++counter;
+        
+        for (int x=0;x<tileSize;++x) {
+            if (currentTile[y*tileSize + x] != ' ' && blocks[xy(checkX + x, checkY + y)]) {
+                return true;
+            }
+        }
     }
 
     return false;
