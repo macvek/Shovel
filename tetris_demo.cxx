@@ -37,6 +37,23 @@ int nextFrameDown;
 bool moveEveryFrame = false;
 
 bool gameOver;
+int tileSize = 4;
+
+string dot = 
+"@   "
+"    "
+"    "
+"    "
+;
+
+string partA = 
+"@@@@"
+"    "
+"    "
+"    "
+;
+
+string currentTile = partA;
 
 void renderGameOver() {
     f.drawFrame(frontBuffer,30,8,50,12, Frame::DoubleBorder);
@@ -54,13 +71,25 @@ int xy(int x , int y) {
     return y* levelWidth + x;
 }
 
-
 int range(int what, int min, int max) {
     return what < min ? min : what > max ? max : what;
 }
 
-bool cursorCollides(int x, int y) {
-    return y >= levelHeight || blocks[xy(x, y)];
+bool cursorCollides(int checkX, int checkY) {
+    if (checkY >= levelHeight ) {
+        return true;
+    }
+
+    int counter = 0;
+    for (int y=0;y<tileSize;++y)
+    for (int x=0;x<tileSize;++x) {
+        if (currentTile[counter] != ' ' && blocks[xy(checkX + x, checkY + y)]) {
+            return true;
+        }
+        ++counter;
+    }
+
+    return false;
 }
 
 void moveCursor(int xOffset) {
@@ -99,8 +128,19 @@ void resetGame() {
     nextFrameDown = frameNo + levelFrames;
 }
 
-void placeTile(int y) {
-    blocks[xy(cursorX, y)] = true;
+void placeTile(int placeY) {
+    int placeX = cursorX;
+    
+    int counter = 0;
+    for (int y=0;y<tileSize;++y)
+    for (int x=0;x<tileSize;++x) {
+        if (currentTile[counter] != ' ') {
+            blocks[xy(placeX+x, placeY+y)] = true;
+        }
+        ++counter;
+    }
+
+    
     refreshBlocksBackBuffer();
 }
 
@@ -125,7 +165,14 @@ void gameFrame() {
 }
 
 void renderTile() {
-    blocksBuffer.writeText("@", cursorX, cursorY);
+    int counter = 0;
+    for (int y=0;y<tileSize;++y)
+    for (int x=0;x<tileSize;++x) {
+        if (currentTile[counter] != ' ') {
+            blocksBuffer.writeText("@", cursorX+x, cursorY+y);
+        }
+        ++counter;
+    }
 }
 
 void render() {
