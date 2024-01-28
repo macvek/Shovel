@@ -49,13 +49,24 @@ void renderGameOver() {
     frontBuffer.writeColorLine(30,12, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
 }
 
+int xy(int x , int y) {
+    return y* levelWidth + x;
+}
+
+
 int range(int what, int min, int max) {
     return what < min ? min : what > max ? max : what;
 }
 
+bool cursorCollides(int x, int y) {
+    return y >= levelHeight || blocks[xy(x, y)];
+}
+
 void moveCursor(int xOffset) {
-    cursorX += xOffset;
-    cursorX = range(cursorX, 0, levelWidth-1);
+    int newValue = range(cursorX+xOffset, 0, levelWidth-1);
+    if (!cursorCollides(newValue, cursorY)) {
+        cursorX = newValue;
+    }
 }
 
 void resetCursor() {
@@ -71,13 +82,6 @@ void resetGame() {
     nextFrameDown = frameNo + levelFrames;
 }
 
-int xy(int x , int y) {
-    return y* levelWidth + x;
-}
-
-bool cursorCollides(int y) {
-    return y >= levelHeight || blocks[xy(cursorX, y)];
-}
 
 void refreshBlocksBackBuffer() {
     string on = "@";
@@ -104,7 +108,7 @@ void gameFrame() {
     if (frameNo == nextFrameDown) {
         nextFrameDown = frameNo + levelFrames;
 
-        if (cursorCollides(1+cursorY)) {
+        if (cursorCollides(cursorX, 1+cursorY)) {
             placeTile(cursorY);
             resetCursor();
         }
@@ -112,9 +116,6 @@ void gameFrame() {
             ++cursorY;
         }
     }
-
-    
-
 }
 
 void renderTile() {
@@ -180,9 +181,11 @@ int main(int argc, char** argv) {
         if (!gameOver) {
             if (k.type == ARROW_LEFT) {
                 moveCursor(-1);
+                render();
             }
             else if (k.type == ARROW_RIGHT) {
                 moveCursor(1);
+                render();
             }
         }
 
