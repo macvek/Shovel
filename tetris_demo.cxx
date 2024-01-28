@@ -34,13 +34,14 @@ int levelFrames = 3;
 int levelWidth = 20;
 int levelHeight = 22;
 int nextFrameDown;
+bool moveEveryFrame = false;
 
 bool gameOver;
 
 void renderGameOver() {
     f.drawFrame(frontBuffer,30,8,50,12, Frame::DoubleBorder);
     frontBuffer.writeText("Game Over", 36, 10);
-    frontBuffer.writeText("[ENTER] - try again", 31, 14);
+    frontBuffer.writeText("[ENTER] - try again", 31, 13);
     
     frontBuffer.writeColorLine(30,8, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
     frontBuffer.writeColorLine(30,9, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
@@ -72,16 +73,9 @@ void moveCursor(int xOffset) {
 void resetCursor() {
     cursorX = 3;
     cursorY = 0;
+    gameOver = cursorCollides(cursorX, cursorY);
+    moveEveryFrame = false;
 }
-
-void resetGame() {
-    gameOver = false;
-    resetCursor();
-
-    frameNo = 0;
-    nextFrameDown = frameNo + levelFrames;
-}
-
 
 void refreshBlocksBackBuffer() {
     string on = "@";
@@ -91,6 +85,18 @@ void refreshBlocksBackBuffer() {
     for (int x=0;x<levelWidth;++x) {
         blocksBackBuffer.writeText(blocks[xy(x,y)] ? on : off, x, y);
     }
+}
+
+void clearBlocks() {
+    for (int i=0;i<blocks.size(); ++i) blocks[i] = false;    
+    refreshBlocksBackBuffer();
+}
+
+void resetGame() {
+    clearBlocks();
+    resetCursor();
+    frameNo = 0;
+    nextFrameDown = frameNo + levelFrames;
 }
 
 void placeTile(int y) {
@@ -105,7 +111,7 @@ void gameFrame() {
         return;
     }
     
-    if (frameNo == nextFrameDown) {
+    if (moveEveryFrame || frameNo == nextFrameDown) {
         nextFrameDown = frameNo + levelFrames;
 
         if (cursorCollides(cursorX, 1+cursorY)) {
@@ -186,6 +192,9 @@ int main(int argc, char** argv) {
             else if (k.type == ARROW_RIGHT) {
                 moveCursor(1);
                 render();
+            }
+            else if (k.type == ARROW_DOWN) {
+                moveEveryFrame = true;
             }
         }
 
