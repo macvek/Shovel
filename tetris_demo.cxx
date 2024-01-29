@@ -75,7 +75,7 @@ string partE =
 ;
 
 
-string currentTile = partB;
+string currentTile;
 
 void renderGameOver() {
     f.drawFrame(frontBuffer,30,8,50,12, Frame::DoubleBorder);
@@ -87,6 +87,63 @@ void renderGameOver() {
     frontBuffer.writeColorLine(30,10, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
     frontBuffer.writeColorLine(30,11, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
     frontBuffer.writeColorLine(30,12, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
+}
+
+int tileXY(int x, int y) {
+    return y* tileSize + x;
+}
+
+void trimTile(string& toTrim) {
+    int lastEmptyLine = -1;
+    int lastEmptyColumn = tileSize;
+    for (int y=0;y<tileSize;++y) {
+        bool emptyLine = true;
+        int emptyColumnIdx = -1;
+        for (int x=0;x<tileSize;++x) {
+            if ( toTrim[tileXY(x,y)] != ' ') {
+                emptyLine = false;
+            }
+            else if (emptyColumnIdx == x - 1) {
+                emptyColumnIdx = x;
+            }
+        }
+
+        lastEmptyColumn = min(lastEmptyColumn, emptyColumnIdx);
+
+        if (emptyLine && lastEmptyLine == y-1) {
+            lastEmptyLine = y;
+        }
+    }
+    
+    int tX = lastEmptyColumn + 1;
+    int tY = lastEmptyLine + 1;
+
+    for (int y=0;y<tileSize;++y) for (int x=0;x<tileSize;++x) {
+        int fromX = x + tX;
+        int fromY = y + tY;
+        
+        if (fromX >= tileSize || fromY >= tileSize) {
+            toTrim[ tileXY(x,y) ] = ' ';
+        }
+        else {
+            toTrim[ tileXY(x,y) ] = toTrim[ tileXY(fromX, fromY)];
+        }
+    }
+}
+
+void rotate() {
+    string rotated = currentTile;
+    int ptr = 0;
+    
+    // rotated loop
+    for (int x=0;x<tileSize;++x) for (int y=tileSize-1; y>=0 ;--y) {
+    
+        rotated[ptr] = currentTile[tileXY(x,y)];
+        ++ptr;
+    }
+
+    trimTile(rotated);
+    currentTile = rotated;
 }
 
 int xy(int x , int y) {
@@ -102,7 +159,7 @@ bool cursorCollides(int checkX, int checkY) {
     for (int y=0;y<tileSize;++y) {
         bool anyTile = false;
         for (int x=0;x<tileSize;++x) {
-            if (currentTile[y*tileSize + x] != ' ') {
+            if (currentTile[tileXY(x,y)] != ' ') {
                 anyTile = true;
                 if (x + checkX >= levelWidth) {
                    return true;
@@ -119,7 +176,7 @@ bool cursorCollides(int checkX, int checkY) {
         }
         
         for (int x=0;x<tileSize;++x) {
-            if (currentTile[y*tileSize + x] != ' ' && blocks[xy(checkX + x, checkY + y)]) {
+            if (currentTile[tileXY(x,y)] != ' ' && blocks[xy(checkX + x, checkY + y)]) {
                 return true;
             }
         }
@@ -140,14 +197,14 @@ void resetCursor() {
     cursorY = 0;
     gameOver = cursorCollides(cursorX, cursorY);
     moveEveryFrame = false;
+    currentTile = partB;
 }
 
 void refreshBlocksBackBuffer() {
     string on = "@";
     string off = " ";
     
-    for (int y=0;y<levelHeight;++y)
-    for (int x=0;x<levelWidth;++x) {
+    for (int y=0;y<levelHeight;++y) for (int x=0;x<levelWidth;++x) {
         blocksBackBuffer.writeText(blocks[xy(x,y)] ? on : off, x, y);
     }
 }
@@ -167,13 +224,10 @@ void resetGame() {
 void placeTile(int placeY) {
     int placeX = cursorX;
     
-    int counter = 0;
-    for (int y=0;y<tileSize;++y)
-    for (int x=0;x<tileSize;++x) {
-        if (currentTile[counter] != ' ') {
+    for (int y=0;y<tileSize;++y) for (int x=0;x<tileSize;++x) {
+        if (currentTile[tileXY(x,y)] != ' ') {
             blocks[xy(placeX+x, placeY+y)] = true;
         }
-        ++counter;
     }
 
     
@@ -201,13 +255,10 @@ void gameFrame() {
 }
 
 void renderTile() {
-    int counter = 0;
-    for (int y=0;y<tileSize;++y)
-    for (int x=0;x<tileSize;++x) {
-        if (currentTile[counter] != ' ') {
+    for (int y=0;y<tileSize;++y) for (int x=0;x<tileSize;++x) {
+        if (currentTile[tileXY(x,y)] != ' ') {
             blocksBuffer.writeText("@", cursorX+x, cursorY+y);
         }
-        ++counter;
     }
 }
 
@@ -274,6 +325,10 @@ int main(int argc, char** argv) {
             }
             else if (k.type == ARROW_RIGHT) {
                 moveCursor(1);
+                render();
+            }
+            else if (k.type == ARROW_UP) {
+                rotate();
                 render();
             }
             else if (k.type == ARROW_DOWN) {
