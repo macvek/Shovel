@@ -40,7 +40,7 @@ bool gameOver;
 int tileSize = 4;
 
 string partA = 
-"@@@@"
+"X@@@"
 "    "
 "    "
 "    "
@@ -48,20 +48,20 @@ string partA =
 
 string partB = 
 " @  "
-"@@@ "
+"@X@ "
 "    "
 "    "
 ;
 
 string partC = 
 "@   "
-"@@@ "
+"@X@ "
 "    "
 "    "
 ;
 
 string partD = 
-"@@  "
+"X@  "
 "@@  "
 "    "
 "    "
@@ -69,7 +69,7 @@ string partD =
 
 string partE = 
 "  @ "
-"@@@ "
+"@X@ "
 "    "
 "    "
 ;
@@ -175,18 +175,49 @@ void rotate() {
     string original = currentTile;
     int ptr = 0;
     
+    int pivotX = -1;
+    int pivotY = -1;
+
     // rotated loop
     for (int x=0;x<tileSize;++x) for (int y=tileSize-1; y>=0 ;--y) {
-    
-        rotated[ptr] = currentTile[tileXY(x,y)];
+        char tileValue = currentTile[tileXY(x,y)];
+        if (tileValue == 'X') {
+            pivotX = x;
+            pivotY = y;
+        }
+        rotated[ptr] = tileValue;
         ++ptr;
     }
 
     trimTile(rotated);
 
+    int rotatedPivotX = -1;
+    int rotatedPivotY = -1;
+
+    for (int y=0;y<tileSize;++y) for (int x=0;x<tileSize;++x) {
+        char tileValue = rotated[tileXY(x,y)];
+        if (tileValue == 'X') {
+            rotatedPivotX = x;
+            rotatedPivotY = y;
+            break;
+        }
+    }
+
+    int tX = 0;
+    int tY = 0;
+    if (rotatedPivotX != -1 && rotatedPivotY != -1 && pivotX != -1 && pivotY != -1) {
+        tX = pivotX - rotatedPivotX;
+        tY = pivotY - rotatedPivotY;
+    }
+
     currentTile = rotated;
+    cursorX += tX;
+    cursorY += tY;
+
     if (cursorCollides(cursorX, cursorY)) {
         currentTile = original;
+        cursorX -= tX;
+        cursorY -= tY;
     }
 }
 
