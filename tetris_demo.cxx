@@ -37,7 +37,7 @@ int nextFrameDown;
 bool moveEveryFrame = false;
 
 bool gameOver;
-int tileSize;
+int tileSize = 4;
 
 string partA = 
 "@@@@"
@@ -47,26 +47,31 @@ string partA =
 ;
 
 string partB = 
-" @ "
-"@@@"
-"   "
+" @  "
+"@@@ "
+"    "
+"    "
 ;
 
 string partC = 
-"@  "
-"@@@"
+"@   "
+"@@@ "
+"    "
 "    "
 ;
 
 string partD = 
-"@@"
-"@@"
+"@@  "
+"@@  "
+"    "
+"    "
 ;
 
 string partE = 
-"  @"
-"@@@"
-"   "
+"  @ "
+"@@@ "
+"    "
+"    "
 ;
 
 
@@ -88,7 +93,7 @@ int tileXY(int x, int y) {
     return y* tileSize + x;
 }
 
-int trimTile(string& toTrim) {
+void trimTile(string& toTrim) {
     int lastEmptyLine = -1;
     int lastEmptyColumn = tileSize;
     for (int y=0;y<tileSize;++y) {
@@ -137,9 +142,7 @@ void rotate() {
         ++ptr;
     }
 
-    //TODO: fix rotation bug, i.e. being collided after rotation must not apply rotation
-    //TODO2: for 3x3 tiles, in case of first column being removed, apply +1 cursor move , so it looks as if it rotates around center
-    int moveXHint = trimTile(rotated);
+    trimTile(rotated);
     currentTile = rotated;
 }
 
@@ -189,30 +192,12 @@ void moveCursor(int xOffset) {
     }
 }
 
-void updateCurrentTile(string &which) {
-    currentTile = which;
-    if (which.size() == 16) {
-        tileSize = 4;
-    }
-    else if (which.size() == 9) {
-        tileSize = 3;
-    }
-    else if (which.size() == 4) {
-        tileSize = 2;
-    }
-    else {
-        cerr << "FAILED: tile has unexpected size: " << which.size() << " TILE:`" << which<<"`" << endl;
-        exit(1);
-    }
-}
-
 void resetCursor() {
     cursorX = 3;
     cursorY = 0;
     gameOver = cursorCollides(cursorX, cursorY);
     moveEveryFrame = false;
-
-    updateCurrentTile(partB);    
+    currentTile = partB;
 }
 
 void refreshBlocksBackBuffer() {
