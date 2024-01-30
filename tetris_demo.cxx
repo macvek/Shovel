@@ -131,21 +131,6 @@ void trimTile(string& toTrim) {
     }
 }
 
-void rotate() {
-    string rotated = currentTile;
-    int ptr = 0;
-    
-    // rotated loop
-    for (int x=0;x<tileSize;++x) for (int y=tileSize-1; y>=0 ;--y) {
-    
-        rotated[ptr] = currentTile[tileXY(x,y)];
-        ++ptr;
-    }
-
-    trimTile(rotated);
-    currentTile = rotated;
-}
-
 int xy(int x , int y) {
     return y* levelWidth + x;
 }
@@ -183,6 +168,26 @@ bool cursorCollides(int checkX, int checkY) {
     }
 
     return false;
+}
+
+void rotate() {
+    string rotated = currentTile;
+    string original = currentTile;
+    int ptr = 0;
+    
+    // rotated loop
+    for (int x=0;x<tileSize;++x) for (int y=tileSize-1; y>=0 ;--y) {
+    
+        rotated[ptr] = currentTile[tileXY(x,y)];
+        ++ptr;
+    }
+
+    trimTile(rotated);
+
+    currentTile = rotated;
+    if (cursorCollides(cursorX, cursorY)) {
+        currentTile = original;
+    }
 }
 
 void moveCursor(int xOffset) {
