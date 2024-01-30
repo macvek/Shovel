@@ -40,7 +40,7 @@ bool gameOver;
 int tileSize = 4;
 
 string partA = 
-"X@@@"
+"@@@@"
 "    "
 "    "
 "    "
@@ -61,7 +61,7 @@ string partC =
 ;
 
 string partD = 
-"X@  "
+"@@  "
 "@@  "
 "    "
 "    "
@@ -73,6 +73,10 @@ string partE =
 "    "
 "    "
 ;
+
+array<string*, 5> parts = {
+    &partA, &partB, &partC, &partD, &partE
+};
 
 
 string currentTile;
@@ -228,12 +232,18 @@ void moveCursor(int xOffset) {
     }
 }
 
+void pickTiles() {
+    int idx = rand() % parts.size();
+    currentTile = *parts[idx];
+}
+
 void resetCursor() {
     cursorX = 3;
     cursorY = 0;
     gameOver = cursorCollides(cursorX, cursorY);
     moveEveryFrame = false;
-    currentTile = partB;
+    
+    pickTiles();
 }
 
 void refreshBlocksBackBuffer() {
