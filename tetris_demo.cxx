@@ -74,8 +74,15 @@ string partE =
 "    "
 ;
 
-array<string*, 5> parts = {
-    &partA, &partB, &partC, &partD, &partE
+string partF = 
+"@@  "
+" @@ "
+"    "
+"    "
+;
+
+array<string*, 6> parts = {
+    &partA, &partB, &partC, &partD, &partE, &partF
 };
 
 
