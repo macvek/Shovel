@@ -278,6 +278,28 @@ void resetGame() {
     nextFrameDown = frameNo + levelFrames;
 }
 
+void clearBlockLine(int y) {
+    for (int x=0;x<levelWidth;++x) {
+        blocks[xy(x,y)] = '-';
+    }
+}
+
+void clearFullLines() {
+    for (int y=0;y<levelHeight;++y) {
+        bool full = true;
+        for (int x=0;x<levelWidth;++x) {
+            if (!blocks[xy(x,y)]) {
+                full = false;
+                break;
+            }
+        }
+
+        if (full) {
+            clearBlockLine(y);
+        }
+    } 
+}
+
 int currentColor = 0;
 void placeTile(int placeY) {
     int placeX = cursorX;
@@ -289,6 +311,7 @@ void placeTile(int placeY) {
     }
     ++currentColor;
     
+    clearFullLines();
     refreshBlocksBackBuffer();
 }
 
