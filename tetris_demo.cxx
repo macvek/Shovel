@@ -21,7 +21,7 @@ RenderBuffer frontBuffer = blankScene;
 RenderBuffer blocksBuffer(20,22,' ', true, base);
 RenderBuffer blocksBackBuffer = blocksBuffer;
 
-array<bool, 20*22> blocks;
+array<char, 20*22> blocks;
 
 
 vector<RenderUnit> diffs;
@@ -247,16 +247,20 @@ void resetCursor() {
 }
 
 void refreshBlocksBackBuffer() {
-    string on = "@";
     string off = " ";
     
     for (int y=0;y<levelHeight;++y) for (int x=0;x<levelWidth;++x) {
-        blocksBackBuffer.writeText(blocks[xy(x,y)] ? on : off, x, y);
+        auto block = blocks[xy(x,y)];
+        string val = off;
+        if (block) {
+            val[0] = block;
+        }
+        blocksBackBuffer.writeText(val, x, y);
     }
 }
 
 void clearBlocks() {
-    for (int i=0;i<blocks.size(); ++i) blocks[i] = false;    
+    for (int i=0;i<blocks.size(); ++i) blocks[i] = 0;    
     refreshBlocksBackBuffer();
 }
 
@@ -267,15 +271,16 @@ void resetGame() {
     nextFrameDown = frameNo + levelFrames;
 }
 
+int currentColor = 0;
 void placeTile(int placeY) {
     int placeX = cursorX;
     
     for (int y=0;y<tileSize;++y) for (int x=0;x<tileSize;++x) {
         if (currentTile[tileXY(x,y)] != ' ') {
-            blocks[xy(placeX+x, placeY+y)] = true;
+            blocks[xy(placeX+x, placeY+y)] = '0' + (currentColor%8);
         }
     }
-
+    ++currentColor;
     
     refreshBlocksBackBuffer();
 }
