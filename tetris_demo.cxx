@@ -279,8 +279,29 @@ void resetGame() {
 }
 
 void clearBlockLine(int y) {
-    for (int x=0;x<levelWidth;++x) {
-        blocks[xy(x,y)] = '-';
+    for (int x = 0; x < levelWidth; ++x ) {
+        blocks[xy(x,y)] = 0;
+    }
+}
+
+void copyFromAboveLine(int y) {
+    for (int x = 0; x < levelWidth; ++x ) {
+        blocks[xy(x,y)] = blocks[xy(x,y-1)];
+    }
+}
+
+void fillUpBlockLine(int y) {
+    if (y == 0) {
+        clearBlockLine(y);
+    }
+    else {
+        copyFromAboveLine(y);
+    }
+}
+
+void removeBlockLine(int removeY) {
+    for (int y = removeY; y>=0; --y) {
+        fillUpBlockLine(y);
     }
 }
 
@@ -295,7 +316,7 @@ void clearFullLines() {
         }
 
         if (full) {
-            clearBlockLine(y);
+            removeBlockLine(y);
         }
     } 
 }
