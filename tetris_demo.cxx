@@ -110,17 +110,19 @@ int gameMoves;
 int gameSpeed;
 
 void renderGameOver() {
-    f.drawFrame(frontBuffer,30,8,50,12, Frame::DoubleBorder);
-    frontBuffer.writeText("Game Over", 36, 10);
-    frontBuffer.writeText("[ENTER] - try again", 31, 13);
+    f.drawFrame(frontBuffer,29,8,50,12, Frame::DoubleBorder);
+    frontBuffer.writeText("GameOver", 36, 10);
+    frontBuffer.writeText("  [ENTER]  try again  ", 29, 13);
     
     TermColor red = Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT);
+    TermColor white = Terminal::MakeColor(Terminal::BRIGHT_WHITE, Terminal::DEFAULT);
 
-    frontBuffer.writeColorLine(30,8, 21, red);
-    frontBuffer.writeColorLine(30,9, 21, red);
-    frontBuffer.writeColorLine(30,10, 21, red);
-    frontBuffer.writeColorLine(30,11, 21, red);
-    frontBuffer.writeColorLine(30,12, 21, red);
+    frontBuffer.writeColorLine(29,8, 22, red);
+    frontBuffer.writeColorLine(29,9, 22, red);
+    frontBuffer.writeColorLine(29,10, 22, red);
+    frontBuffer.writeColorLine(29,11, 22, red);
+    frontBuffer.writeColorLine(29,12, 22, red);
+    frontBuffer.writeColorLine(29,13, 22, white);
 }
 
 int tileXY(int x, int y) {
