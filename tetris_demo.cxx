@@ -169,11 +169,10 @@ int xy(int x , int y) {
     return y* levelWidth + x;
 }
 
-int range(int what, int min, int max) {
-    return what < min ? min : what > max ? max : what;
-}
-
 bool cursorCollides(int checkX, int checkY) {
+    if (checkX < 0) {
+        return true;
+    }
 
     for (int y=0;y<tileSize;++y) {
         bool anyTile = false;
@@ -245,23 +244,18 @@ void rotate() {
     }
 
     currentTile = rotated;
-    cursorX += tX;
-    cursorY += tY;
-
-    if (cursorCollides(cursorX, cursorY)) {
+    if (cursorCollides(cursorX+tX, cursorY+tY)) {
         currentTile = original;
-        cursorX -= tX;
-        cursorY -= tY;
+    }
+    else {
+        cursorX += tX;
+        cursorY += tY;
     }
 }
 
 void moveCursor(int xOffset) {
-    int newValue = range(cursorX+xOffset, 0, levelWidth-1);
-    if (newValue == cursorX) {
-        return;
-    }
-    if (!cursorCollides(newValue, cursorY)) {
-        cursorX = newValue;
+    if (!cursorCollides(cursorX+xOffset, cursorY)) {
+        cursorX = cursorX+xOffset;
         ++gameMoves;
     }
 }
