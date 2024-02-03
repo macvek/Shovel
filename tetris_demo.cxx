@@ -98,7 +98,7 @@ array<Terminal::COLOR, 6> colors = {
 TermColor shadowTileColor = Terminal::MakeColor(Terminal::COLOR::BRIGHT_WHITE, Terminal::COLOR::DEFAULT);
 
 TermColor currentTileColor;
-string currentTile;
+string currentTile = partA;
 int currentTileIdx;
 
 TermColor nextTileColor;
@@ -278,10 +278,10 @@ void pickTiles() {
 void resetCursor() {
     cursorX = 8;
     cursorY = 0;
+
+    pickTiles();
     gameOver = cursorCollides(cursorX, cursorY);
     moveEveryFrame = false;
-    
-    pickTiles();
 }
 
 void refreshBlocksBuffer() {
