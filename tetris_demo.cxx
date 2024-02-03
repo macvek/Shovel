@@ -110,6 +110,7 @@ int gameMoves;
 int gameSpeed;
 
 vector<int> linesToClear;
+int eraseAnimationLength = levelWidth;
 int eraseAnimationEnd = -1;
 
 void renderGameOver() {
@@ -277,7 +278,6 @@ void pickTiles() {
     currentTileColor = nextTileColor;
     
     randomizeNextTile();
-    
 }
 
 void resetCursor() {
@@ -428,7 +428,7 @@ void gameFrame() {
         if (cursorCollides(cursorX, 1+cursorY)) {
             placeTile(cursorY);
             if (!linesToClear.empty()) {
-                eraseAnimationEnd = frameNo + levelWidth;
+                eraseAnimationEnd = frameNo + eraseAnimationLength;
             }
             else {
                 resetCursor();
@@ -436,9 +436,7 @@ void gameFrame() {
         }
         else {
             ++cursorY;
-        }
-
-        
+        }        
     }
 }
 
@@ -459,6 +457,24 @@ void renderShadow() {
     for (; !cursorCollides(cursorX, 1 + shadowY); ++shadowY );
     if (shadowY > cursorY + 3) {
         renderTile(blocksXOff + cursorX, blocksYOff + shadowY, currentTile, shadowTileColor);
+    }
+}
+
+void drawEraseLines() {
+    auto white = Terminal::MakeColor(Terminal::BLACK, Terminal::BLACK);
+    int framesLeft = eraseAnimationEnd - frameNo;
+    
+    bool flip = true;
+
+    for (auto i = linesToClear.cbegin(); i != linesToClear.cend(); ++i) {
+        int count = eraseAnimationLength - framesLeft+1;
+        if (flip) {
+            frontBuffer.writeColorLine(blocksXOff, *i + blocksYOff, count, white);
+        }
+        else {
+            frontBuffer.writeColorLine(blocksXOff + levelWidth - count, *i + blocksYOff, count, white);
+        }
+        flip = !flip;
     }
 }
 
@@ -493,6 +509,10 @@ void render() {
     }
     else {
         renderShadow();
+    }
+
+    if (eraseAnimationEnd > frameNo) {
+        drawEraseLines();
     }
 
     frontBuffer.diff(backBuffer, diffs, 1);
