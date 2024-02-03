@@ -15,7 +15,7 @@ Console console;
 Input input;
 Terminal t(std::cout);
 SpecialCharsMap base = SpecialCharsMapFactory::create();
-RenderBuffer blankScene(80,24,'.',true, base);
+RenderBuffer blankScene(80,24,' ',true, base);
 RenderBuffer backBuffer = blankScene;
 RenderBuffer frontBuffer = blankScene;
 RenderBuffer blocksBuffer(20,22,' ', true, base);
