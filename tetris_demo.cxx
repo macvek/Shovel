@@ -109,6 +109,9 @@ int gameLines;
 int gameMoves;
 int gameSpeed;
 
+vector<int> linesToClear;
+int eraseAnimationEnd = -1;
+
 void renderGameOver() {
     f.drawFrame(frontBuffer,29,8,50,12, Frame::DoubleBorder);
     frontBuffer.writeText("GameOver", 36, 10);
@@ -332,6 +335,7 @@ void resetGame() {
     clearBlocks();
     resetCursor();
     frameNo = 0;
+    eraseAnimationEnd = -1;
     nextFrameDown = frameNo + levelFrames;
 }
 
@@ -362,7 +366,18 @@ void removeBlockLine(int removeY) {
     }
 }
 
-void clearFullLines() {
+void linesToClearAction() {
+    for (auto i = linesToClear.cbegin(); i != linesToClear.cend(); ++i) {
+        removeBlockLine(*i);
+        ++gameLines;
+    }
+
+    calcLevelFrames();
+    linesToClear.clear();
+    refreshBlocksBuffer();
+}
+
+void updateLinesToClear() {
     for (int y=0;y<levelHeight;++y) {
         bool full = true;
         for (int x=0;x<levelWidth;++x) {
@@ -373,9 +388,7 @@ void clearFullLines() {
         }
 
         if (full) {
-            removeBlockLine(y);
-            ++gameLines;
-            calcLevelFrames();
+            linesToClear.push_back(y);
         }
     } 
 }
@@ -389,10 +402,9 @@ void placeTile(int placeY) {
         }
     }
     
-    clearFullLines();
     refreshBlocksBuffer();
+    updateLinesToClear();
 }
-
 
 void gameFrame() {
     if (pause) {
@@ -400,11 +412,16 @@ void gameFrame() {
     }
 
     ++frameNo;
-    if (gameOver) {
+
+    if (eraseAnimationEnd > frameNo || gameOver) {
         return;
     }
-    
-    if (moveEveryFrame || frameNo == nextFrameDown) {
+
+    if (eraseAnimationEnd == frameNo) {
+        linesToClearAction();
+    }
+
+    if (moveEveryFrame || frameNo >= nextFrameDown) {
         nextFrameDown = frameNo + levelFrames;
 
         if (cursorCollides(cursorX, 1+cursorY)) {
@@ -413,6 +430,10 @@ void gameFrame() {
         }
         else {
             ++cursorY;
+        }
+
+        if (!linesToClear.empty()) {
+            eraseAnimationEnd = frameNo + levelWidth;
         }
     }
 }
@@ -509,9 +530,6 @@ int main(int argc, char** argv) {
         if (!gameOver) {
             if (k.value == 'p') {
                 pause = !pause;
-            }
-            if (k.value == 'r') {
-                render();
             }
 
             if (!pause) {
