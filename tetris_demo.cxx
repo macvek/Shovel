@@ -375,6 +375,7 @@ void linesToClearAction() {
     calcLevelFrames();
     linesToClear.clear();
     refreshBlocksBuffer();
+    resetCursor();
 }
 
 void updateLinesToClear() {
@@ -426,15 +427,18 @@ void gameFrame() {
 
         if (cursorCollides(cursorX, 1+cursorY)) {
             placeTile(cursorY);
-            resetCursor();
+            if (!linesToClear.empty()) {
+                eraseAnimationEnd = frameNo + levelWidth;
+            }
+            else {
+                resetCursor();
+            }
         }
         else {
             ++cursorY;
         }
 
-        if (!linesToClear.empty()) {
-            eraseAnimationEnd = frameNo + levelWidth;
-        }
+        
     }
 }
 
