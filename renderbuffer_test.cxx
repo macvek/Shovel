@@ -580,6 +580,25 @@ void TestUseSpecialCharacters() {
     }
 }
 
+void TestCopyFrom() {
+    RenderBuffer blank(4,1,' ', true);
+    RenderBuffer fixed(4,1,'!', true);
+    fixed.writeText("abcd",0,0);
+
+    RenderBuffer other = blank;
+
+    if ( "    " != other.asLine(0)) {
+        cerr << __FUNCTION__ << " Expected as line to have 4 space characters, got `"<< other.asLine(0) <<  "`" << endl;
+        exit(1);
+    }
+
+    other.copyFrom(fixed);
+    if ( "abcd" != other.asLine(0)) {
+        cerr << __FUNCTION__ << " Expected to have `abcd` got `"<< other.asLine(0) <<  "`" << endl;
+        exit(1);
+    }
+}
+
 
 int main() {
     TestOneLineBuffer();
@@ -605,5 +624,6 @@ int main() {
     TestUnitsToTerminal();
     TestUnitsToTerminalColor();
     TestUseSpecialCharacters();
+    TestCopyFrom();
     return 0;
 }

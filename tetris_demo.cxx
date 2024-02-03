@@ -15,11 +15,10 @@ Console console;
 Input input;
 Terminal t(std::cout);
 SpecialCharsMap base = SpecialCharsMapFactory::create();
-RenderBuffer blankScene(80,24,' ',true, base);
+RenderBuffer blankScene(80,24,'.',true, base);
 RenderBuffer backBuffer = blankScene;
 RenderBuffer frontBuffer = blankScene;
 RenderBuffer blocksBuffer(20,22,' ', true, base);
-RenderBuffer blocksBackBuffer = blocksBuffer;
 
 array<char, 20*22> blocks;
 
@@ -254,7 +253,7 @@ void resetCursor() {
     pickTiles();
 }
 
-void refreshBlocksBackBuffer() {
+void refreshBlocksBuffer() {
     string off = " ";
     
     for (int y=0;y<levelHeight;++y) for (int x=0;x<levelWidth;++x) {
@@ -263,13 +262,13 @@ void refreshBlocksBackBuffer() {
         if (block) {
             val[0] = block;
         }
-        blocksBackBuffer.writeText(val, x, y);
+        blocksBuffer.writeText(val, x, y);
     }
 }
 
 void clearBlocks() {
     for (int i=0;i<blocks.size(); ++i) blocks[i] = 0;    
-    refreshBlocksBackBuffer();
+    refreshBlocksBuffer();
 }
 
 void resetGame() {
@@ -334,7 +333,7 @@ void placeTile(int placeY) {
     ++currentColor;
     
     clearFullLines();
-    refreshBlocksBackBuffer();
+    refreshBlocksBuffer();
 }
 
 
@@ -361,15 +360,19 @@ void gameFrame() {
     }
 }
 
-void renderTile() {
+void renderTile(int offX, int offY) {
+
     for (int y=0;y<tileSize;++y) for (int x=0;x<tileSize;++x) {
         if (currentTile[tileXY(x,y)] != ' ') {
-            blocksBuffer.writeText("@", cursorX+x, cursorY+y);
+            frontBuffer.writeText("@", offX+cursorX+x, offY+cursorY+y);
         }
     }
 }
 
+bool colored = false;
 void render() {
+    t.backColor( colored ? Terminal::RED : Terminal::DEFAULT );
+    colored = !colored;
     backBuffer.copyFrom(frontBuffer);
     frontBuffer.copyFrom(blankScene);
     
@@ -381,20 +384,18 @@ void render() {
 
     frontBuffer.writeText(scoreLabel.str(), 2,0);
     frontBuffer.writeText(" ESC - exit ", 66,0);
-
-    blocksBuffer.copyFrom(blocksBackBuffer);
-    renderTile();
-
+    
     frontBuffer.writeView(blocksBuffer.view(), 30,1);
+    renderTile(30,1);
 
     if (gameOver) {
         renderGameOver();
     }
 
-    frontBuffer.diff(backBuffer, diffs, 3);
+    frontBuffer.diff(backBuffer, diffs, 1);
     frontBuffer.unitsToTerminal(t, diffs, 1, 1, true);
-    
     diffs.clear();
+
     t.flush();
 }
 
@@ -410,6 +411,7 @@ int main(int argc, char** argv) {
     console.enableRaw();
     t.showCursor(false);
     t.clear();
+    blankScene.toTerminal(t, 1,1, true);
 
     Tetris tetris;
     Timer timer(50, &tetris);
