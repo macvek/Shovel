@@ -85,19 +85,31 @@ array<string*, 6> parts = {
     &partA, &partB, &partC, &partD, &partE, &partF
 };
 
+array<Terminal::COLOR, 6> colors = {
+    Terminal::COLOR::BRIGHT_BLUE,
+    Terminal::COLOR::BRIGHT_RED,
+    Terminal::COLOR::BRIGHT_YELLOW,
+    Terminal::COLOR::BRIGHT_CYAN,
+    Terminal::COLOR::BRIGHT_GREEN,
+    Terminal::COLOR::BRIGHT_MAGENTA,
+};
 
+TermColor currentTileColor;
 string currentTile;
+int currentTileIdx;
 
 void renderGameOver() {
     f.drawFrame(frontBuffer,30,8,50,12, Frame::DoubleBorder);
     frontBuffer.writeText("Game Over", 36, 10);
     frontBuffer.writeText("[ENTER] - try again", 31, 13);
     
-    frontBuffer.writeColorLine(30,8, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
-    frontBuffer.writeColorLine(30,9, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
-    frontBuffer.writeColorLine(30,10, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
-    frontBuffer.writeColorLine(30,11, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
-    frontBuffer.writeColorLine(30,12, 21, Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT));
+    TermColor red = Terminal::MakeColor(Terminal::RED, Terminal::DEFAULT);
+
+    frontBuffer.writeColorLine(30,8, 21, red);
+    frontBuffer.writeColorLine(30,9, 21, red);
+    frontBuffer.writeColorLine(30,10, 21, red);
+    frontBuffer.writeColorLine(30,11, 21, red);
+    frontBuffer.writeColorLine(30,12, 21, red);
 }
 
 int tileXY(int x, int y) {
@@ -240,8 +252,9 @@ void moveCursor(int xOffset) {
 }
 
 void pickTiles() {
-    int idx = rand() % parts.size();
-    currentTile = *parts[idx];
+    currentTileIdx = rand() % parts.size();
+    currentTile = *parts[currentTileIdx];
+    currentTileColor = Terminal::MakeColor(colors[currentTileIdx], Terminal::DEFAULT);
 }
 
 void resetCursor() {
@@ -255,14 +268,18 @@ void resetCursor() {
 
 void refreshBlocksBuffer() {
     string off = " ";
-    
+    string on = "@";
+
     for (int y=0;y<levelHeight;++y) for (int x=0;x<levelWidth;++x) {
-        auto block = blocks[xy(x,y)];
-        string val = off;
-        if (block) {
-            val[0] = block;
+        char blockValue = blocks[xy(x,y)];
+        if (!blockValue) {
+            blocksBuffer.writeText(off, x, y);
         }
-        blocksBuffer.writeText(val, x, y);
+        else {
+            blocksBuffer.writeText(on, x, y);
+            auto color = Terminal::MakeColor(colors[blockValue - '0' ], Terminal::COLOR::DEFAULT);
+            blocksBuffer.writeColorLine(x,y,1, color);
+        }
     }
 }
 
@@ -321,16 +338,14 @@ void clearFullLines() {
     } 
 }
 
-int currentColor = 0;
 void placeTile(int placeY) {
     int placeX = cursorX;
     
     for (int y=0;y<tileSize;++y) for (int x=0;x<tileSize;++x) {
         if (currentTile[tileXY(x,y)] != ' ') {
-            blocks[xy(placeX+x, placeY+y)] = '0' + (currentColor%8);
+            blocks[xy(placeX+x, placeY+y)] = '0'+currentTileIdx;
         }
     }
-    ++currentColor;
     
     clearFullLines();
     refreshBlocksBuffer();
@@ -365,22 +380,16 @@ void renderTile(int offX, int offY) {
     for (int y=0;y<tileSize;++y) for (int x=0;x<tileSize;++x) {
         if (currentTile[tileXY(x,y)] != ' ') {
             frontBuffer.writeText("@", offX+cursorX+x, offY+cursorY+y);
+            frontBuffer.writeColorLine(offX+cursorX+x, offY+cursorY+y, 1, currentTileColor);
         }
     }
 }
 
-int colored = 5;
+bool renderInProgress = false;
 void render() {
-    switch(colored) {
-        case 0: t.backColor(Terminal::DEFAULT); break;
-        case 1: t.backColor(Terminal::RED); break;
-        case 2: t.backColor(Terminal::GREEN); break;
-        case 3: t.backColor(Terminal::BLUE); break;
-        case 4: t.backColor(Terminal::CYAN); break;
-    }
-    
-    colored = (1+colored) % 2;
-    
+    if (renderInProgress) return;
+    renderInProgress = true;
+
     backBuffer.copyFrom(frontBuffer);
     frontBuffer.copyFrom(blankScene);
     
@@ -401,15 +410,11 @@ void render() {
     }
 
     frontBuffer.diff(backBuffer, diffs, 1);
-    if (frameNo > 10 && diffs.size() > 10) {
-        frontBuffer.toTerminal(t, 1,1, true);
-        backBuffer.toTerminal(t, 80,1, true);
-        exit(0);
-    }    
     frontBuffer.unitsToTerminal(t, diffs, 1, 1, true);
     diffs.clear();
 
     t.flush();
+    renderInProgress = false;
 }
 
 struct Tetris : public TimerOnTick {
