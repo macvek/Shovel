@@ -98,6 +98,10 @@ TermColor currentTileColor;
 string currentTile;
 int currentTileIdx;
 
+TermColor nextTileColor;
+string nextTile;
+int nextTileIdx;
+
 void renderGameOver() {
     f.drawFrame(frontBuffer,30,8,50,12, Frame::DoubleBorder);
     frontBuffer.writeText("Game Over", 36, 10);
@@ -251,10 +255,19 @@ void moveCursor(int xOffset) {
     }
 }
 
+void randomizeNextTile() {
+    nextTileIdx = rand() % parts.size();
+    nextTile = *parts[nextTileIdx];
+    nextTileColor = Terminal::MakeColor(colors[nextTileIdx], Terminal::DEFAULT);
+}
+
 void pickTiles() {
-    currentTileIdx = rand() % parts.size();
-    currentTile = *parts[currentTileIdx];
-    currentTileColor = Terminal::MakeColor(colors[currentTileIdx], Terminal::DEFAULT);
+    currentTileIdx = nextTileIdx;
+    currentTile = nextTile;
+    currentTileColor = nextTileColor;
+    
+    randomizeNextTile();
+    
 }
 
 void resetCursor() {
@@ -289,6 +302,7 @@ void clearBlocks() {
 }
 
 void resetGame() {
+    randomizeNextTile();
     clearBlocks();
     resetCursor();
     frameNo = 0;
@@ -375,12 +389,11 @@ void gameFrame() {
     }
 }
 
-void renderTile(int offX, int offY) {
-
+void renderTile(int offX, int offY, std::string& tileSource, TermColor tileColor) {
     for (int y=0;y<tileSize;++y) for (int x=0;x<tileSize;++x) {
-        if (currentTile[tileXY(x,y)] != ' ') {
-            frontBuffer.writeText("@", offX+cursorX+x, offY+cursorY+y);
-            frontBuffer.writeColorLine(offX+cursorX+x, offY+cursorY+y, 1, currentTileColor);
+        if (tileSource[tileXY(x,y)] != ' ') {
+            frontBuffer.writeText("@", offX+x, offY+y);
+            frontBuffer.writeColorLine(offX+x, offY+y, 1, tileColor);
         }
     }
 }
@@ -395,7 +408,9 @@ void render() {
     
     f.drawFrame(frontBuffer,0,0,79,23, Frame::SingleBorder);
     f.drawFrame(frontBuffer,29,0,50,23, Frame::SingleHorisontalExtend);
-    
+    f.drawFrame(frontBuffer,12,3,17,6, Frame::SingleBorder);
+    renderTile(13, 4, nextTile, nextTileColor);
+
     stringstream scoreLabel;
     scoreLabel << " Frame: " << frameNo << " ";
 
@@ -403,8 +418,8 @@ void render() {
     frontBuffer.writeText(" ESC - exit ", 66,0);
     
     frontBuffer.writeView(blocksBuffer.view(), 30,1);
-    renderTile(30,1);
-
+    renderTile(30+cursorX, 1+cursorY, currentTile, currentTileColor);
+   
     if (gameOver) {
         renderGameOver();
     }
