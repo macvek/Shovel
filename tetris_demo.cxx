@@ -29,9 +29,10 @@ Frame f;
 int cursorX, cursorY;
 
 int frameNo = 0;
-int levelFrames = 3;
 int levelWidth = 20;
 int levelHeight = 22;
+
+int levelFrames;
 int nextFrameDown;
 bool moveEveryFrame = false;
 
@@ -309,11 +310,26 @@ void clearBlocks() {
     refreshBlocksBuffer();
 }
 
+void calcLevelFrames() {
+    if (gameLines > 20) levelFrames = 3;
+    else if (gameLines > 18) levelFrames = 4;
+    else if (gameLines > 15) levelFrames = 5;
+    else if (gameLines > 12) levelFrames = 6;
+    else if (gameLines > 9) levelFrames = 7;
+    else if (gameLines > 6) levelFrames = 8;
+    else if (gameLines > 3) levelFrames = 9;
+    else levelFrames = 10;
+
+    gameSpeed = 11 - levelFrames;
+
+}
+
 void resetGame() {
     gameLines = 0;
     gameMoves = 0;
     gameSpeed = 1;
-    
+
+    calcLevelFrames();
     randomizeNextTile();
     clearBlocks();
     resetCursor();
@@ -361,6 +377,7 @@ void clearFullLines() {
         if (full) {
             removeBlockLine(y);
             ++gameLines;
+            calcLevelFrames();
         }
     } 
 }
@@ -464,7 +481,7 @@ int main(int argc, char** argv) {
     blankScene.toTerminal(t, 1,1, true);
 
     Tetris tetris;
-    Timer timer(50, &tetris);
+    Timer timer(30, &tetris);
 
     resetGame();
     render();
