@@ -95,6 +95,8 @@ array<Terminal::COLOR, 6> colors = {
     Terminal::COLOR::BRIGHT_MAGENTA,
 };
 
+TermColor shadowTileColor = Terminal::MakeColor(Terminal::COLOR::BRIGHT_WHITE, Terminal::COLOR::DEFAULT);
+
 TermColor currentTileColor;
 string currentTile;
 int currentTileIdx;
@@ -428,6 +430,17 @@ void renderTile(int offX, int offY, std::string& tileSource, TermColor tileColor
     }
 }
 
+const int blocksXOff = 30;
+const int blocksYOff = 1;
+
+void renderShadow() {
+    int shadowY = cursorY;
+    for (; !cursorCollides(cursorX, 1 + shadowY); ++shadowY );
+    if (shadowY > cursorY + 3) {
+        renderTile(blocksXOff + cursorX, blocksYOff + shadowY, currentTile, shadowTileColor);
+    }
+}
+
 bool renderInProgress = false;
 void render() {
     if (renderInProgress) return;
@@ -451,11 +464,14 @@ void render() {
 
     frontBuffer.writeText(" ESC - exit ", 66,0);
     
-    frontBuffer.writeView(blocksBuffer.view(), 30,1);
-    renderTile(30+cursorX, 1+cursorY, currentTile, currentTileColor);
+    frontBuffer.writeView(blocksBuffer.view(), blocksXOff,blocksYOff);
+    renderTile(blocksXOff + cursorX, blocksYOff + cursorY, currentTile, currentTileColor);
    
     if (gameOver) {
         renderGameOver();
+    }
+    else {
+        renderShadow();
     }
 
     frontBuffer.diff(backBuffer, diffs, 1);
