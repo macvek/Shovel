@@ -36,7 +36,8 @@ int levelHeight = 22;
 int nextFrameDown;
 bool moveEveryFrame = false;
 
-bool gameOver;
+bool gameOver = false;
+bool pause = false;
 int tileSize = 4;
 
 string partA = 
@@ -245,7 +246,7 @@ void pickTiles() {
 }
 
 void resetCursor() {
-    cursorX = 3;
+    cursorX = 8;
     cursorY = 0;
     gameOver = cursorCollides(cursorX, cursorY);
     moveEveryFrame = false;
@@ -338,6 +339,10 @@ void placeTile(int placeY) {
 
 
 void gameFrame() {
+    if (pause) {
+        return;
+    }
+
     ++frameNo;
     if (gameOver) {
         return;
@@ -369,6 +374,7 @@ void render() {
     frontBuffer.copyFrom(blankScene);
     
     f.drawFrame(frontBuffer,0,0,79,23, Frame::SingleBorder);
+    f.drawFrame(frontBuffer,29,0,51,23, Frame::SingleBorder);
     
     stringstream scoreLabel;
     scoreLabel << " Frame: " << frameNo << " ";
@@ -421,20 +427,29 @@ int main(int argc, char** argv) {
         }
 
         if (!gameOver) {
-            if (k.type == ARROW_LEFT) {
-                moveCursor(-1);
+            if (k.value == 'p') {
+                pause = !pause;
+            }
+            if (k.value == 'r') {
                 render();
             }
-            else if (k.type == ARROW_RIGHT) {
-                moveCursor(1);
-                render();
-            }
-            else if (k.type == ARROW_UP) {
-                rotate();
-                render();
-            }
-            else if (k.type == ARROW_DOWN) {
-                moveEveryFrame = true;
+
+            if (!pause) {
+                if (k.type == ARROW_LEFT) {
+                    moveCursor(-1);
+                    render();
+                }
+                else if (k.type == ARROW_RIGHT) {
+                    moveCursor(1);
+                    render();
+                }
+                else if (k.type == ARROW_UP) {
+                    rotate();
+                    render();
+                }
+                else if (k.type == ARROW_DOWN) {
+                    moveEveryFrame = true;
+                }
             }
         }
 
