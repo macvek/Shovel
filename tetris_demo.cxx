@@ -369,10 +369,18 @@ void renderTile(int offX, int offY) {
     }
 }
 
-bool colored = false;
+int colored = 5;
 void render() {
-    t.backColor( colored ? Terminal::RED : Terminal::DEFAULT );
-    colored = !colored;
+    switch(colored) {
+        case 0: t.backColor(Terminal::DEFAULT); break;
+        case 1: t.backColor(Terminal::RED); break;
+        case 2: t.backColor(Terminal::GREEN); break;
+        case 3: t.backColor(Terminal::BLUE); break;
+        case 4: t.backColor(Terminal::CYAN); break;
+    }
+    
+    colored = (1+colored) % 2;
+    
     backBuffer.copyFrom(frontBuffer);
     frontBuffer.copyFrom(blankScene);
     
@@ -393,6 +401,11 @@ void render() {
     }
 
     frontBuffer.diff(backBuffer, diffs, 1);
+    if (frameNo > 10 && diffs.size() > 10) {
+        frontBuffer.toTerminal(t, 1,1, true);
+        backBuffer.toTerminal(t, 80,1, true);
+        exit(0);
+    }    
     frontBuffer.unitsToTerminal(t, diffs, 1, 1, true);
     diffs.clear();
 
