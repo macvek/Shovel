@@ -102,6 +102,10 @@ TermColor nextTileColor;
 string nextTile;
 int nextTileIdx;
 
+int gameLines;
+int gameMoves;
+int gameSpeed;
+
 void renderGameOver() {
     f.drawFrame(frontBuffer,30,8,50,12, Frame::DoubleBorder);
     frontBuffer.writeText("Game Over", 36, 10);
@@ -250,8 +254,12 @@ void rotate() {
 
 void moveCursor(int xOffset) {
     int newValue = range(cursorX+xOffset, 0, levelWidth-1);
+    if (newValue == cursorX) {
+        return;
+    }
     if (!cursorCollides(newValue, cursorY)) {
         cursorX = newValue;
+        ++gameMoves;
     }
 }
 
@@ -302,6 +310,10 @@ void clearBlocks() {
 }
 
 void resetGame() {
+    gameLines = 0;
+    gameMoves = 0;
+    gameSpeed = 1;
+    
     randomizeNextTile();
     clearBlocks();
     resetCursor();
@@ -348,6 +360,7 @@ void clearFullLines() {
 
         if (full) {
             removeBlockLine(y);
+            ++gameLines;
         }
     } 
 }
@@ -411,10 +424,14 @@ void render() {
     f.drawFrame(frontBuffer,12,3,17,6, Frame::SingleBorder);
     renderTile(13, 4, nextTile, nextTileColor);
 
-    stringstream scoreLabel;
-    scoreLabel << " Frame: " << frameNo << " ";
+    stringstream linesLabel; linesLabel << " Lines: " << gameLines << " ";
+    stringstream movesLabel; movesLabel << " Moves: " << gameMoves << " ";
+    stringstream speedLabel; speedLabel << " Speed: " << gameSpeed << " ";
 
-    frontBuffer.writeText(scoreLabel.str(), 2,0);
+    frontBuffer.writeText(linesLabel.str(), 11, 7);
+    frontBuffer.writeText(movesLabel.str(), 11, 8);
+    frontBuffer.writeText(speedLabel.str(), 11, 9);
+
     frontBuffer.writeText(" ESC - exit ", 66,0);
     
     frontBuffer.writeView(blocksBuffer.view(), 30,1);
@@ -478,6 +495,7 @@ int main(int argc, char** argv) {
                     render();
                 }
                 else if (k.type == ARROW_UP) {
+                    ++gameMoves;
                     rotate();
                     render();
                 }
