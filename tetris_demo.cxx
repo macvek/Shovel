@@ -477,6 +477,8 @@ int main(int argc, char** argv) {
         }
     }
 
+    t.moveCursor(0,23);
+    t.stream() << endl;
     t.showCursor(true);
     return 0;
 }
