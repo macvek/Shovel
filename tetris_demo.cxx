@@ -374,7 +374,7 @@ void render() {
     frontBuffer.copyFrom(blankScene);
     
     f.drawFrame(frontBuffer,0,0,79,23, Frame::SingleBorder);
-    f.drawFrame(frontBuffer,29,0,51,23, Frame::SingleBorder);
+    f.drawFrame(frontBuffer,29,0,50,23, Frame::SingleHorisontalExtend);
     
     stringstream scoreLabel;
     scoreLabel << " Frame: " << frameNo << " ";
@@ -390,7 +390,6 @@ void render() {
     if (gameOver) {
         renderGameOver();
     }
-
 
     frontBuffer.diff(backBuffer, diffs, 3);
     frontBuffer.unitsToTerminal(t, diffs, 1, 1, true);

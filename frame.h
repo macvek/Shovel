@@ -6,6 +6,7 @@ class Frame {
     static const std::string Hash;
     static const std::string DashAndSlash;
     static const std::string SingleBorder;
+    static const std::string SingleHorisontalExtend;
     static const std::string DoubleBorder;
     
 
