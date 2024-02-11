@@ -1,13 +1,15 @@
 #pragma once
 
 #include <string>
+#include <unordered_set>
+#include <unordered_map>
 
 template<typename T> struct EventTrigger {
-    virtual void trigger(std::string eventName, T* handler) = 0;
+    virtual void trigger(const std::string& eventName, T* handler) = 0;
 };
 
 template<typename T> class Events {
-    T* handler;
+    std::unordered_map<std::string, std::unordered_set<T*>> hub;
 
     public:
     void registerEvent(std::string eventName, T* handler);
@@ -15,9 +17,16 @@ template<typename T> class Events {
 };
 
 template<typename T> void Events<T>::registerEvent(std::string eventName, T* aHandler) {
-    this->handler = aHandler;
+    this->hub[eventName].insert(aHandler);
 }
 
 template<typename T> void Events<T>::triggerEvent(std::string eventName, EventTrigger<T> &callToTrigger) {
-    callToTrigger.trigger(eventName, this->handler);
+    if (this->hub.find(eventName) == this->hub.end()) {
+        return;
+    }
+
+    auto matching = this->hub[eventName];
+    for (auto each = matching.cbegin(); each != matching.end(); ++each) {
+        callToTrigger.trigger(eventName, *each);
+    }
 }

@@ -14,7 +14,7 @@ struct MyHandler : public Handler {
 };
 
 struct TriggerMyEvent : public EventTrigger<Handler> {
-    void trigger(std::string eventName, Handler* handler) {
+    void trigger(const std::string& eventName, Handler* handler) {
         handler->onEvent();
     }
 };
