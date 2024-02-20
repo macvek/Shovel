@@ -45,5 +45,6 @@
         "streambuf": "cpp",
         "typeinfo": "cpp",
         "unordered_set": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": false
 }

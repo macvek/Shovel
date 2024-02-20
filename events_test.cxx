@@ -20,8 +20,8 @@ struct MyHandler : public Handler {
 
 static int counter = 0;
 
-struct TriggerMyEvent : public EventTrigger<Handler> {
-    void trigger(const std::string& eventName, Handler* handler) {
+struct TriggerMyEvent : public EventTrigger<Handler, void> {
+    void trigger(const std::string& eventName, Handler* handler, void*) {
         if ("MyEvent" == eventName) {
             handler->onEvent();
         }
@@ -32,7 +32,7 @@ struct TriggerMyEvent : public EventTrigger<Handler> {
 };
 
 int main() {
-    Events<Handler> e;
+    Events<Handler, void> e;
     MyHandler h; 
     TriggerMyEvent triggerMyEvent;
     
@@ -40,16 +40,16 @@ int main() {
     e.registerEvent("MyEvent", &h);
     e.registerEvent("ConsumeInt", &h);
 
-    e.triggerEvent("MyEvent", triggerMyEvent);
-    e.triggerEvent("ConsumeInt", triggerMyEvent);
-    e.triggerEvent("UnknownEvent", triggerMyEvent);
+    e.triggerEvent("MyEvent", triggerMyEvent, nullptr);
+    e.triggerEvent("ConsumeInt", triggerMyEvent, nullptr);
+    e.triggerEvent("UnknownEvent", triggerMyEvent, nullptr);
 
     if (counter != 1) {
         cerr << "Failed, counter should be 1";
         exit(1);
     }
     e.unregisterEvent("ConsumeInt", &h);
-    e.triggerEvent("ConsumeInt", triggerMyEvent);
+    e.triggerEvent("ConsumeInt", triggerMyEvent, nullptr);
 
     if (counter != 1) {
         cerr << "Failed, counter should be 1, as event was unregistered";
@@ -57,7 +57,7 @@ int main() {
     }
 
     e.registerEvent("ConsumeInt", &h);
-    e.triggerEvent("ConsumeInt", triggerMyEvent);
+    e.triggerEvent("ConsumeInt", triggerMyEvent, nullptr);
 
     if (counter != 2) {
         cerr << "Failed, counter should be 2, got: " << counter<< ". Event was registered again and retriggered";

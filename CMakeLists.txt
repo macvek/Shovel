@@ -79,6 +79,7 @@ add_executable(FrameDemo frame_demo.cxx ${libframe})
 
 add_executable(SnakeDemo snake_demo.cxx ${libsources})
 add_executable(TetrisDemo tetris_demo.cxx ${libsources})
+add_executable(InteractiveDemo interactive_demo.cxx ${libsources})
 
 add_executable(EventsTest events_test.cxx)
 add_test(NAME EventsTest COMMAND EventsTest)
