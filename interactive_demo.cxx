@@ -24,18 +24,19 @@ RenderBuffer frontBuffer = blankScene;
 Frame f;
 
 int selectedItem = 0;
-
+int allItems = 15;
+int scrollY = 0;
 void drawMenu() {
     int posX = 30;
     int posY = 1;
     int width = 20;
     int height = 10;
 
-    int scrollY = 3;
+    
     f.drawFrame(frontBuffer,posX,posY,posX+width+1,posY+height+1, Frame::SingleBorder);
     
     RenderBuffer menuBuffer(width,15,' ',true);
-    for (int i=0;i<15;i++) {
+    for (int i=0;i<allItems;i++) {
         std::stringstream caption;
         caption << "Menu item #" << i+1;
         menuBuffer.writeText(caption.str(), 0, i);
@@ -43,6 +44,18 @@ void drawMenu() {
             menuBuffer.writeColorLine(0, i, 20, Terminal::MakeColor(Terminal::BLACK, Terminal::WHITE));
         }
     }
+
+    int firstVisible = scrollY;
+    if (selectedItem < firstVisible) {
+        scrollY = selectedItem;
+    }
+
+    int lastVisible = scrollY + height-1 ;
+    if (lastVisible < selectedItem) {
+        scrollY = selectedItem - ( height -1 );
+    }
+
+
 
     frontBuffer.writeView(menuBuffer.view(0,20,scrollY,10 + scrollY), posX+1, posY+1);
 }
@@ -69,6 +82,7 @@ struct KeyHandlerCapture : public OnKeyHandler {
             --selectedItem;
         }
         
+        selectedItem = selectedItem < 0 ? 0 : selectedItem >= allItems ? allItems-1 : selectedItem;
         render();
     }
 } mainKeyCapture;
