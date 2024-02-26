@@ -30,16 +30,21 @@ void drawMenu() {
     int posY = 1;
     int width = 20;
     int height = 10;
+
+    int scrollY = 3;
     f.drawFrame(frontBuffer,posX,posY,posX+width+1,posY+height+1, Frame::SingleBorder);
     
-    for (int i=0;i<10;i++) {
+    RenderBuffer menuBuffer(width,15,' ',true);
+    for (int i=0;i<15;i++) {
         std::stringstream caption;
         caption << "Menu item #" << i+1;
-        frontBuffer.writeText(caption.str(), posX+1, posY+1+i);
+        menuBuffer.writeText(caption.str(), 0, i);
         if ( i == selectedItem ) {
-            frontBuffer.writeColorLine(posX + 1, posY + 1 + i, 20, Terminal::MakeColor(Terminal::BLACK, Terminal::WHITE));
+            menuBuffer.writeColorLine(0, i, 20, Terminal::MakeColor(Terminal::BLACK, Terminal::WHITE));
         }
     }
+
+    frontBuffer.writeView(menuBuffer.view(0,20,scrollY,10 + scrollY), posX+1, posY+1);
 }
 
 void render() {
