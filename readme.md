@@ -12,3 +12,6 @@ All subprojects have test builds (suffixed with _test) which are triggered by cm
 
 ## Demos
 Projects which are designed to be executed in consoles are demos. Files are suffixed with _demo.cxx and artifacts are suffixed with `Demo`, like TetrisDemo.
+
+https://github.com/user-attachments/assets/df3d099c-413e-4e48-9756-1b33b0ee5e04
+
